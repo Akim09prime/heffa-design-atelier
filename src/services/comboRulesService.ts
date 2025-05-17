@@ -17,7 +17,8 @@ export const comboRules: ComboRule[] = [
           manufacturer: 'Blum'
         }
       }
-    }
+    },
+    enabled: true
   },
   {
     id: '2',
@@ -32,7 +33,8 @@ export const comboRules: ComboRule[] = [
           type: 'push_system'
         }
       }
-    }
+    },
+    enabled: true
   },
   {
     id: '3',
@@ -47,7 +49,8 @@ export const comboRules: ComboRule[] = [
           type: 'foot'
         }
       }
-    }
+    },
+    enabled: true
   },
   {
     id: '4',
@@ -62,7 +65,8 @@ export const comboRules: ComboRule[] = [
           type: 'profile'
         }
       }
-    }
+    },
+    enabled: true
   },
   {
     id: '5',
@@ -75,7 +79,8 @@ export const comboRules: ComboRule[] = [
       // Fix: Adding an empty suggest object to satisfy the type requirement
       suggest: {},
       warning: 'Painting can only be applied to MDF materials'
-    }
+    },
+    enabled: true
   },
   {
     id: '6',
@@ -90,7 +95,8 @@ export const comboRules: ComboRule[] = [
           type: 'hinge'
         }
       }
-    }
+    },
+    enabled: true
   },
   {
     id: '7',
@@ -105,7 +111,8 @@ export const comboRules: ComboRule[] = [
           type: 'shelf_support'
         }
       }
-    }
+    },
+    enabled: true
   }
 ];
 
@@ -139,8 +146,8 @@ export const ComboRulesService = {
       });
     };
     
-    // Apply each rule
-    comboRules.forEach(rule => {
+    // Apply only enabled rules
+    comboRules.filter(rule => rule.enabled !== false).forEach(rule => {
       let conditionsMet = true;
       
       // Check module type condition
@@ -326,5 +333,13 @@ export const ComboRulesService = {
       warnings,
       errors
     };
+  },
+
+  // Method to update combo rules
+  updateComboRules: (updatedRules: ComboRule[]) => {
+    // In a real implementation, this would persist rules to a database
+    // For now, let's just log that we received updated rules
+    console.log('Updated combo rules:', updatedRules);
+    return true;
   }
 };

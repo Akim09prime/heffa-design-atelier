@@ -11,7 +11,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { MaterialType, ProcessingType } from '@/types';
+import { MaterialType, ProcessingType, ComboRule } from '@/types';
+import { ComboRulesEditor } from '@/components/processing/ComboRulesEditor';
+import { comboRules } from '@/services/comboRulesService';
 
 interface ProcessingOption {
   id: string;
@@ -20,15 +22,6 @@ interface ProcessingOption {
   pricePerUnit: number;
   unit: string;
   compatibleMaterials: MaterialType[];
-}
-
-interface ComboRule {
-  id: string;
-  name: string;
-  description: string;
-  condition: string;
-  action: string;
-  enabled: boolean;
 }
 
 const Processing = () => {
@@ -43,48 +36,7 @@ const Processing = () => {
     { id: '7', name: 'Painting', type: 'painting', pricePerUnit: 40, unit: 'm²', compatibleMaterials: ['MDF'] },
   ]);
 
-  const [comboRules, setComboRules] = useState<ComboRule[]>([
-    { 
-      id: '1', 
-      name: 'Drawer Slides', 
-      description: 'Add slides to drawer units',
-      condition: 'Module type is drawer_unit',
-      action: 'Add slide accessory',
-      enabled: true
-    },
-    { 
-      id: '2', 
-      name: 'Push System', 
-      description: 'Add push system when no handle selected',
-      condition: 'No handle accessory and door width > 300mm',
-      action: 'Add push system accessory',
-      enabled: true
-    },
-    { 
-      id: '3', 
-      name: 'Cabinet Feet', 
-      description: 'Add feet to base cabinets',
-      condition: 'Module type is base_cabinet',
-      action: 'Add 4 adjustable feet',
-      enabled: true
-    },
-    { 
-      id: '4', 
-      name: 'Glass Profile', 
-      description: 'Add aluminum profile for glass doors',
-      condition: 'Door material is GLASS',
-      action: 'Add aluminum profile',
-      enabled: true
-    },
-    { 
-      id: '5', 
-      name: 'Painting Restriction', 
-      description: 'Block painting for non-MDF materials',
-      condition: 'Material type is not MDF',
-      action: 'Block painting processing',
-      enabled: true
-    },
-  ]);
+  const [managedComboRules, setManagedComboRules] = useState<ComboRule[]>(comboRules);
 
   const [isAddProcessingOpen, setIsAddProcessingOpen] = useState(false);
   const [isAddRuleOpen, setIsAddRuleOpen] = useState(false);
@@ -121,7 +73,7 @@ const Processing = () => {
   };
 
   const handleDeleteRule = (id: string) => {
-    setComboRules(prev => prev.filter(r => r.id !== id));
+    setManagedComboRules(prev => prev.filter(r => r.id !== id));
     toast({
       title: "Combo Rule Deleted",
       description: "The combo rule has been removed successfully.",
@@ -129,14 +81,54 @@ const Processing = () => {
   };
 
   const handleToggleRule = (id: string) => {
-    setComboRules(prev => prev.map(rule => 
-      rule.id === id ? { ...rule, enabled: !rule.enabled } : rule
-    ));
-    
-    const rule = comboRules.find(r => r.id === id);
+    setManagedComboRules(prev => prev.map(rule => {
+      if (rule.id === id) {
+        const newEnabled = !rule.enabled;
+        toast({
+          title: newEnabled ? "Rule Enabled" : "Rule Disabled",
+          description: `"${rule.name}" has been ${newEnabled ? 'enabled' : 'disabled'}.`,
+        });
+        return { ...rule, enabled: newEnabled };
+      }
+      return rule;
+    }));
+  };
+
+  const handleSaveProcessing = (processing: ProcessingOption) => {
+    if (editingProcessing) {
+      // Update existing processing option
+      setProcessingOptions(prev => prev.map(p => 
+        p.id === editingProcessing.id ? processing : p
+      ));
+      toast({
+        title: "Processing Option Updated",
+        description: `${processing.name} has been updated successfully.`,
+      });
+    } else {
+      // Add new processing option
+      setProcessingOptions(prev => [...prev, { ...processing, id: `${Date.now()}` }]);
+      toast({
+        title: "Processing Option Added",
+        description: `${processing.name} has been added successfully.`,
+      });
+    }
+    setIsAddProcessingOpen(false);
+  };
+
+  const handleSaveRule = (rule: ComboRule) => {
+    if (editingRule) {
+      // Update existing rule
+      setManagedComboRules(prev => prev.map(r => 
+        r.id === editingRule.id ? rule : r
+      ));
+    } else {
+      // Add new rule
+      setManagedComboRules(prev => [...prev, rule]);
+    }
+    setIsAddRuleOpen(false);
     toast({
-      title: rule?.enabled ? "Rule Disabled" : "Rule Enabled",
-      description: `"${rule?.name}" has been ${rule?.enabled ? 'disabled' : 'enabled'}.`,
+      title: editingRule ? "Rule Updated" : "Rule Added",
+      description: `${rule.name} has been ${editingRule ? 'updated' : 'added'} successfully.`,
     });
   };
 
@@ -152,11 +144,9 @@ const Processing = () => {
     p.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredComboRules = comboRules.filter(r => 
+  const filteredComboRules = managedComboRules.filter(r => 
     r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.action.toLowerCase().includes(searchQuery.toLowerCase())
+    r.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -280,8 +270,7 @@ const Processing = () => {
                   <TableHeader>
                     <TableRow className="border-gray-700 hover:bg-gray-800">
                       <TableHead className="text-gray-400">Rule Name</TableHead>
-                      <TableHead className="text-gray-400">Condition</TableHead>
-                      <TableHead className="text-gray-400">Action</TableHead>
+                      <TableHead className="text-gray-400">Description</TableHead>
                       <TableHead className="text-gray-400 text-center">Status</TableHead>
                       <TableHead className="text-gray-400 text-right">Controls</TableHead>
                     </TableRow>
@@ -291,13 +280,11 @@ const Processing = () => {
                       <TableRow key={rule.id} className="border-gray-700 hover:bg-gray-700">
                         <TableCell className="font-medium text-gray-300">
                           {rule.name}
-                          <div className="text-xs text-gray-400">{rule.description}</div>
                         </TableCell>
-                        <TableCell className="text-gray-300">{rule.condition}</TableCell>
-                        <TableCell className="text-gray-300">{rule.action}</TableCell>
+                        <TableCell className="text-gray-300">{rule.description}</TableCell>
                         <TableCell className="text-center">
                           <Switch 
-                            checked={rule.enabled} 
+                            checked={rule.enabled !== false} 
                             onCheckedChange={() => handleToggleRule(rule.id)} 
                           />
                         </TableCell>
@@ -449,81 +436,13 @@ const Processing = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add/Edit Rule Dialog */}
-      <Dialog open={isAddRuleOpen} onOpenChange={setIsAddRuleOpen}>
-        <DialogContent className="bg-gray-800 border-gray-700 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-white">
-              {editingRule ? 'Edit Combo Rule' : 'Add Combo Rule'}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rule-name" className="text-right">Name</Label>
-              <Input
-                id="rule-name"
-                defaultValue={editingRule?.name}
-                className="col-span-3 bg-gray-700 border-gray-600"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rule-description" className="text-right">Description</Label>
-              <Input
-                id="rule-description"
-                defaultValue={editingRule?.description}
-                className="col-span-3 bg-gray-700 border-gray-600"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rule-condition" className="text-right">Condition</Label>
-              <Input
-                id="rule-condition"
-                defaultValue={editingRule?.condition}
-                className="col-span-3 bg-gray-700 border-gray-600"
-                placeholder="e.g. Module type is drawer_unit"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rule-action" className="text-right">Action</Label>
-              <Input
-                id="rule-action"
-                defaultValue={editingRule?.action}
-                className="col-span-3 bg-gray-700 border-gray-600"
-                placeholder="e.g. Add slide accessory"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Enabled</Label>
-              <div className="flex items-center space-x-2">
-                <Switch defaultChecked={editingRule?.enabled ?? true} />
-                <Label>Rule is {editingRule?.enabled ?? true ? 'enabled' : 'disabled'}</Label>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setIsAddRuleOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" onClick={() => {
-              setIsAddRuleOpen(false);
-              toast({
-                title: editingRule ? 'Rule Updated' : 'Rule Added',
-                description: editingRule 
-                  ? `${editingRule.name} has been updated` 
-                  : 'New combo rule has been added',
-              });
-            }}>
-              {editingRule ? 'Update' : 'Add'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ComboRulesEditor Dialog */}
+      <ComboRulesEditor 
+        rule={editingRule || undefined}
+        isOpen={isAddRuleOpen}
+        onClose={() => setIsAddRuleOpen(false)}
+        onSave={handleSaveRule}
+      />
     </AdminLayout>
   );
 };

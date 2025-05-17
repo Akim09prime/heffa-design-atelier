@@ -195,6 +195,7 @@ export interface ComboRule {
     warning?: string;
     error?: string;
   };
+  enabled?: boolean;
 }
 
 // Export Types
@@ -229,4 +230,46 @@ export interface AiAssistantMessage {
     type: 'module' | 'material' | 'accessory' | 'processing';
     id: string;
   };
+}
+
+// Report Types
+export interface Report {
+  id: string;
+  name: string;
+  type: 'sales' | 'inventory' | 'materials' | 'accessories' | 'processing' | 'custom';
+  dateCreated: Date;
+  dateRange: {
+    start: Date;
+    end: Date;
+  };
+  format: 'pdf' | 'excel' | 'json';
+  generatedBy: string; // User ID
+  url?: string;
+  status: 'pending' | 'completed' | 'failed';
+}
+
+// Pricing Types
+export interface PricingRule {
+  id: string;
+  name: string;
+  type: 'material' | 'accessory' | 'processing' | 'labor' | 'discount';
+  value: number;
+  unit: 'percentage' | 'fixed';
+  applicableItems: string[]; // IDs of items this rule applies to
+  minimumQuantity?: number;
+  minimumValue?: number;
+  startDate?: Date;
+  endDate?: Date;
+  enabled: boolean;
+}
+
+// System Settings
+export interface SystemSetting {
+  id: string;
+  category: 'general' | 'pricing' | 'materials' | 'processing' | 'export' | 'notification';
+  key: string;
+  value: string | number | boolean;
+  description: string;
+  updatedAt: Date;
+  updatedBy: string; // User ID
 }
