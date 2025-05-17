@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,46 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for HeffaDesign1
+				heffa: {
+					50: '#F9F7F4',
+					100: '#F3EEE8',
+					200: '#E7DFD1',
+					300: '#D5C7B2',
+					400: '#C4B095',
+					500: '#B29978',
+					600: '#9A7F5D',
+					700: '#816749',
+					800: '#665137',
+					900: '#4D3D29',
+					950: '#332819',
+				},
+				designer: {
+					50: '#F9FAFB',
+					100: '#F3F4F6',
+					200: '#E5E7EB',
+					300: '#D1D5DB',
+					400: '#9CA3AF',
+					500: '#6B7280',
+					600: '#4B5563',
+					700: '#374151',
+					800: '#1F2937',
+					900: '#111827',
+					950: '#0B0F19',
+				},
+				admin: {
+					50: '#ECEFF1',
+					100: '#CFD8DC',
+					200: '#B0BEC5',
+					300: '#90A4AE',
+					400: '#78909C',
+					500: '#607D8B',
+					600: '#546E7A',
+					700: '#455A64',
+					800: '#37474F',
+					900: '#263238',
+					950: '#1A252A',
 				}
 			},
 			borderRadius: {
@@ -84,11 +125,31 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				'fade-out': {
+					from: { opacity: '1' },
+					to: { opacity: '0' }
+				},
+				'slide-in': {
+					from: { transform: 'translateX(100%)' },
+					to: { transform: 'translateX(0)' }
+				},
+				'slide-out': {
+					from: { transform: 'translateX(0)' },
+					to: { transform: 'translateX(100%)' }
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'fade-out': 'fade-out 0.3s ease-out',
+				'slide-in': 'slide-in 0.3s ease-out',
+				'slide-out': 'slide-out 0.3s ease-out',
 			}
 		}
 	},
