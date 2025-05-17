@@ -1039,7 +1039,7 @@ const translations: Translations = {
       en: 'Export Complete',
       ro: 'Export finalizat'
     },
-    description: {
+    itemDescription: {
       en: 'Description',
       ro: 'Descriere'
     },
