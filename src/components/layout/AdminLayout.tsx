@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Home, Layers, Settings, LogOut, User, Users, 
-  Database, FileSpreadsheet, Upload, BarChart 
+  Database, FileSpreadsheet, Upload, BarChart, Palette, Box
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -40,9 +40,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       title: `Navigating to ${title}`,
       description: "Loading content...",
     });
-    // In a real app, we would navigate to different routes
-    // For now, we'll just show a toast message
     console.log(`Navigating to ${path}`);
+    navigate(path);
   };
 
   return (
@@ -62,7 +61,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/dashboard", "Dashboard")}
+                onClick={() => handleNavigation("/admin/dashboard", "Dashboard")}
               >
                 <Home size={18} />
                 <span>Dashboard</span>
@@ -70,23 +69,31 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/materials-database", "Materials Database")}
+                onClick={() => handleNavigation("/admin/materials-database", "Materials Database")}
               >
-                <Database size={18} />
-                <span>Materials Database</span>
+                <Palette size={18} />
+                <span>Materials</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/accessories", "Accessories")}
+                onClick={() => handleNavigation("/admin/accessories", "Accessories")}
               >
-                <Layers size={18} />
+                <Box size={18} />
                 <span>Accessories</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/users", "Users")}
+                onClick={() => handleNavigation("/admin/processing", "Processing Rules")}
+              >
+                <Layers size={18} />
+                <span>Processing Rules</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/admin/users", "Users")}
               >
                 <Users size={18} />
                 <span>Users</span>
@@ -94,7 +101,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/reports", "Reports")}
+                onClick={() => handleNavigation("/admin/reports", "Reports")}
               >
                 <FileSpreadsheet size={18} />
                 <span>Reports</span>
@@ -102,7 +109,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/import-data", "Import Data")}
+                onClick={() => handleNavigation("/admin/import-data", "Import Data")}
               >
                 <Upload size={18} />
                 <span>Import Data</span>
@@ -110,7 +117,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/analytics", "Analytics")}
+                onClick={() => handleNavigation("/admin/analytics", "Analytics")}
               >
                 <BarChart size={18} />
                 <span>Analytics</span>
@@ -118,7 +125,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/settings", "Settings")}
+                onClick={() => handleNavigation("/admin/settings", "Settings")}
               >
                 <Settings size={18} />
                 <span>Settings</span>

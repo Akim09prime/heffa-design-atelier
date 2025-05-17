@@ -9,6 +9,71 @@ export interface User {
   avatar?: string;
 }
 
+// Material types
+export type MaterialType = 'PAL' | 'MDF' | 'MDF-AGT' | 'PFL' | 'GLASS' | 'COUNTERTOP';
+
+export interface Material {
+  id: string;
+  code: string;
+  name: string;
+  type: MaterialType;
+  thickness: number; // in mm
+  paintable: boolean;
+  cantable: boolean;
+  manufacturer: string;
+  pricePerSqm: number;
+  textureUrl?: string;
+  imageUrl?: string;
+  availability: boolean;
+  compatibleOperations: ProcessingType[];
+  supplier: 'Egger' | 'AGT' | 'SticlaExpert' | 'Hafele' | 'Blum' | 'GTV' | 'Other';
+}
+
+// Accessory types
+export type AccessoryType = 
+  'hinge' | 
+  'slide' | 
+  'handle' | 
+  'foot' | 
+  'profile' | 
+  'push_system' | 
+  'shelf_support' |
+  'other';
+
+export interface AccessoryItem {
+  id: string;
+  code: string;
+  name: string;
+  type: AccessoryType;
+  manufacturer: string;
+  price: number;
+  imageUrl?: string;
+  pdfUrl?: string;
+  compatibility: ModuleType[];
+  properties: Record<string, string | number | boolean>;
+}
+
+// Processing types
+export type ProcessingType = 
+  'cnc_classic' | 
+  'cnc_rifled' | 
+  'glass_cut' | 
+  'glass_sandblast' | 
+  'glass_drill' | 
+  'glass_cnc' |
+  'edge_banding' |
+  'painting' |
+  'other';
+
+export interface ProcessingOption {
+  id: string;
+  name: string;
+  type: ProcessingType;
+  pricePerUnit: number;
+  compatibleMaterials: MaterialType[];
+}
+
+// Project types
 export interface Project {
   id: string;
   name: string;
@@ -76,46 +141,11 @@ export interface ModuleMaterial {
   quantity: number; // in square meters
 }
 
-export type MaterialType = 'PAL' | 'MDF' | 'MDF-AGT' | 'PFL' | 'GLASS' | 'COUNTERTOP';
-
-export interface Material {
-  id: string;
-  code: string;
-  name: string;
-  type: MaterialType;
-  manufacturer: string;
-  thickness: number; // in mm
-  pricePerSqm: number;
-  textureUrl?: string;
-  imageUrl?: string;
-  availability: boolean;
-}
-
 export interface Accessory {
   id: string;
   type: AccessoryType;
-  materialId: string;
+  accessoryItemId: string;
   quantity: number;
-}
-
-export type AccessoryType = 
-  'hinge' | 
-  'slide' | 
-  'handle' | 
-  'foot' | 
-  'profile' | 
-  'push_system' | 
-  'other';
-
-export interface AccessoryItem {
-  id: string;
-  code: string;
-  name: string;
-  type: AccessoryType;
-  manufacturer: string;
-  price: number;
-  imageUrl?: string;
-  compatibility: ModuleType[];
 }
 
 export interface Processing {
@@ -125,25 +155,6 @@ export interface Processing {
   area: number; // in square meters
 }
 
-export type ProcessingType = 
-  'cnc_classic' | 
-  'cnc_rifled' | 
-  'glass_cut' | 
-  'glass_sandblast' | 
-  'glass_drill' | 
-  'glass_cnc' |
-  'edge_banding' |
-  'painting' |
-  'other';
-
-export interface ProcessingOption {
-  id: string;
-  name: string;
-  type: ProcessingType;
-  pricePerUnit: number;
-  compatibleMaterials: MaterialType[];
-}
-
 export interface MaterialRule {
   materialType: MaterialType;
   allowedProcessing: ProcessingType[];
@@ -151,6 +162,9 @@ export interface MaterialRule {
 }
 
 export interface ComboRule {
+  id: string;
+  name: string;
+  description: string;
   if: {
     moduleType?: ModuleType;
     dimension?: {
@@ -180,5 +194,28 @@ export interface ComboRule {
     };
     warning?: string;
     error?: string;
+  };
+}
+
+// Export Types
+export type ExportFormat = 'pdf' | 'excel' | 'dxf' | 'svg' | 'json';
+
+export interface ExportConfig {
+  format: ExportFormat;
+  includeDetails: boolean;
+  includeImages: boolean;
+  includeAccessories: boolean;
+  includeCutting: boolean;
+}
+
+// AI Assistant
+export interface AiAssistantMessage {
+  id: string;
+  text: string;
+  timestamp: Date;
+  type: 'suggestion' | 'warning' | 'error' | 'info';
+  relatedTo?: {
+    type: 'module' | 'material' | 'accessory' | 'processing';
+    id: string;
   };
 }

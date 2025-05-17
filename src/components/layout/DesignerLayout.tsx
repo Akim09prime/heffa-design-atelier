@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Home, Layers, FolderPlus, Settings, LogOut, 
-  User, Users, Palette, Box, Database 
+  User, Users, Palette, Box, Database, FileSpreadsheet, MessageCircle, Table
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -40,9 +40,8 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
       title: `Navigating to ${title}`,
       description: "Loading content...",
     });
-    // In a real app, we would navigate to different routes
-    // For now, we'll just show a toast message
     console.log(`Navigating to ${path}`);
+    navigate(path);
   };
 
   return (
@@ -62,7 +61,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/dashboard", "Dashboard")}
+                onClick={() => handleNavigation("/designer/dashboard", "Dashboard")}
               >
                 <Home size={18} />
                 <span>Dashboard</span>
@@ -70,7 +69,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/projects", "Projects")}
+                onClick={() => handleNavigation("/designer/projects", "Projects")}
               >
                 <Layers size={18} />
                 <span>Projects</span>
@@ -78,7 +77,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/new-project", "New Project")}
+                onClick={() => handleNavigation("/designer/new-project", "New Project")}
               >
                 <FolderPlus size={18} />
                 <span>New Project</span>
@@ -86,7 +85,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/clients", "Clients")}
+                onClick={() => handleNavigation("/designer/clients", "Clients")}
               >
                 <Users size={18} />
                 <span>Clients</span>
@@ -94,7 +93,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/materials", "Materials")}
+                onClick={() => handleNavigation("/designer/materials", "Materials")}
               >
                 <Palette size={18} />
                 <span>Materials</span>
@@ -102,7 +101,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/modules", "Modules")}
+                onClick={() => handleNavigation("/designer/modules", "Modules")}
               >
                 <Box size={18} />
                 <span>Modules</span>
@@ -110,7 +109,31 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/settings", "Settings")}
+                onClick={() => handleNavigation("/designer/accessories", "Accessories")}
+              >
+                <Table size={18} />
+                <span>Accessories</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/designer/exports", "Exports")}
+              >
+                <FileSpreadsheet size={18} />
+                <span>Exports</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/designer/ai-assistant", "AI Assistant")}
+              >
+                <MessageCircle size={18} />
+                <span>AI Assistant</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/designer/settings", "Settings")}
               >
                 <Settings size={18} />
                 <span>Settings</span>

@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Home, Layers, FolderPlus, Settings, LogOut, User } from 'lucide-react';
+import { Home, Layers, FolderPlus, Settings, LogOut, User, MessageCircle, ShoppingCart, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,9 +37,8 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       title: `Navigating to ${title}`,
       description: "Loading content...",
     });
-    // In a real app, we would navigate to different routes
-    // For now, we'll just show a toast message
     console.log(`Navigating to ${path}`);
+    navigate(path);
   };
 
   return (
@@ -59,7 +58,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/dashboard", "Dashboard")}
+                onClick={() => handleNavigation("/client/dashboard", "Dashboard")}
               >
                 <Home size={18} />
                 <span>Dashboard</span>
@@ -67,7 +66,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/projects", "My Projects")}
+                onClick={() => handleNavigation("/client/projects", "My Projects")}
               >
                 <Layers size={18} />
                 <span>My Projects</span>
@@ -75,7 +74,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/new-project", "New Project")}
+                onClick={() => handleNavigation("/client/new-project", "New Project")}
               >
                 <FolderPlus size={18} />
                 <span>New Project</span>
@@ -83,7 +82,31 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/settings", "Settings")}
+                onClick={() => handleNavigation("/client/favorites", "Favorites")}
+              >
+                <Heart size={18} />
+                <span>Favorites</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/client/cart", "Cart")}
+              >
+                <ShoppingCart size={18} />
+                <span>Cart</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/client/ai-assistant", "AI Assistant")}
+              >
+                <MessageCircle size={18} />
+                <span>AI Assistant</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/client/settings", "Settings")}
               >
                 <Settings size={18} />
                 <span>Settings</span>
