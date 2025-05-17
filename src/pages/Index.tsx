@@ -9,7 +9,20 @@ const Index = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      // Redirect based on user role
+      switch (user.role) {
+        case 'admin':
+          navigate('/admin/dashboard');
+          break;
+        case 'designer':
+          navigate('/designer/dashboard');
+          break;
+        case 'client':
+          navigate('/client/dashboard');
+          break;
+        default:
+          navigate('/login');
+      }
     } else {
       navigate('/login');
     }
