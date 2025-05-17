@@ -5,9 +5,13 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 export type Language = 'en' | 'ro';
 
 // Translation content types
+interface TranslationEntry {
+  [language: string]: string;
+}
+
 export interface Translations {
   [key: string]: {
-    [key: string]: string;
+    [key: string]: TranslationEntry;
   };
 }
 
