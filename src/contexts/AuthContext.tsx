@@ -1,13 +1,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole } from '../types';
+import { User, UserRole, AppMode } from '../types';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  appMode: AppMode;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setUserRole: (role: UserRole) => void; // For demo purposes only
+  setAppMode: (mode: AppMode) => void; // For toggling between configurator and showroom
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,34 +21,48 @@ const demoUsers: Record<UserRole, User> = {
     name: 'John Client',
     email: 'client@heffadesign.com',
     role: 'client',
-    avatar: '/avatar-client.jpg'
+    avatar: '/avatar-client.jpg',
+    active: true,
+    projectIds: ['1', '2']
   },
   designer: {
     id: '2',
     name: 'Diana Designer',
     email: 'designer@heffadesign.com',
     role: 'designer',
-    avatar: '/avatar-designer.jpg'
+    avatar: '/avatar-designer.jpg',
+    active: true,
+    projectIds: ['1', '3', '4']
   },
   admin: {
     id: '3',
     name: 'Adam Admin',
     email: 'admin@heffadesign.com',
     role: 'admin',
-    avatar: '/avatar-admin.jpg'
+    avatar: '/avatar-admin.jpg',
+    active: true
   }
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [appMode, setAppMode] = useState<AppMode>('configurator');
 
   useEffect(() => {
     // Check for saved user in localStorage (demo only)
     const savedUser = localStorage.getItem('heffaUser');
+    
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
+    
+    // Check for saved app mode
+    const savedMode = localStorage.getItem('heffaAppMode');
+    if (savedMode && (savedMode === 'configurator' || savedMode === 'showroom')) {
+      setAppMode(savedMode as AppMode);
+    }
+    
     setLoading(false);
   }, []);
 
@@ -83,6 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem('heffaUser');
+    // Do not reset app mode on logout to maintain user preference
   };
 
   // For demo purposes only - allows switching between user roles
@@ -92,8 +109,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('heffaUser', JSON.stringify(demoUser));
   };
 
+  // Toggle between configurator and showroom modes
+  const handleSetAppMode = (mode: AppMode) => {
+    setAppMode(mode);
+    localStorage.setItem('heffaAppMode', mode);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, setUserRole }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        loading, 
+        login, 
+        logout, 
+        setUserRole, 
+        appMode, 
+        setAppMode: handleSetAppMode 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

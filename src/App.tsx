@@ -16,6 +16,7 @@ import Settings from "./pages/admin/Settings";
 import ClientDashboard from "./pages/client/Dashboard";
 import ClientProjects from "./pages/client/Projects";
 import ClientNewProject from "./pages/client/NewProject";
+import ClientShowroom from "./pages/client/Showroom"; // New showroom page
 import ClientFavorites from "./pages/client/Favorites";
 import ClientCart from "./pages/client/Cart";
 import ClientSettings from "./pages/client/Settings";
@@ -54,6 +55,7 @@ function App() {
             
             {/* Client Routes */}
             <Route path="/client/dashboard" element={<ClientDashboard />} />
+            <Route path="/client/showroom" element={<ClientShowroom />} />
             <Route path="/client/projects" element={<ClientProjects />} />
             <Route path="/client/projects/new" element={<ClientNewProject />} />
             <Route path="/client/favorites" element={<ClientFavorites />} />

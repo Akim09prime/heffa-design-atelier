@@ -7,6 +7,8 @@ export interface User {
   email: string;
   role: UserRole;
   avatar?: string;
+  projectIds?: string[];
+  active: boolean;
 }
 
 // Material types
@@ -27,6 +29,28 @@ export interface Material {
   availability: boolean;
   compatibleOperations: ProcessingType[];
   supplier: 'Egger' | 'AGT' | 'SticlaExpert' | 'Hafele' | 'Blum' | 'GTV' | 'Other';
+}
+
+// Project types
+export type ProjectType = 'Kitchen' | 'Living Room' | 'Bedroom' | 'Hallway' | 'Bathroom' | 'Balcony/Terrace' | 'Apartment' | 'House/Villa' | 'Free Mode';
+export type ProjectSubType = 'Straight' | 'L-shape' | 'U-shape' | 'Island' | 'Sliding' | 'Classic' | 'Glass' | 'MDF' | '';
+export type ProjectStatus = 'draft' | 'saved' | 'submitted' | 'approved' | 'in_production' | 'completed';
+
+export interface Project {
+  id: string;
+  userId: string;
+  name: string;
+  description: string;
+  type: ProjectType;
+  subType?: ProjectSubType;
+  parameters: Record<string, any>;
+  status: ProjectStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  roomType: RoomType;
+  modules: FurnitureModule[];
+  dimensions: RoomDimensions;
+  priceBreakdown?: Record<string, any>;
 }
 
 // Accessory types
@@ -71,19 +95,6 @@ export interface ProcessingOption {
   type: ProcessingType;
   pricePerUnit: number;
   compatibleMaterials: MaterialType[];
-}
-
-// Project types
-export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  roomType: RoomType;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  modules: FurnitureModule[];
-  dimensions: RoomDimensions;
 }
 
 export type RoomType = 'kitchen' | 'bathroom' | 'bedroom' | 'livingroom' | 'office' | 'other';
@@ -220,6 +231,9 @@ export interface Client {
   status: 'active' | 'inactive' | 'pending';
 }
 
+// App Mode for client interface
+export type AppMode = 'configurator' | 'showroom';
+
 // AI Assistant
 export interface AiAssistantMessage {
   id: string;
@@ -272,4 +286,15 @@ export interface SystemSetting {
   description: string;
   updatedAt: Date;
   updatedBy: string; // User ID
+}
+
+// AI Logging
+export interface AiLog {
+  id: string;
+  userId: string;
+  role: UserRole;
+  timestamp: Date;
+  trigger: string;
+  message: string;
+  action: 'clicked' | 'ignored' | 'applied' | 'dismissed';
 }
