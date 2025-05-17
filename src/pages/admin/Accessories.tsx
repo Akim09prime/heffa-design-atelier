@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +26,7 @@ interface Accessory {
 
 const Accessories = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<AccessoryType>('hinges');
+  const [activeTab, setActiveTab] = useState<AccessoryType>('hinge');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -171,10 +170,10 @@ const Accessories = () => {
   };
   
   const accessoryTabs: { value: AccessoryType; label: string }[] = [
-    { value: 'hinges', label: 'Hinges' },
-    { value: 'slides', label: 'Slides' },
-    { value: 'handles', label: 'Handles' },
-    { value: 'feet', label: 'Feet' },
+    { value: 'hinge', label: 'Hinges' },
+    { value: 'slide', label: 'Slides' },
+    { value: 'handle', label: 'Handles' },
+    { value: 'foot', label: 'Feet' },
     { value: 'profile', label: 'Profiles' },
     { value: 'push_system', label: 'Push Systems' },
     { value: 'shelf_support', label: 'Shelf Supports' },
@@ -233,10 +232,10 @@ const Accessories = () => {
                 <CardHeader className="border-b border-gray-700">
                   <CardTitle className="text-white">{tab.label}</CardTitle>
                   <CardDescription className="text-gray-400">
-                    {tab.value === 'hinges' && 'Cabinet and door hinges from Blum, Hafele and GTV'}
-                    {tab.value === 'slides' && 'Drawer slides and systems from premium manufacturers'}
-                    {tab.value === 'handles' && 'Cabinet and drawer handles in various styles'}
-                    {tab.value === 'feet' && 'Adjustable cabinet feet and supports'}
+                    {tab.value === 'hinge' && 'Cabinet and door hinges from Blum, Hafele and GTV'}
+                    {tab.value === 'slide' && 'Drawer slides and systems from premium manufacturers'}
+                    {tab.value === 'handle' && 'Cabinet and drawer handles in various styles'}
+                    {tab.value === 'foot' && 'Adjustable cabinet feet and supports'}
                     {tab.value === 'profile' && 'Aluminum profiles for glass doors and panels'}
                     {tab.value === 'push_system' && 'Push-to-open systems for handleless designs'}
                     {tab.value === 'shelf_support' && 'Shelf pins and support systems'}
