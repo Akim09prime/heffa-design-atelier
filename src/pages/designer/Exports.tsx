@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { FileText, FileSpreadsheet, Code, Package, Download, Eye } from 'lucide-react';
-import { projectService } from '@/services/projectService';
+import { ProjectService } from '@/services/projectService';
 import { Project } from '@/types';
 
 const projectMockData = [
@@ -100,7 +100,7 @@ const ExportsPage = () => {
   React.useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const fetchedProjects = await projectService.getProjects();
+        const fetchedProjects = await ProjectService.getAllProjects();
         setProjects(fetchedProjects);
       } catch (error) {
         console.error("Failed to fetch projects", error);

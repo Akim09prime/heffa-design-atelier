@@ -9,7 +9,7 @@ import { ExportForm } from '@/components/exports/ExportForm';
 import { SupplierOrderForm } from '@/components/exports/SupplierOrderForm';
 import { CuttingListView } from '@/components/exports/CuttingListView';
 import { Project } from '@/types';
-import { projectService } from '@/services/projectService';
+import { ProjectService } from '@/services/projectService';
 import { SceneContainer } from '@/components/3d/SceneContainer';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft } from 'lucide-react';
@@ -26,7 +26,7 @@ const ExportProject = () => {
     const fetchProject = async () => {
       try {
         if (projectId) {
-          const fetchedProject = await projectService.getProjectById(projectId);
+          const fetchedProject = await ProjectService.getProjectById(projectId);
           setProject(fetchedProject);
         }
       } catch (error) {
