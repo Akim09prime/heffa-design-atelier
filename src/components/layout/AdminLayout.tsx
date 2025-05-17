@@ -12,11 +12,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Home, Layers, Settings, LogOut, User, Users, 
-  Database, FileSpreadsheet, Upload, BarChart, Palette, Box
+  Database, FileSpreadsheet, Upload, BarChart, Palette, Box, Globe
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { AiAssistant } from '@/components/ai/AiAssistant';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, language, changeLanguage } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -43,6 +45,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     });
     console.log(`Navigating to ${path}`);
     navigate(path);
+  };
+  
+  const handleLanguageToggle = () => {
+    const newLanguage = language === 'en' ? 'ro' : 'en';
+    changeLanguage(newLanguage);
+    toast({
+      title: t('settings.languageChanged'),
+      description: t('settings.languageSetTo'),
+    });
   };
 
   return (
@@ -62,74 +73,82 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/dashboard", "Dashboard")}
+                onClick={() => handleNavigation("/admin/dashboard", t('common.dashboard'))}
               >
                 <Home size={18} />
-                <span>Dashboard</span>
+                <span>{t('common.dashboard')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/materials-database", "Materials Database")}
+                onClick={() => handleNavigation("/admin/materials-database", t('common.materials'))}
               >
                 <Palette size={18} />
-                <span>Materials</span>
+                <span>{t('common.materials')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/accessories", "Accessories")}
+                onClick={() => handleNavigation("/admin/accessories", t('common.accessories'))}
               >
                 <Box size={18} />
-                <span>Accessories</span>
+                <span>{t('common.accessories')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/processing", "Processing Rules")}
+                onClick={() => handleNavigation("/admin/processing", t('common.processing'))}
               >
                 <Layers size={18} />
-                <span>Processing Rules</span>
+                <span>{t('common.processing')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/users", "Users")}
+                onClick={() => handleNavigation("/admin/users", t('common.users'))}
               >
                 <Users size={18} />
-                <span>Users</span>
+                <span>{t('common.users')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/reports", "Reports")}
+                onClick={() => handleNavigation("/admin/reports", t('common.reports'))}
               >
                 <FileSpreadsheet size={18} />
-                <span>Reports</span>
+                <span>{t('common.reports')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/import-data", "Import Data")}
+                onClick={() => handleNavigation("/admin/import-data", t('common.importData'))}
               >
                 <Upload size={18} />
-                <span>Import Data</span>
+                <span>{t('common.importData')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/analytics", "Analytics")}
+                onClick={() => handleNavigation("/admin/analytics", t('common.analytics'))}
               >
                 <BarChart size={18} />
-                <span>Analytics</span>
+                <span>{t('common.analytics')}</span>
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full justify-start gap-2"
-                onClick={() => handleNavigation("/admin/settings", "Settings")}
+                onClick={() => handleNavigation("/admin/settings", t('common.settings'))}
               >
                 <Settings size={18} />
-                <span>Settings</span>
+                <span>{t('common.settings')}</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={handleLanguageToggle}
+              >
+                <Globe size={18} />
+                <span>{language === 'en' ? 'English' : 'Română'}</span>
               </Button>
             </nav>
           </SidebarContent>
