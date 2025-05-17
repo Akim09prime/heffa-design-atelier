@@ -66,6 +66,10 @@ const translations: Translations = {
       en: 'Settings',
       ro: 'Setări'
     },
+    client: {
+      en: 'Client',
+      ro: 'Client'
+    },
     
     // Actions
     save: {
@@ -1031,6 +1035,10 @@ const translations: Translations = {
     dimensions: {
       en: 'Dimensions',
       ro: 'Dimensiuni'
+    },
+    exportComplete: {
+      en: 'Export Complete',
+      ro: 'Export finalizat'
     },
   },
   

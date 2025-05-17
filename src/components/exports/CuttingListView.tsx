@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Download, FileSpreadsheet, Printer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CuttingListViewProps {
   project: Project;
@@ -15,6 +16,7 @@ interface CuttingListViewProps {
 
 export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [cuttingList, setCuttingList] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,8 +28,8 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
       } catch (error) {
         console.error('Failed to generate cutting list:', error);
         toast({
-          title: "Error",
-          description: "Failed to generate cutting list",
+          title: t('common.error'),
+          description: t('reports.failedToLoad'),
           variant: "destructive",
         });
       } finally {
@@ -36,20 +38,20 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
     };
 
     fetchCuttingList();
-  }, [project, toast]);
+  }, [project, toast, t]);
 
   const handleDownloadExcel = async () => {
     try {
       const excelUrl = await ExportService.generateExcelCuttingSheet(project);
       window.open(excelUrl, '_blank');
       toast({
-        title: "Excel file generated",
-        description: "Cutting list has been exported to Excel",
+        title: t('common.success'),
+        description: t('exportComplete'),
       });
     } catch (error) {
       toast({
-        title: "Export failed",
-        description: "Could not export cutting list to Excel",
+        title: t('common.error'),
+        description: t('reports.failedToLoad'),
         variant: "destructive",
       });
     }
@@ -73,7 +75,7 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
       <Card>
         <CardContent className="p-6">
           <div className="flex justify-center items-center h-32">
-            <p>Generating cutting list...</p>
+            <p>{t('common.loading')}</p>
           </div>
         </CardContent>
       </Card>
@@ -85,7 +87,7 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
       <Card>
         <CardContent className="p-6">
           <div className="flex justify-center items-center h-32">
-            <p>Failed to generate cutting list</p>
+            <p>{t('reports.failedToLoad')}</p>
           </div>
         </CardContent>
       </Card>
@@ -95,39 +97,39 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Cutting List</CardTitle>
+        <CardTitle>{t('importExport.cuttingList')}</CardTitle>
         <CardDescription>
-          Complete cutting specifications for manufacturing
+          {t('importExport.cuttingList')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium">Project: {cuttingList.projectId}</h3>
+            <h3 className="text-lg font-medium">{t('common.projects')}: {cuttingList.projectId}</h3>
             <p className="text-sm text-muted-foreground">
-              Generated: {new Date(cuttingList.dateGenerated).toLocaleDateString()}
+              {t('reports.dateGenerated')}: {new Date(cuttingList.dateGenerated).toLocaleDateString()}
             </p>
           </div>
-          <p>Client: {cuttingList.clientName}</p>
+          <p>{t('common.client')}: {cuttingList.clientName}</p>
         </div>
 
         {cuttingList.modules.map((module: any, index: number) => (
           <div key={module.moduleId} className="mb-8">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-md font-medium">
-                Module: {module.moduleName}
+                {t('common.modules')}: {module.moduleName}
               </h4>
-              <Badge variant="outline">{`Module ${index + 1} of ${cuttingList.modules.length}`}</Badge>
+              <Badge variant="outline">{`${t('common.modules')} ${index + 1} of ${cuttingList.modules.length}`}</Badge>
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Part Type</TableHead>
-                  <TableHead>Material</TableHead>
-                  <TableHead className="text-right">Length (mm)</TableHead>
-                  <TableHead className="text-right">Width (mm)</TableHead>
-                  <TableHead className="text-right">Thickness (mm)</TableHead>
-                  <TableHead>Edge Banding</TableHead>
+                  <TableHead>{t('materials.form.type')}</TableHead>
+                  <TableHead>{t('materials.title')}</TableHead>
+                  <TableHead className="text-right">{t('importExport.dimensions')}</TableHead>
+                  <TableHead className="text-right">{t('importExport.dimensions')}</TableHead>
+                  <TableHead className="text-right">{t('materials.form.thickness')}</TableHead>
+                  <TableHead>{t('accessories.title')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -152,10 +154,10 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline" onClick={() => window.print()}>
-          <Printer className="h-4 w-4 mr-2" /> Print Cutting List
+          <Printer className="h-4 w-4 mr-2" /> {t('common.download')}
         </Button>
         <Button onClick={handleDownloadExcel}>
-          <FileSpreadsheet className="h-4 w-4 mr-2" /> Export to Excel
+          <FileSpreadsheet className="h-4 w-4 mr-2" /> {t('common.export')}
         </Button>
       </CardFooter>
     </Card>

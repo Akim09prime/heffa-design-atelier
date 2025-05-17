@@ -28,6 +28,7 @@ import DesignerAccessories from "./pages/designer/Accessories";
 import DesignerModules from "./pages/designer/Modules";
 import DesignerClients from "./pages/designer/Clients";
 import DesignerExports from "./pages/designer/Exports";
+import ExportProject from "./pages/designer/ExportProject";
 import DesignerSettings from "./pages/designer/Settings";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { Toaster } from "./components/ui/toaster";
@@ -71,6 +72,7 @@ function App() {
             <Route path="/designer/modules" element={<DesignerModules />} />
             <Route path="/designer/clients" element={<DesignerClients />} />
             <Route path="/designer/exports" element={<DesignerExports />} />
+            <Route path="/designer/exports/:projectId" element={<ExportProject />} />
             <Route path="/designer/settings" element={<DesignerSettings />} />
             
             <Route path="*" element={<NotFound />} />
