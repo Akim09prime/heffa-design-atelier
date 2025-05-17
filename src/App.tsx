@@ -1,6 +1,6 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -35,45 +35,47 @@ import "./App.css";
 function App() {
   return (
     <TranslationProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/materials-database" element={<MaterialsDatabase />} />
-          <Route path="/admin/accessories" element={<Accessories />} />
-          <Route path="/admin/processing" element={<Processing />} />
-          <Route path="/admin/users" element={<Users />} />
-          <Route path="/admin/reports" element={<Reports />} />
-          <Route path="/admin/import-data" element={<ImportData />} />
-          <Route path="/admin/analytics" element={<Analytics />} />
-          <Route path="/admin/settings" element={<Settings />} />
-          
-          {/* Client Routes */}
-          <Route path="/client/dashboard" element={<ClientDashboard />} />
-          <Route path="/client/projects" element={<ClientProjects />} />
-          <Route path="/client/projects/new" element={<ClientNewProject />} />
-          <Route path="/client/favorites" element={<ClientFavorites />} />
-          <Route path="/client/cart" element={<ClientCart />} />
-          <Route path="/client/settings" element={<ClientSettings />} />
-          
-          {/* Designer Routes */}
-          <Route path="/designer/dashboard" element={<DesignerDashboard />} />
-          <Route path="/designer/projects" element={<DesignerProjects />} />
-          <Route path="/designer/projects/new" element={<DesignerNewProject />} />
-          <Route path="/designer/materials" element={<DesignerMaterials />} />
-          <Route path="/designer/accessories" element={<DesignerAccessories />} />
-          <Route path="/designer/modules" element={<DesignerModules />} />
-          <Route path="/designer/clients" element={<DesignerClients />} />
-          <Route path="/designer/exports" element={<DesignerExports />} />
-          <Route path="/designer/settings" element={<DesignerSettings />} />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/materials-database" element={<MaterialsDatabase />} />
+            <Route path="/admin/accessories" element={<Accessories />} />
+            <Route path="/admin/processing" element={<Processing />} />
+            <Route path="/admin/users" element={<Users />} />
+            <Route path="/admin/reports" element={<Reports />} />
+            <Route path="/admin/import-data" element={<ImportData />} />
+            <Route path="/admin/analytics" element={<Analytics />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            
+            {/* Client Routes */}
+            <Route path="/client/dashboard" element={<ClientDashboard />} />
+            <Route path="/client/projects" element={<ClientProjects />} />
+            <Route path="/client/projects/new" element={<ClientNewProject />} />
+            <Route path="/client/favorites" element={<ClientFavorites />} />
+            <Route path="/client/cart" element={<ClientCart />} />
+            <Route path="/client/settings" element={<ClientSettings />} />
+            
+            {/* Designer Routes */}
+            <Route path="/designer/dashboard" element={<DesignerDashboard />} />
+            <Route path="/designer/projects" element={<DesignerProjects />} />
+            <Route path="/designer/projects/new" element={<DesignerNewProject />} />
+            <Route path="/designer/materials" element={<DesignerMaterials />} />
+            <Route path="/designer/accessories" element={<DesignerAccessories />} />
+            <Route path="/designer/modules" element={<DesignerModules />} />
+            <Route path="/designer/clients" element={<DesignerClients />} />
+            <Route path="/designer/exports" element={<DesignerExports />} />
+            <Route path="/designer/settings" element={<DesignerSettings />} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </Router>
+      </AuthProvider>
     </TranslationProvider>
   );
 }
