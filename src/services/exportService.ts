@@ -107,5 +107,89 @@ export const ExportService = {
     
     // Return mock PDF data URL that could be displayed in an iframe
     return Promise.resolve('data:application/pdf;base64,JVBERi0xLjcKJeLjz9MKNSAwIG...');
+  },
+  
+  // Generate cutting list for furniture manufacturing
+  generateCuttingList: async (project: Project): Promise<Record<string, any>> => {
+    console.log('Generating cutting list for project:', project.id);
+    
+    // Mock cutting list data
+    const cuttingList = project.modules.map(module => ({
+      moduleId: module.id,
+      moduleName: module.name,
+      parts: [
+        { partType: 'side', material: 'PAL', length: module.height, width: module.depth, thickness: 18, edgeBanding: 'front' },
+        { partType: 'side', material: 'PAL', length: module.height, width: module.depth, thickness: 18, edgeBanding: 'front' },
+        { partType: 'top', material: 'PAL', length: module.width, width: module.depth, thickness: 18, edgeBanding: 'left,right,front' },
+        { partType: 'bottom', material: 'PAL', length: module.width, width: module.depth, thickness: 18, edgeBanding: 'left,right,front' },
+        { partType: 'shelf', material: 'PAL', length: module.width - 36, width: module.depth - 36, thickness: 18, edgeBanding: 'front' }, // Subtracted thickness of sides
+        { partType: 'backpanel', material: 'PFL', length: module.width - 4, width: module.height - 4, thickness: 3, edgeBanding: 'none' },
+        // Fronts would be added based on module configuration
+      ]
+    }));
+    
+    return Promise.resolve({
+      projectId: project.id,
+      clientName: 'Client Name', // Would come from user data
+      dateGenerated: new Date().toISOString(),
+      modules: cuttingList
+    });
+  },
+  
+  // Generate SVG visualizations for fronts
+  generateSvgFronts: async (project: Project): Promise<string[]> => {
+    console.log('Generating SVG visualizations for project fronts:', project.id);
+    
+    // Mock SVG data URLs
+    return Promise.resolve(project.modules.map(module => 
+      `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCI+PC9zdmc+`
+    ));
+  },
+  
+  // Export order for suppliers
+  generateSupplierOrder: async (project: Project, supplierType: string): Promise<Record<string, any>> => {
+    console.log(`Generating order for ${supplierType} supplier, project:`, project.id);
+    
+    // Different supplier order formats based on the supplier type
+    switch(supplierType) {
+      case 'PAL':
+        // Group by material type and thickness
+        return Promise.resolve({
+          orderType: 'material',
+          supplier: 'Egger',
+          materials: [
+            { type: 'PAL', code: 'W980', name: 'Egger Alb W980', thickness: 18, quantity: 12.5 /* m² */ },
+            { type: 'PAL', code: 'H1582', name: 'Egger Fag H1582', thickness: 18, quantity: 8.3 /* m² */ }
+          ]
+        });
+        
+      case 'accessories':
+        // Group by accessory type
+        return Promise.resolve({
+          orderType: 'accessory',
+          supplier: 'Hafele',
+          accessories: [
+            { type: 'hinge', code: 'CLIP-TOP-110', quantity: 12 },
+            { type: 'slide', code: 'TANDEM-500', quantity: 6 }
+          ]
+        });
+        
+      case 'glass':
+        // Glass processing orders
+        return Promise.resolve({
+          orderType: 'glass',
+          supplier: 'SticlaExpert',
+          glassItems: [
+            { type: 'STICLA', thickness: 6, width: 597, height: 720, processing: 'cut,drill,edge' },
+            { type: 'STICLA', thickness: 6, width: 597, height: 350, processing: 'cut,sandblast' }
+          ]
+        });
+        
+      default:
+        return Promise.resolve({
+          orderType: 'unknown',
+          message: 'Unsupported supplier type'
+        });
+    }
   }
 };
