@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define available languages
@@ -10,7 +11,9 @@ interface TranslationEntry {
 
 export interface Translations {
   [key: string]: {
-    [key: string]: TranslationEntry;
+    [key: string]: TranslationEntry | {
+      [nestedKey: string]: TranslationEntry;
+    };
   };
 }
 
@@ -892,21 +895,50 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
   const t = (key: string): string => {
     const [section, translationKey] = key.includes('.') ? key.split('.') : ['common', key];
     
+    // Handle nested keys (like settings.languageSetTo.en)
+    if (key.split('.').length > 2) {
+      const [section, parentKey, childKey] = key.split('.');
+      
+      if (
+        translations[section] && 
+        translations[section][parentKey] && 
+        typeof translations[section][parentKey] === 'object' &&
+        (translations[section][parentKey] as any)[childKey] &&
+        (translations[section][parentKey] as any)[childKey][language]
+      ) {
+        return (translations[section][parentKey] as any)[childKey][language];
+      }
+      
+      // Fallback to English for nested keys
+      if (
+        translations[section] && 
+        translations[section][parentKey] && 
+        typeof translations[section][parentKey] === 'object' &&
+        (translations[section][parentKey] as any)[childKey] &&
+        (translations[section][parentKey] as any)[childKey]['en']
+      ) {
+        return (translations[section][parentKey] as any)[childKey]['en'];
+      }
+    }
+    
+    // Handle regular keys
     if (
       translations[section] && 
       translations[section][translationKey] && 
-      translations[section][translationKey][language]
+      typeof translations[section][translationKey] === 'object' &&
+      (translations[section][translationKey] as TranslationEntry)[language]
     ) {
-      return translations[section][translationKey][language];
+      return (translations[section][translationKey] as TranslationEntry)[language];
     }
     
     // Fallback to English if translation not found
     if (
       translations[section] && 
       translations[section][translationKey] && 
-      translations[section][translationKey]['en']
+      typeof translations[section][translationKey] === 'object' &&
+      (translations[section][translationKey] as TranslationEntry)['en']
     ) {
-      return translations[section][translationKey]['en'];
+      return (translations[section][translationKey] as TranslationEntry)['en'];
     }
     
     // Return key if no translation found
