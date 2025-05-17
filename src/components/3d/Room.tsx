@@ -3,6 +3,7 @@ import React from 'react';
 import { Grid } from '@react-three/drei';
 import { FurnitureModule as FurnitureModuleType } from '../../types';
 import { FurnitureModule } from './FurnitureModule';
+import * as THREE from 'three';
 
 interface RoomProps {
   width: number;
@@ -24,7 +25,7 @@ export const Room: React.FC<RoomProps> = ({
       {/* Floor */}
       <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, 0, 0]}>
         <planeGeometry args={[width, length]} />
-        <meshStandardMaterial color="#f5f5f5" />
+        <meshStandardMaterial color={new THREE.Color("#f5f5f5")} />
       </mesh>
 
       {/* Grid */}
@@ -45,19 +46,19 @@ export const Room: React.FC<RoomProps> = ({
       {/* Back wall */}
       <mesh position={[0, height / 2, -length / 2]} receiveShadow>
         <planeGeometry args={[width, height]} />
-        <meshStandardMaterial color="#ffffff" />
+        <meshStandardMaterial color={new THREE.Color("#ffffff")} />
       </mesh>
 
       {/* Left wall */}
       <mesh position={[-width / 2, height / 2, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[length, height]} />
-        <meshStandardMaterial color="#f0f0f0" />
+        <meshStandardMaterial color={new THREE.Color("#f0f0f0")} />
       </mesh>
 
       {/* Right wall */}
       <mesh position={[width / 2, height / 2, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[length, height]} />
-        <meshStandardMaterial color="#f0f0f0" />
+        <meshStandardMaterial color={new THREE.Color("#f0f0f0")} />
       </mesh>
 
       {/* Furniture Modules */}

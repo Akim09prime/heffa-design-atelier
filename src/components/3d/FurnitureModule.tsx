@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { FurnitureModule as FurnitureModuleType } from '../../types';
-import { Vector3 } from 'three';
+import * as THREE from 'three';
 
 interface FurnitureModuleProps {
   module: FurnitureModuleType;
@@ -26,9 +26,9 @@ const PlaceholderBox: React.FC<{
   
   useFrame(() => {
     if (meshRef.current && isSelected) {
-      meshRef.current.scale.lerp(new Vector3(1.02, 1.02, 1.02), 0.1);
+      meshRef.current.scale.lerp(new THREE.Vector3(1.02, 1.02, 1.02), 0.1);
     } else if (meshRef.current) {
-      meshRef.current.scale.lerp(new Vector3(1, 1, 1), 0.1);
+      meshRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
     }
   });
 
