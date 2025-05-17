@@ -208,6 +208,17 @@ export interface ExportConfig {
   includeCutting: boolean;
 }
 
+// Client Types - added for client management functionality
+export interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  projects: number;
+  lastActive: string;
+  status: 'active' | 'inactive' | 'pending';
+}
+
 // AI Assistant
 export interface AiAssistantMessage {
   id: string;
