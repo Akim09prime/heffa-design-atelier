@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, Upload, Download, Edit, Trash, X, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -317,6 +318,9 @@ const Accessories = () => {
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
             <DialogTitle>Add New Accessory</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Fill in the details for the new accessory
+            </DialogDescription>
           </DialogHeader>
           
           <AccessoryForm 
@@ -332,6 +336,9 @@ const Accessories = () => {
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
             <DialogTitle>Edit Accessory</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Update the accessory details
+            </DialogDescription>
           </DialogHeader>
           
           {editingAccessory && (
@@ -441,7 +448,7 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
           <SelectTrigger id="manufacturer" className="col-span-3 bg-gray-700 border-gray-600">
             <SelectValue placeholder="Select manufacturer" />
           </SelectTrigger>
-          <SelectContent className="bg-gray-700 border-gray-600">
+          <SelectContent className="bg-gray-700 border-gray-600 text-white">
             <SelectItem value="Blum">Blum</SelectItem>
             <SelectItem value="Hafele">Hafele</SelectItem>
             <SelectItem value="GTV">GTV</SelectItem>

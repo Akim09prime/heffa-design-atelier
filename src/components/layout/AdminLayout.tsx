@@ -52,7 +52,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     changeLanguage(newLanguage);
     toast({
       title: t('settings.languageChanged'),
-      description: t('settings.languageSetTo'),
+      description: language === 'en' ? t('settings.languageSetTo.ro') : t('settings.languageSetTo.en'),
     });
   };
 
@@ -162,10 +162,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  <p className="text-sm font-medium text-white">{user?.name}</p>
+                  <p className="text-xs text-gray-400">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="text-gray-400 hover:text-white">
                   <LogOut size={18} />
                 </Button>
               </div>

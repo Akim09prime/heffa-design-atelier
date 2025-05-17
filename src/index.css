@@ -223,3 +223,51 @@
   transform: translateY(-4px);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
+
+/* Fix for dropdown menus */
+.SelectContent {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border));
+}
+
+.SelectItem {
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+/* Fix for dropdowns in admin theme */
+.admin-theme .SelectContent,
+.admin-theme [data-radix-popper-content-wrapper] {
+  background-color: hsl(200 15% 20%) !important;
+  color: hsl(0 0% 90%) !important;
+  border: 1px solid hsl(200 15% 30%) !important;
+}
+
+.admin-theme .SelectItem {
+  color: hsl(0 0% 90%) !important;
+}
+
+.admin-theme .SelectItem:hover,
+.admin-theme .SelectItem:focus {
+  background-color: hsl(200 15% 25%) !important;
+}
+
+/* Dialog and Popover fixes */
+[data-radix-popper-content-wrapper] {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  z-index: 50 !important;
+}
+
+/* Fix layout issues */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.flex {
+  display: flex;
+}
+
+.w-full {
+  width: 100%;
+}

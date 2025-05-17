@@ -11,7 +11,7 @@ import { AccessoryType, AccessoryItem } from '@/types';
 import { AccessoryService, sampleAccessories } from '@/services/accessoryService';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 const Accessories = () => {
   const { toast } = useToast();
@@ -180,9 +180,15 @@ const Accessories = () => {
                                   src={accessory.imageUrl} 
                                   alt={accessory.name}
                                   className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).onerror = null;
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+                                  }}
                                 />
                               ) : (
-                                `[${accessory.type} Image]`
+                                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                                  {accessory.type} Image
+                                </div>
                               )}
                             </div>
                             <CardContent className="p-4">
@@ -217,6 +223,9 @@ const Accessories = () => {
             <>
               <DialogHeader>
                 <DialogTitle>{selectedAccessory.name}</DialogTitle>
+                <DialogDescription>
+                  Product details and specifications
+                </DialogDescription>
               </DialogHeader>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="aspect-square bg-gray-100 flex items-center justify-center text-gray-500">
@@ -225,9 +234,15 @@ const Accessories = () => {
                       src={selectedAccessory.imageUrl} 
                       alt={selectedAccessory.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300?text=No+Image';
+                      }}
                     />
                   ) : (
-                    `[${selectedAccessory.type} Image]`
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                      {selectedAccessory.type} Image
+                    </div>
                   )}
                 </div>
                 <div>
@@ -256,11 +271,11 @@ const Accessories = () => {
                     </div>
                   </div>
                   
-                  {Object.keys(selectedAccessory.properties).length > 0 && (
+                  {Object.keys(selectedAccessory.properties || {}).length > 0 && (
                     <div>
                       <h3 className="text-sm font-medium mb-2">Properties</h3>
                       <div className="space-y-2">
-                        {Object.entries(selectedAccessory.properties).map(([key, value]) => (
+                        {Object.entries(selectedAccessory.properties || {}).map(([key, value]) => (
                           <div key={key} className="flex justify-between">
                             <span className="text-gray-500">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
                             <span>{String(value)}</span>
