@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Upload, Download, Edit, Trash, X, Check } from 'lucide-react';
+import { Search, Plus, Upload, Download, Edit, Trash, X, Check, Image } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AccessoryType, ModuleType } from '@/types';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Accessory {
   id: string;
@@ -27,6 +28,7 @@ interface Accessory {
 
 const Accessories = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<AccessoryType>('hinge');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -129,8 +131,8 @@ const Accessories = () => {
   const handleDeleteAccessory = (id: string) => {
     setAccessories(prev => prev.filter(acc => acc.id !== id));
     toast({
-      title: "Accessory Deleted",
-      description: "The accessory has been successfully removed."
+      title: t("accessories.accessoryDeleted"),
+      description: t("accessories.accessoryDeletedSuccess")
     });
   };
   
@@ -141,16 +143,16 @@ const Accessories = () => {
         prev.map(acc => acc.id === editingAccessory.id ? accessory : acc)
       );
       toast({
-        title: "Accessory Updated",
-        description: `${accessory.name} has been updated successfully.`
+        title: t("accessories.accessoryUpdated"),
+        description: `${accessory.name} ${t("accessories.hasBeenUpdated")}`
       });
       setIsEditDialogOpen(false);
     } else {
       // Add new accessory
       setAccessories(prev => [...prev, { ...accessory, id: `${Date.now()}`, type: activeTab }]);
       toast({
-        title: "Accessory Added",
-        description: `${accessory.name} has been added successfully.`
+        title: t("accessories.accessoryAdded"),
+        description: `${accessory.name} ${t("accessories.hasBeenAdded")}`
       });
       setIsAddDialogOpen(false);
     }
@@ -158,27 +160,27 @@ const Accessories = () => {
   
   const handleImport = () => {
     toast({
-      title: "Import Initiated",
-      description: "Accessory import functionality will be implemented here."
+      title: t("accessories.importStarted"),
+      description: t("accessories.importFunctionality")
     });
   };
   
   const handleExport = () => {
     toast({
-      title: "Export Initiated",
-      description: "Accessory export functionality will be implemented here."
+      title: t("accessories.exportStarted"),
+      description: t("accessories.exportFunctionality")
     });
   };
   
   const accessoryTabs: { value: AccessoryType; label: string }[] = [
-    { value: 'hinge', label: 'Hinges' },
-    { value: 'slide', label: 'Slides' },
-    { value: 'handle', label: 'Handles' },
-    { value: 'foot', label: 'Feet' },
-    { value: 'profile', label: 'Profiles' },
-    { value: 'push_system', label: 'Push Systems' },
-    { value: 'shelf_support', label: 'Shelf Supports' },
-    { value: 'other', label: 'Other' },
+    { value: 'hinge', label: t('accessories.hinges') },
+    { value: 'slide', label: t('accessories.slides') },
+    { value: 'handle', label: t('accessories.handles') },
+    { value: 'foot', label: t('accessories.feet') },
+    { value: 'profile', label: t('accessories.profiles') },
+    { value: 'push_system', label: t('accessories.pushSystems') },
+    { value: 'shelf_support', label: t('accessories.shelfSupports') },
+    { value: 'other', label: t('accessories.other') },
   ];
 
   return (
@@ -186,15 +188,15 @@ const Accessories = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-medium text-white">Accessories Database</h1>
-            <p className="text-gray-300">Manage all furniture accessories</p>
+            <h1 className="text-3xl font-medium text-white">{t('accessories.title')}</h1>
+            <p className="text-gray-300">{t('accessories.description')}</p>
           </div>
           <div className="flex flex-wrap w-full lg:w-auto gap-4">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search accessories..."
+                placeholder={t('accessories.searchPlaceholder')}
                 className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -202,15 +204,15 @@ const Accessories = () => {
             </div>
             <Button variant="outline" onClick={handleImport}>
               <Upload className="h-4 w-4 mr-2" />
-              Import
+              {t('common.import')}
             </Button>
             <Button variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              {t('common.export')}
             </Button>
             <Button onClick={handleAddAccessory}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Accessory
+              {t('accessories.addAccessory')}
             </Button>
           </div>
         </div>
@@ -233,30 +235,30 @@ const Accessories = () => {
                 <CardHeader className="border-b border-gray-700">
                   <CardTitle className="text-white">{tab.label}</CardTitle>
                   <CardDescription className="text-gray-400">
-                    {tab.value === 'hinge' && 'Cabinet and door hinges from Blum, Hafele and GTV'}
-                    {tab.value === 'slide' && 'Drawer slides and systems from premium manufacturers'}
-                    {tab.value === 'handle' && 'Cabinet and drawer handles in various styles'}
-                    {tab.value === 'foot' && 'Adjustable cabinet feet and supports'}
-                    {tab.value === 'profile' && 'Aluminum profiles for glass doors and panels'}
-                    {tab.value === 'push_system' && 'Push-to-open systems for handleless designs'}
-                    {tab.value === 'shelf_support' && 'Shelf pins and support systems'}
-                    {tab.value === 'other' && 'Other cabinet accessories and hardware'}
+                    {tab.value === 'hinge' && t('accessories.hingesDesc')}
+                    {tab.value === 'slide' && t('accessories.slidesDesc')}
+                    {tab.value === 'handle' && t('accessories.handlesDesc')}
+                    {tab.value === 'foot' && t('accessories.feetDesc')}
+                    {tab.value === 'profile' && t('accessories.profilesDesc')}
+                    {tab.value === 'push_system' && t('accessories.pushSystemsDesc')}
+                    {tab.value === 'shelf_support' && t('accessories.shelfSupportsDesc')}
+                    {tab.value === 'other' && t('accessories.otherDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   {filteredAccessories.length === 0 ? (
                     <div className="flex flex-col items-center justify-center p-8 text-center">
-                      <p className="text-gray-400 mb-4">No {tab.label.toLowerCase()} found in the database</p>
+                      <p className="text-gray-400 mb-4">{t('accessories.noAccessoriesFound')}</p>
                       <Button onClick={handleAddAccessory}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Add New {tab.label.slice(0, -1)}
+                        {t('common.add')} {tab.label}
                       </Button>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                       {filteredAccessories.map((accessory) => (
                         <Card key={accessory.id} className="bg-gray-700 border-gray-600 overflow-hidden">
-                          <div className="aspect-square bg-gray-600 flex items-center justify-center text-gray-500">
+                          <div className="aspect-square bg-gray-600 flex items-center justify-center text-gray-500 relative">
                             {accessory.imageUrl ? (
                               <img 
                                 src={accessory.imageUrl} 
@@ -264,7 +266,12 @@ const Accessories = () => {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              `[${accessory.type} Image]`
+                              <div className="flex flex-col items-center justify-center h-full w-full">
+                                <Image className="h-12 w-12 text-gray-400 opacity-50" />
+                                <span className="mt-2 text-xs text-gray-400">
+                                  {t('accessories.noImage')}
+                                </span>
+                              </div>
                             )}
                           </div>
                           <CardContent className="p-4">
@@ -280,7 +287,7 @@ const Accessories = () => {
                                   ? "bg-red-900/30 text-red-400 hover:bg-red-900/40" 
                                   : "bg-green-900/30 text-green-400 hover:bg-green-900/40"
                               }>
-                                {accessory.stockQty < 50 ? 'Low Stock' : 'In Stock'} ({accessory.stockQty})
+                                {accessory.stockQty < 50 ? t('common.lowStock') : t('common.inStock')} ({accessory.stockQty})
                               </Badge>
                               <div className="flex gap-1">
                                 <Button 
@@ -317,9 +324,9 @@ const Accessories = () => {
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>Add New Accessory</DialogTitle>
+            <DialogTitle className="text-white">{t('accessories.addNewAccessory')}</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Fill in the details for the new accessory
+              {t('accessories.fillDetails')}
             </DialogDescription>
           </DialogHeader>
           
@@ -335,9 +342,9 @@ const Accessories = () => {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>Edit Accessory</DialogTitle>
+            <DialogTitle className="text-white">{t('accessories.editAccessory')}</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Update the accessory details
+              {t('accessories.updateDetails')}
             </DialogDescription>
           </DialogHeader>
           
@@ -368,6 +375,7 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
   onSave,
   onCancel
 }) => {
+  const { t } = useTranslation();
   const [code, setCode] = useState(accessory?.code || '');
   const [name, setName] = useState(accessory?.name || '');
   const [manufacturer, setManufacturer] = useState(accessory?.manufacturer || '');
@@ -376,6 +384,9 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
   const [selectedCompatibility, setSelectedCompatibility] = useState<ModuleType[]>(
     accessory?.compatibility || []
   );
+  const [imageUrl, setImageUrl] = useState<string>(accessory?.imageUrl || '');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const moduleTypes: ModuleType[] = [
     'base_cabinet',
@@ -396,6 +407,20 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
     }
   };
   
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setImageUrl(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
   const handleSubmit = () => {
     if (!code || !name || !manufacturer || !price || !stockQty) {
       return; // Form validation would go here
@@ -409,44 +434,59 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
       manufacturer,
       price: parseFloat(price),
       stockQty: parseInt(stockQty),
+      imageUrl: imageUrl,
       compatibility: selectedCompatibility.length ? selectedCompatibility : ['base_cabinet'],
     };
     
     onSave(newAccessory);
   };
+  
+  const getModuleTypeName = (type: ModuleType): string => {
+    switch(type) {
+      case 'base_cabinet': return t('accessories.moduleTypes.baseUnit');
+      case 'wall_cabinet': return t('accessories.moduleTypes.wallUnit');
+      case 'tall_cabinet': return t('accessories.moduleTypes.tallUnit');
+      case 'drawer_unit': return t('accessories.moduleTypes.drawerUnit');
+      case 'corner_cabinet': return t('accessories.moduleTypes.cornerUnit');
+      case 'shelf_unit': return t('accessories.moduleTypes.shelfUnit');
+      case 'island': return t('accessories.moduleTypes.island');
+      case 'other': return t('accessories.moduleTypes.other');
+      default: return type.replace('_', ' ');
+    }
+  };
 
   return (
     <div className="grid gap-4 py-4">
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="code" className="text-right">Code</Label>
+        <Label htmlFor="code" className="text-right text-white">{t('accessories.form.code')}</Label>
         <Input
           id="code"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          className="col-span-3 bg-gray-700 border-gray-600"
-          placeholder="e.g. BL-HG-110"
+          className="col-span-3 bg-gray-700 border-gray-600 text-white"
+          placeholder="ex: BL-HG-110"
         />
       </div>
       
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="name" className="text-right">Name</Label>
+        <Label htmlFor="name" className="text-right text-white">{t('accessories.form.name')}</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="col-span-3 bg-gray-700 border-gray-600"
-          placeholder="e.g. Blum ClipTop 110°"
+          className="col-span-3 bg-gray-700 border-gray-600 text-white"
+          placeholder="ex: Blum ClipTop 110°"
         />
       </div>
       
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="manufacturer" className="text-right">Manufacturer</Label>
+        <Label htmlFor="manufacturer" className="text-right text-white">{t('accessories.form.manufacturer')}</Label>
         <Select 
           value={manufacturer} 
           onValueChange={setManufacturer}
         >
-          <SelectTrigger id="manufacturer" className="col-span-3 bg-gray-700 border-gray-600">
-            <SelectValue placeholder="Select manufacturer" />
+          <SelectTrigger id="manufacturer" className="col-span-3 bg-gray-700 border-gray-600 text-white">
+            <SelectValue placeholder={t('accessories.form.selectManufacturer')} />
           </SelectTrigger>
           <SelectContent className="bg-gray-700 border-gray-600 text-white">
             <SelectItem value="Blum">Blum</SelectItem>
@@ -454,36 +494,36 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
             <SelectItem value="GTV">GTV</SelectItem>
             <SelectItem value="Hettich">Hettich</SelectItem>
             <SelectItem value="Grass">Grass</SelectItem>
-            <SelectItem value="Other">Other</SelectItem>
+            <SelectItem value="Other">{t('accessories.form.other')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="price" className="text-right">Price (€)</Label>
+        <Label htmlFor="price" className="text-right text-white">{t('accessories.form.price')}</Label>
         <Input
           id="price"
           type="number"
           step="0.01"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          className="col-span-3 bg-gray-700 border-gray-600"
+          className="col-span-3 bg-gray-700 border-gray-600 text-white"
         />
       </div>
       
       <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="stockQty" className="text-right">Stock Quantity</Label>
+        <Label htmlFor="stockQty" className="text-right text-white">{t('accessories.form.stockQty')}</Label>
         <Input
           id="stockQty"
           type="number"
           value={stockQty}
           onChange={(e) => setStockQty(e.target.value)}
-          className="col-span-3 bg-gray-700 border-gray-600"
+          className="col-span-3 bg-gray-700 border-gray-600 text-white"
         />
       </div>
       
       <div className="grid grid-cols-4 items-start gap-4">
-        <Label className="text-right pt-2">Compatible With</Label>
+        <Label className="text-right pt-2 text-white">{t('accessories.form.compatibility')}</Label>
         <div className="col-span-3 grid grid-cols-2 gap-2">
           {moduleTypes.map(type => (
             <div key={type} className="flex items-center">
@@ -501,7 +541,7 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 ) : (
                   <X className="w-4 h-4 mr-2" />
                 )}
-                {type.replace('_', ' ')}
+                {getModuleTypeName(type)}
               </button>
             </div>
           ))}
@@ -509,24 +549,61 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
       </div>
       
       <div className="grid grid-cols-4 items-center gap-4 mt-2">
-        <Label htmlFor="image" className="text-right">Image</Label>
+        <Label htmlFor="image" className="text-right text-white">{t('accessories.form.image')}</Label>
         <div className="col-span-3">
-          <Input
+          <input
+            ref={fileInputRef}
             id="image"
             type="file"
-            className="col-span-3 bg-gray-700 border-gray-600"
+            className="hidden"
             accept="image/*"
+            onChange={handleFileChange}
           />
-          <p className="text-xs text-gray-400 mt-1">Optional. Maximum size: 2MB</p>
+          
+          {imageUrl ? (
+            <div className="relative w-full h-40 mb-2">
+              <img 
+                src={imageUrl} 
+                alt={t('accessories.form.preview')} 
+                className="h-full w-full object-cover rounded-md"
+              />
+              <Button 
+                variant="destructive" 
+                size="sm"
+                className="absolute top-2 right-2 h-6 w-6 rounded-full p-0"
+                onClick={() => {
+                  setImageUrl('');
+                  setImageFile(null);
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                  }
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              type="button" 
+              variant="outline"
+              className="w-full h-20 flex flex-col items-center justify-center bg-gray-700 border-gray-600 hover:bg-gray-600"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="h-6 w-6 mb-1" />
+              <span className="text-sm">{t('accessories.form.uploadImage')}</span>
+            </Button>
+          )}
+          
+          <p className="text-xs text-gray-400 mt-1">{t('accessories.form.imageNote')}</p>
         </div>
       </div>
       
       <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
+        <Button variant="outline" onClick={onCancel} className="bg-gray-700 text-white border-gray-600">
+          {t('common.cancel')}
         </Button>
-        <Button onClick={handleSubmit}>
-          {accessory ? 'Update' : 'Add'} Accessory
+        <Button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white">
+          {accessory ? t('accessories.form.update') : t('accessories.form.add')}
         </Button>
       </DialogFooter>
     </div>

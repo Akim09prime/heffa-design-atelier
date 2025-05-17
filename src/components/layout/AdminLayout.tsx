@@ -33,17 +33,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     logout();
     navigate('/login');
     toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
+      title: "Deconectare",
+      description: "V-ați deconectat cu succes",
     });
   };
 
   const handleNavigation = (path: string, title: string) => {
     toast({
-      title: `Navigating to ${title}`,
-      description: "Loading content...",
+      title: `Navigare către ${title}`,
+      description: "Se încarcă conținutul...",
     });
-    console.log(`Navigating to ${path}`);
+    console.log(`Navigare către ${path}`);
     navigate(path);
   };
   
@@ -59,10 +59,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className="flex w-full min-h-screen bg-admin-950 admin-theme">
       <SidebarProvider>
-        <Sidebar>
+        <Sidebar className="bg-[#181c28] border-r border-[#3a3f4c]">
           <SidebarHeader>
             <div className="flex items-center px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white mr-2">
+              <div className="w-8 h-8 rounded-full bg-[#6e59a5] flex items-center justify-center text-white mr-2">
                 <span className="font-display text-lg">H</span>
               </div>
               <span className="font-display text-lg font-semibold text-white">HeffaDesign</span>
@@ -72,7 +72,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <nav className="space-y-1 px-2">
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/dashboard", t('common.dashboard'))}
               >
                 <Home size={18} />
@@ -80,7 +80,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/materials-database", t('common.materials'))}
               >
                 <Palette size={18} />
@@ -88,7 +88,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/accessories", t('common.accessories'))}
               >
                 <Box size={18} />
@@ -96,7 +96,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/processing", t('common.processing'))}
               >
                 <Layers size={18} />
@@ -104,7 +104,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/users", t('common.users'))}
               >
                 <Users size={18} />
@@ -112,7 +112,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/reports", t('common.reports'))}
               >
                 <FileSpreadsheet size={18} />
@@ -120,7 +120,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/import-data", t('common.importData'))}
               >
                 <Upload size={18} />
@@ -128,7 +128,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/analytics", t('common.analytics'))}
               >
                 <BarChart size={18} />
@@ -136,7 +136,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={() => handleNavigation("/admin/settings", t('common.settings'))}
               >
                 <Settings size={18} />
@@ -144,7 +144,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 text-white hover:bg-[#323846]"
                 onClick={handleLanguageToggle}
               >
                 <Globe size={18} />
@@ -157,7 +157,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback>
+                  <AvatarFallback className="bg-[#6e59a5]">
                     <User size={16} />
                   </AvatarFallback>
                 </Avatar>

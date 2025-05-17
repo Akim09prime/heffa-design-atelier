@@ -73,17 +73,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
   }
 }
 
 /* Fix layout issues */
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-}
-
 #root {
   width: 100%;
   margin: 0 auto;
@@ -93,13 +90,52 @@ body {
   min-height: 100vh;
 }
 
+/* Updated admin theme colors */
+.admin-theme {
+  --admin-bg: #1a1f2c;
+  --admin-text: #ffffff;
+  --admin-card: #2a2f3c;
+  --admin-card-hover: #323846;
+  --admin-sidebar: #181c28;
+  --admin-accent: #6e59a5;
+  --admin-accent-hover: #7e69ab;
+  --admin-border: #3a3f4c;
+  --admin-muted: #8e9196;
+}
+
+/* Admin styling improvements */
+.admin-theme main {
+  @apply bg-gray-900;
+  width: 100%;
+}
+
+.admin-theme .bg-gray-800 {
+  background-color: var(--admin-card);
+}
+
+.admin-theme .bg-gray-700 {
+  background-color: var(--admin-card-hover);
+}
+
+.admin-theme .border-gray-700 {
+  border-color: var(--admin-border);
+}
+
+.admin-theme .border-gray-600 {
+  border-color: var(--admin-border);
+}
+
+.admin-theme button[variant="ghost"]:hover {
+  background-color: var(--admin-accent-hover);
+}
+
 /* Fix dropdown styling */
 .SelectContent {
-  @apply bg-gray-800 text-white border-gray-700;
+  @apply bg-gray-800 text-white border-gray-700 z-50;
 }
 
 .SelectItem {
-  @apply text-white hover:bg-gray-700;
+  @apply text-white hover:bg-gray-700 z-50;
 }
 
 /* Fix dialog styling */
@@ -155,9 +191,58 @@ body {
 
 /* Dialog Content Improvements */
 [role="dialog"] {
-  @apply z-50 text-white;
+  @apply z-50;
 }
 
-.DialogContent {
+.DialogContent, 
+div[role="dialog"] {
   @apply bg-gray-800 border-gray-700 text-white;
+}
+
+/* Fix form fields in dialogs */
+.DialogContent input,
+.DialogContent select,
+.DialogContent textarea,
+div[role="dialog"] input,
+div[role="dialog"] select,
+div[role="dialog"] textarea {
+  @apply bg-gray-700 text-white border-gray-600;
+}
+
+/* Fix dialog labels and text */
+.DialogContent label,
+.DialogContent p,
+div[role="dialog"] label,
+div[role="dialog"] p,
+div[role="dialog"] h2,
+div[role="dialog"] h3 {
+  @apply text-white;
+}
+
+/* Fix card content */
+.CardContent, 
+.CardHeader,
+.CardTitle,
+.CardDescription {
+  @apply text-white;
+}
+
+/* Fix button styling */
+.btn-primary {
+  background-color: var(--admin-accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--admin-accent-hover);
+}
+
+/* Ensure file inputs are visible */
+input[type="file"] {
+  @apply text-white bg-transparent;
+}
+
+/* Make sure placeholder text is visible */
+::placeholder {
+  @apply text-gray-400;
 }

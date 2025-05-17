@@ -588,6 +588,10 @@ const translations: Translations = {
       en: 'No accessories found matching your criteria',
       ro: 'Nu s-au găsit accesorii care să corespundă criteriilor tale'
     },
+    noImage: {
+      en: 'No image available',
+      ro: 'Nicio imagine disponibilă'
+    },
     loading: {
       en: 'Loading accessories...',
       ro: 'Se încarcă accesoriile...'
@@ -596,13 +600,45 @@ const translations: Translations = {
       en: 'Accessory Added',
       ro: 'Accesoriu adăugat'
     },
+    accessoryUpdated: {
+      en: 'Accessory Updated',
+      ro: 'Accesoriu actualizat'
+    },
+    accessoryDeleted: {
+      en: 'Accessory Deleted',
+      ro: 'Accesoriu șters'
+    },
+    hasBeenAdded: {
+      en: 'has been added successfully',
+      ro: 'a fost adăugat cu succes'
+    },
+    hasBeenUpdated: {
+      en: 'has been updated successfully',
+      ro: 'a fost actualizat cu succes'
+    },
+    accessoryDeletedSuccess: {
+      en: 'Accessory has been deleted successfully',
+      ro: 'Accesoriul a fost șters cu succes'
+    },
     hasBeenAddedToProject: {
       en: 'has been added to your project.',
       ro: 'a fost adăugat la proiectul tău.'
     },
+    importStarted: {
+      en: 'Import Started',
+      ro: 'Import început'
+    },
+    importFunctionality: {
+      en: 'Accessory import functionality would be implemented here',
+      ro: 'Funcționalitatea de import accesorii ar fi implementată aici'
+    },
     exportStarted: {
       en: 'Export Started',
       ro: 'Export început'
+    },
+    exportFunctionality: {
+      en: 'Accessory export functionality would be implemented here',
+      ro: 'Funcționalitatea de export accesorii ar fi implementată aici'
     },
     exportingAccessories: {
       en: 'Exporting accessories catalog to Excel...',
@@ -616,6 +652,118 @@ const translations: Translations = {
       en: 'Accessories catalog has been exported successfully.',
       ro: 'Catalogul de accesorii a fost exportat cu succes.'
     },
+    addAccessory: {
+      en: 'Add Accessory',
+      ro: 'Adaugă Accesoriu'
+    },
+    addNewAccessory: {
+      en: 'Add New Accessory',
+      ro: 'Adaugă Accesoriu Nou'
+    },
+    editAccessory: {
+      en: 'Edit Accessory',
+      ro: 'Editează Accesoriu'
+    },
+    fillDetails: {
+      en: 'Fill in the details for the new accessory',
+      ro: 'Completează detaliile pentru noul accesoriu'
+    },
+    updateDetails: {
+      en: 'Update the accessory details',
+      ro: 'Actualizează detaliile accesoriului'
+    },
+    form: {
+      code: {
+        en: 'Code',
+        ro: 'Cod'
+      },
+      name: {
+        en: 'Name',
+        ro: 'Nume'
+      },
+      manufacturer: {
+        en: 'Manufacturer',
+        ro: 'Producător'
+      },
+      selectManufacturer: {
+        en: 'Select manufacturer',
+        ro: 'Selectează producătorul'
+      },
+      price: {
+        en: 'Price (€)',
+        ro: 'Preț (€)'
+      },
+      stockQty: {
+        en: 'Stock Quantity',
+        ro: 'Cantitate în stoc'
+      },
+      compatibility: {
+        en: 'Compatible With',
+        ro: 'Compatibil cu'
+      },
+      image: {
+        en: 'Image',
+        ro: 'Imagine'
+      },
+      preview: {
+        en: 'Preview',
+        ro: 'Previzualizare'
+      },
+      uploadImage: {
+        en: 'Upload Image',
+        ro: 'Încarcă imagine'
+      },
+      imageNote: {
+        en: 'Optional. Maximum size: 2MB',
+        ro: 'Opțional. Dimensiune maximă: 2MB'
+      },
+      update: {
+        en: 'Update Accessory',
+        ro: 'Actualizează Accesoriu'
+      },
+      add: {
+        en: 'Add Accessory',
+        ro: 'Adaugă Accesoriu'
+      },
+      other: {
+        en: 'Other',
+        ro: 'Alta'
+      }
+    },
+    moduleTypes: {
+      baseUnit: {
+        en: 'Base Unit',
+        ro: 'Corp bază'
+      },
+      wallUnit: {
+        en: 'Wall Unit',
+        ro: 'Corp suspendat'
+      },
+      tallUnit: {
+        en: 'Tall Unit',
+        ro: 'Corp înalt'
+      },
+      drawerUnit: {
+        en: 'Drawer Unit',
+        ro: 'Corp sertare'
+      },
+      cornerUnit: {
+        en: 'Corner Unit',
+        ro: 'Corp colț'
+      },
+      shelfUnit: {
+        en: 'Shelf Unit',
+        ro: 'Raft'
+      },
+      island: {
+        en: 'Island',
+        ro: 'Insulă'
+      },
+      other: {
+        en: 'Other',
+        ro: 'Altele'
+      }
+    }
   },
   
   // Users page
@@ -772,7 +920,6 @@ const translations: Translations = {
       en: 'No reports found matching your criteria',
       ro: 'Nu s-au găsit rapoarte care să corespundă criteriilor tale'
     },
-    // More report translations...
   },
   
   // Import/Export page
@@ -809,7 +956,6 @@ const translations: Translations = {
       en: 'Download templates for data import',
       ro: 'Descarcă șabloane pentru import de date'
     },
-    // More import/export translations...
   },
   
   // Analytics page
@@ -866,7 +1012,6 @@ const translations: Translations = {
       en: 'Client Retention',
       ro: 'Retenție clienți'
     },
-    // More analytics translations...
   }
 };
 
