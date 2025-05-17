@@ -154,7 +154,7 @@ export const MaterialService = {
     return Promise.resolve(sampleMaterials.filter(material => material.type === type));
   },
 
-  // Add new material
+  // Add new material with better image handling
   addMaterial: async (material: Omit<Material, 'id'>): Promise<Material> => {
     // In a real app, this would be an API call
     const newMaterial = {
@@ -163,7 +163,7 @@ export const MaterialService = {
     };
     
     // Set default image if none provided
-    if (!newMaterial.textureUrl) {
+    if (!newMaterial.textureUrl || newMaterial.textureUrl.trim() === '') {
       newMaterial.textureUrl = 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500';
     }
     
@@ -176,7 +176,7 @@ export const MaterialService = {
     return Promise.resolve(newMaterial as Material);
   },
 
-  // Update material
+  // Update material with better image handling
   updateMaterial: async (id: string, material: Partial<Material>): Promise<Material> => {
     // In a real app, this would be an API call
     console.log(`Updating material ${id}:`, material);
@@ -193,6 +193,11 @@ export const MaterialService = {
       ...sampleMaterials[existingMaterialIndex],
       ...material,
     };
+    
+    // If textureUrl is empty, set default
+    if (!updatedMaterial.textureUrl || updatedMaterial.textureUrl.trim() === '') {
+      updatedMaterial.textureUrl = 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500';
+    }
     
     // Update the material in our local sample data
     sampleMaterials[existingMaterialIndex] = updatedMaterial;

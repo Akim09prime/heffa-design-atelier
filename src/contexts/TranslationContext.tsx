@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define available languages
-export type Language = 'en' | 'ro';
+export type Language = 'ro' | 'en';
 
 // Translation content types
 interface TranslationEntry {
@@ -876,13 +876,18 @@ interface TranslationProviderProps {
 }
 
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  // Change default language to Romanian
+  const [language, setLanguage] = useState<Language>('ro');
   
   // Load saved language preference from localStorage on mount
   useEffect(() => {
     const savedLanguage = localStorage.getItem('language') as Language;
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'ro')) {
       setLanguage(savedLanguage);
+    } else {
+      // If no preference is saved, default to Romanian
+      setLanguage('ro');
+      localStorage.setItem('language', 'ro');
     }
   }, []);
   
@@ -910,15 +915,16 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
           return (translations[section][parentKey] as any)[childKey][language];
         }
         
-        // Fallback to English for nested keys
+        // Fallback to other language if translation not found in current language
+        const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
         if (
           translations[section] && 
           translations[section][parentKey] && 
           typeof translations[section][parentKey] === 'object' &&
           (translations[section][parentKey] as any)[childKey] &&
-          (translations[section][parentKey] as any)[childKey]['en']
+          (translations[section][parentKey] as any)[childKey][fallbackLang]
         ) {
-          return (translations[section][parentKey] as any)[childKey]['en'];
+          return (translations[section][parentKey] as any)[childKey][fallbackLang];
         }
         
         // Return the key if no translation found
@@ -936,14 +942,15 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
         return (translations[section][translationKey] as TranslationEntry)[language];
       }
       
-      // Fallback to English if translation not found
+      // Fallback to other language if translation not found in current language
+      const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
       if (
         translations[section] && 
         translations[section][translationKey] && 
         typeof translations[section][translationKey] === 'object' &&
-        (translations[section][translationKey] as TranslationEntry)['en']
+        (translations[section][translationKey] as TranslationEntry)[fallbackLang]
       ) {
-        return (translations[section][translationKey] as TranslationEntry)['en'];
+        return (translations[section][translationKey] as TranslationEntry)[fallbackLang];
       }
       
       // Return key if no translation found
