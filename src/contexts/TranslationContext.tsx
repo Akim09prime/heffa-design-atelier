@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define available languages
@@ -919,6 +918,9 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
       ) {
         return (translations[section][parentKey] as any)[childKey]['en'];
       }
+      
+      // Return the key if no translation found
+      return key;
     }
     
     // Handle regular keys

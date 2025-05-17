@@ -33,7 +33,7 @@ const Settings = () => {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-medium">{t('settings.title')}</h1>
-          <p className="text-muted-foreground">{t('settings.client.description')}</p>
+          <p className="text-muted-foreground">{t('settings.client.description') || t('settings.description')}</p>
         </div>
         
         <Tabs defaultValue="account" className="space-y-4">

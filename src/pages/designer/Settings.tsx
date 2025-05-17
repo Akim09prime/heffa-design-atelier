@@ -21,6 +21,13 @@ const Settings = () => {
     });
   };
 
+  const handleSaveSettings = () => {
+    toast({
+      title: t('settings.settingsSaved'),
+      description: t('settings.changesSavedSuccess'),
+    });
+  };
+
   return (
     <DesignerLayout>
       <div className="p-6">
@@ -46,7 +53,7 @@ const Settings = () => {
               <CardContent className="space-y-4 pt-4">
                 {/* Profile settings would go here */}
                 <div className="flex justify-end">
-                  <Button>{t('settings.saveChanges')}</Button>
+                  <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                 </div>
               </CardContent>
             </Card>
@@ -61,7 +68,7 @@ const Settings = () => {
               <CardContent className="space-y-4 pt-4">
                 {/* Preferences settings would go here */}
                 <div className="flex justify-end">
-                  <Button>{t('settings.saveChanges')}</Button>
+                  <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                 </div>
               </CardContent>
             </Card>
@@ -76,7 +83,7 @@ const Settings = () => {
               <CardContent className="space-y-4 pt-4">
                 {/* Notification settings would go here */}
                 <div className="flex justify-end">
-                  <Button>{t('settings.saveChanges')}</Button>
+                  <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                 </div>
               </CardContent>
             </Card>
