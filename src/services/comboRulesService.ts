@@ -72,6 +72,8 @@ export const comboRules: ComboRule[] = [
       // Custom logic will check material type
     },
     then: {
+      // Fix: Adding an empty suggest object to satisfy the type requirement
+      suggest: {},
       warning: 'Painting can only be applied to MDF materials'
     }
   },
