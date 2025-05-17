@@ -442,7 +442,10 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
   };
   
   const getModuleTypeName = (type: ModuleType): string => {
-    switch(type) {
+    // Fix: Ensure we're working with a string type before using replace
+    const typeString = String(type);
+    
+    switch(typeString) {
       case 'base_cabinet': return t('accessories.moduleTypes.baseUnit');
       case 'wall_cabinet': return t('accessories.moduleTypes.wallUnit');
       case 'tall_cabinet': return t('accessories.moduleTypes.tallUnit');
@@ -451,7 +454,7 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
       case 'shelf_unit': return t('accessories.moduleTypes.shelfUnit');
       case 'island': return t('accessories.moduleTypes.island');
       case 'other': return t('accessories.moduleTypes.other');
-      default: return type.replace('_', ' ');
+      default: return typeString.replace('_', ' ');
     }
   };
 
