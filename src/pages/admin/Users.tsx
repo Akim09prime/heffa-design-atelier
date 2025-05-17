@@ -23,6 +23,7 @@ const Users = () => {
       email: 'john.doe@example.com',
       role: 'admin',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      active: true,
     },
     {
       id: '2',
@@ -30,6 +31,7 @@ const Users = () => {
       email: 'jane.smith@example.com',
       role: 'designer',
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      active: true,
     },
     {
       id: '3',
@@ -37,6 +39,7 @@ const Users = () => {
       email: 'robert.johnson@example.com',
       role: 'client',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      active: true,
     },
     {
       id: '4',
@@ -44,6 +47,7 @@ const Users = () => {
       email: 'lisa.anderson@example.com',
       role: 'designer',
       avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      active: true,
     },
     {
       id: '5',
@@ -51,6 +55,7 @@ const Users = () => {
       email: 'michael.williams@example.com',
       role: 'client',
       avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      active: true,
     },
   ]);
   
@@ -114,6 +119,7 @@ const Users = () => {
         role,
         // Default avatar based on name initials
         avatar: undefined,
+        active: true, // Add the missing active property
       };
       
       setUsers(prev => [...prev, newUser]);
