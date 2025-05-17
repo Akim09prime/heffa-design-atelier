@@ -14,6 +14,8 @@ import {
   Home, Layers, FolderPlus, Settings, LogOut, 
   User, Users, Palette, Box, Database 
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 interface DesignerLayoutProps {
   children: React.ReactNode;
@@ -21,10 +23,31 @@ interface DesignerLayoutProps {
 
 export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+  };
+
+  const handleNavigation = (path: string, title: string) => {
+    toast({
+      title: `Navigating to ${title}`,
+      description: "Loading content...",
+    });
+    // In a real app, we would navigate to different routes
+    // For now, we'll just show a toast message
+    console.log(`Navigating to ${path}`);
+  };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-designer-50 designer-theme">
+    <div className="min-h-screen flex w-full bg-designer-50 designer-theme">
+      <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center px-4 py-2">
@@ -36,31 +59,59 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
           </SidebarHeader>
           <SidebarContent>
             <nav className="space-y-1 px-2">
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/dashboard", "Dashboard")}
+              >
                 <Home size={18} />
                 <span>Dashboard</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/projects", "Projects")}
+              >
                 <Layers size={18} />
                 <span>Projects</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/new-project", "New Project")}
+              >
                 <FolderPlus size={18} />
                 <span>New Project</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/clients", "Clients")}
+              >
                 <Users size={18} />
                 <span>Clients</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/materials", "Materials")}
+              >
                 <Palette size={18} />
                 <span>Materials</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/modules", "Modules")}
+              >
                 <Box size={18} />
                 <span>Modules</span>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2">
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-2"
+                onClick={() => handleNavigation("/settings", "Settings")}
+              >
                 <Settings size={18} />
                 <span>Settings</span>
               </Button>
@@ -79,7 +130,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
                   <p className="text-sm font-medium">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={logout}>
+                <Button variant="ghost" size="icon" onClick={handleLogout}>
                   <LogOut size={18} />
                 </Button>
               </div>
@@ -89,7 +140,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </div>
   );
 };

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Plus, ArrowRight } from 'lucide-react';
 import { SceneContainer } from '../components/3d/SceneContainer';
 import { FurnitureModule } from '../types';
+import { useToast } from '@/hooks/use-toast';
 
 // Sample data for demonstration
 const recentProjects = [
@@ -50,6 +51,24 @@ const suggestedModules: FurnitureModule[] = [
 ];
 
 const ClientDashboard = () => {
+  const { toast } = useToast();
+
+  const handleButtonClick = (action: string, detail: string = '') => {
+    toast({
+      title: `${action}`,
+      description: detail ? detail : `Action initiated for ${action}`,
+    });
+    console.log(`Action: ${action}, Detail: ${detail}`);
+  };
+
+  const handleProjectClick = (projectId: string, projectName: string) => {
+    toast({
+      title: "Opening project",
+      description: `Loading ${projectName}...`,
+    });
+    console.log(`Opening project: ${projectId} - ${projectName}`);
+  };
+
   return (
     <ClientLayout>
       <div className="p-6">
@@ -66,10 +85,16 @@ const ClientDashboard = () => {
             </div>
             
             <div className="flex gap-4">
-              <Button className="bg-heffa-600 hover:bg-heffa-700">
+              <Button 
+                className="bg-heffa-600 hover:bg-heffa-700"
+                onClick={() => handleButtonClick('New Project', 'Starting new furniture design project')}
+              >
                 <Plus size={18} className="mr-2" /> New Project
               </Button>
-              <Button variant="outline">
+              <Button 
+                variant="outline"
+                onClick={() => handleButtonClick('Browse Templates', 'Exploring design templates')}
+              >
                 Browse Templates
               </Button>
             </div>
@@ -97,7 +122,11 @@ const ClientDashboard = () => {
                               style={{ width: `${project.progress}%` }}
                             ></div>
                           </div>
-                          <Button variant="ghost" size="icon">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleProjectClick(project.id, project.name)}
+                          >
                             <ArrowRight size={18} />
                           </Button>
                         </div>
@@ -107,7 +136,13 @@ const ClientDashboard = () => {
                 </ul>
               </CardContent>
               <CardFooter className="pt-2">
-                <Button variant="link" className="text-heffa-600">View all projects</Button>
+                <Button 
+                  variant="link" 
+                  className="text-heffa-600"
+                  onClick={() => handleButtonClick('View All Projects', 'Displaying all your projects')}
+                >
+                  View all projects
+                </Button>
               </CardFooter>
             </Card>
           </div>
@@ -127,7 +162,14 @@ const ClientDashboard = () => {
                   </p>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                  <Button variant="outline" size="sm" className="w-full">Browse Gallery</Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => handleButtonClick('Browse Gallery', 'Exploring design inspiration')}
+                  >
+                    Browse Gallery
+                  </Button>
                 </CardFooter>
               </Card>
               <Card>
@@ -140,7 +182,13 @@ const ClientDashboard = () => {
                   </p>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                  <Button size="sm" className="w-full bg-heffa-600 hover:bg-heffa-700">Get Started</Button>
+                  <Button 
+                    size="sm" 
+                    className="w-full bg-heffa-600 hover:bg-heffa-700"
+                    onClick={() => handleButtonClick('Design Advisor', 'Starting AI-assisted design session')}
+                  >
+                    Get Started
+                  </Button>
                 </CardFooter>
               </Card>
             </div>
@@ -151,7 +199,13 @@ const ClientDashboard = () => {
         <div className="mt-12">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-display font-semibold text-heffa-900">Popular Modules</h2>
-            <Button variant="link" className="text-heffa-600">View all</Button>
+            <Button 
+              variant="link" 
+              className="text-heffa-600"
+              onClick={() => handleButtonClick('View All Modules', 'Browsing all furniture modules')}
+            >
+              View all
+            </Button>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -165,7 +219,13 @@ const ClientDashboard = () => {
                   </p>
                   <div className="flex justify-between items-center mt-2">
                     <span className="font-semibold text-heffa-900">$249</span>
-                    <Button variant="outline" size="sm">Preview</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleButtonClick('Preview Module', `Previewing Kitchen Cabinet ${index + 1}`)}
+                    >
+                      Preview
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
