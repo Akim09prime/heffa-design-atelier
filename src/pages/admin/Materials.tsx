@@ -1,24 +1,116 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Upload, Download, Edit, Trash } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Search, Plus, Upload, Download } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from '@/hooks/use-toast';
+import { MaterialType, Material } from '@/types';
+import { MaterialService } from '@/services/materialService';
+import { MaterialCard } from '@/components/materials/MaterialCard';
+import { MaterialForm } from '@/components/materials/MaterialForm';
 
 const Materials = () => {
-  const [materialType, setMaterialType] = useState('PAL');
-
-  // Sample materials data
-  const materials = [
-    { id: '1', code: 'PAL-W980-ST2-18', name: 'Alb W980 ST2', manufacturer: 'Egger', type: 'PAL', thickness: 18, pricePerSqm: 38.50, availability: true },
-    { id: '2', code: 'PAL-H1334-ST9-18', name: 'Light Oak', manufacturer: 'Egger', type: 'PAL', thickness: 18, pricePerSqm: 42.30, availability: true },
-    { id: '3', code: 'PAL-U702-ST9-18', name: 'Cashmere Grey', manufacturer: 'Egger', type: 'PAL', thickness: 18, pricePerSqm: 39.80, availability: true },
-    { id: '4', code: 'PAL-H3170-ST12-18', name: 'Natural Kendal Oak', manufacturer: 'Egger', type: 'PAL', thickness: 18, pricePerSqm: 45.20, availability: false },
-    { id: '5', code: 'PAL-F812-ST9-18', name: 'White Levanto Marble', manufacturer: 'Egger', type: 'PAL', thickness: 18, pricePerSqm: 48.90, availability: true },
-  ];
+  const { toast } = useToast();
+  const [materialType, setMaterialType] = useState<MaterialType>('PAL');
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [filteredMaterials, setFilteredMaterials] = useState<Material[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  
+  // Load materials when component mounts or material type changes
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedMaterials = await MaterialService.getMaterialsByType(materialType);
+        setMaterials(fetchedMaterials);
+        setFilteredMaterials(fetchedMaterials);
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load materials data',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchMaterials();
+  }, [materialType, toast]);
+  
+  // Filter materials when search query changes
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = materials.filter(material => 
+        material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        material.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        material.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredMaterials(filtered);
+    } else {
+      setFilteredMaterials(materials);
+    }
+  }, [searchQuery, materials]);
+  
+  const handleTabChange = (value: string) => {
+    setMaterialType(value.toUpperCase() as MaterialType);
+  };
+  
+  const handleAddMaterial = (formData: any) => {
+    // In a real app, this would add the material to the database
+    toast({
+      title: 'Material Added',
+      description: `${formData.name} has been added successfully`,
+    });
+    setIsAddDialogOpen(false);
+  };
+  
+  const handleEditMaterial = (material: Material) => {
+    setSelectedMaterial(material);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleUpdateMaterial = (formData: any) => {
+    if (!selectedMaterial) return;
+    
+    // In a real app, this would update the material in the database
+    toast({
+      title: 'Material Updated',
+      description: `${formData.name} has been updated successfully`,
+    });
+    setIsEditDialogOpen(false);
+  };
+  
+  const handleDeleteMaterial = (material: Material) => {
+    // In a real app, this would delete the material from the database
+    toast({
+      title: 'Material Deleted',
+      description: `${material.name} has been deleted successfully`,
+    });
+  };
+  
+  const handleImportMaterials = () => {
+    toast({
+      title: 'Import Materials',
+      description: 'Material import functionality would be implemented here',
+    });
+  };
+  
+  const handleExportMaterials = () => {
+    toast({
+      title: 'Export Materials',
+      description: 'Material export functionality would be implemented here',
+    });
+  };
 
   return (
     <AdminLayout>
@@ -35,24 +127,29 @@ const Materials = () => {
                 type="search"
                 placeholder="Search materials..."
                 className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleImportMaterials}>
               <Upload className="h-4 w-4 mr-2" />
               Import
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExportMaterials}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
-            <Button>
+            <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Material
             </Button>
           </div>
         </div>
 
-        <Tabs defaultValue="pal" onValueChange={(value) => setMaterialType(value.toUpperCase())}>
+        <Tabs 
+          defaultValue="pal" 
+          onValueChange={handleTabChange}
+        >
           <TabsList className="mb-6 bg-gray-800">
             <TabsTrigger value="pal">PAL</TabsTrigger>
             <TabsTrigger value="mdf">MDF</TabsTrigger>
@@ -67,53 +164,30 @@ const Materials = () => {
               <CardHeader className="border-b border-gray-700">
                 <CardTitle className="text-white">PAL Materials</CardTitle>
                 <CardDescription className="text-gray-400">
-                  PAL materials from Egger and other suppliers. Total: {materials.length} entries
+                  PAL materials from Egger and other suppliers. Total: {filteredMaterials.length} entries
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-gray-700 hover:bg-gray-800">
-                        <TableHead className="text-gray-400">Code</TableHead>
-                        <TableHead className="text-gray-400">Name</TableHead>
-                        <TableHead className="text-gray-400">Manufacturer</TableHead>
-                        <TableHead className="text-gray-400">Thickness (mm)</TableHead>
-                        <TableHead className="text-gray-400">Price/m²</TableHead>
-                        <TableHead className="text-gray-400">Availability</TableHead>
-                        <TableHead className="text-gray-400 text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {materials.map((material) => (
-                        <TableRow key={material.id} className="border-gray-700 hover:bg-gray-700">
-                          <TableCell className="font-medium text-gray-300">{material.code}</TableCell>
-                          <TableCell className="text-white">{material.name}</TableCell>
-                          <TableCell className="text-gray-300">{material.manufacturer}</TableCell>
-                          <TableCell className="text-gray-300">{material.thickness}</TableCell>
-                          <TableCell className="text-gray-300">€{material.pricePerSqm.toFixed(2)}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              material.availability ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-                            }`}>
-                              {material.availability ? 'In Stock' : 'Out of Stock'}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Edit className="h-4 w-4 text-gray-400" />
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <Trash className="h-4 w-4 text-gray-400" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+              <CardContent className="p-6">
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <p className="text-gray-400">Loading materials...</p>
+                  </div>
+                ) : filteredMaterials.length === 0 ? (
+                  <div className="flex justify-center items-center h-64">
+                    <p className="text-gray-400">No materials found. Add some materials to get started.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredMaterials.map((material) => (
+                      <MaterialCard 
+                        key={material.id}
+                        material={material}
+                        onEdit={handleEditMaterial}
+                        onDelete={handleDeleteMaterial}
+                      />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -121,14 +195,68 @@ const Materials = () => {
           {['mdf', 'mdf-agt', 'pfl', 'glass', 'countertop'].map((type) => (
             <TabsContent key={type} value={type}>
               <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="flex items-center justify-center p-12 text-center">
-                  <p className="text-gray-400">{type.toUpperCase()} materials will be displayed here</p>
+                <CardHeader className="border-b border-gray-700">
+                  <CardTitle className="text-white">{type.toUpperCase()} Materials</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    {type.toUpperCase()} materials and supplies. Total: {filteredMaterials.length} entries
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                      <p className="text-gray-400">Loading materials...</p>
+                    </div>
+                  ) : filteredMaterials.length === 0 ? (
+                    <div className="flex justify-center items-center h-64">
+                      <p className="text-gray-400">No materials found. Add some materials to get started.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {filteredMaterials.map((material) => (
+                        <MaterialCard 
+                          key={material.id}
+                          material={material}
+                          onEdit={handleEditMaterial}
+                          onDelete={handleDeleteMaterial}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
           ))}
         </Tabs>
       </div>
+
+      {/* Add Material Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-gray-800 border-gray-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Add New Material</DialogTitle>
+          </DialogHeader>
+          <MaterialForm 
+            onSubmit={handleAddMaterial}
+            onCancel={() => setIsAddDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Material Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-gray-800 border-gray-700 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Material</DialogTitle>
+          </DialogHeader>
+          {selectedMaterial && (
+            <MaterialForm 
+              material={selectedMaterial}
+              onSubmit={handleUpdateMaterial}
+              onCancel={() => setIsEditDialogOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };

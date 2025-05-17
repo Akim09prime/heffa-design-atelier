@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { AiAssistant } from '@/components/ai/AiAssistant';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -156,6 +157,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {children}
         </main>
       </SidebarProvider>
+      
+      {/* Add AI Assistant */}
+      <AiAssistant />
     </div>
   );
 };
