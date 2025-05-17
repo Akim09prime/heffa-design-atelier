@@ -165,7 +165,7 @@ const Reports = () => {
       case 'processing':
         return <FileSpreadsheet className="h-6 w-6 text-orange-500" />;
       default:
-        return <FilePdf className="h-6 w-6 text-gray-500" />;
+        return <File className="h-6 w-6 text-gray-500" />;
     }
   };
   
