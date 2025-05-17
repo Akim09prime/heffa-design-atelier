@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, FileSpreadsheet, Code, Package, Download, Eye } from 'lucide-react';
 import { ProjectService } from '@/services/projectService';
 import { Project } from '@/types';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const projectMockData = [
   {
@@ -95,6 +96,7 @@ const ExportsPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
+  const { t } = useTranslation();
   
   // Initialize with mock data
   React.useEffect(() => {
@@ -137,13 +139,13 @@ const ExportsPage = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Badge className="bg-green-500">{t('common.approved')}</Badge>;
       case 'in_production':
-        return <Badge className="bg-blue-500">In Production</Badge>;
+        return <Badge className="bg-blue-500">{t('common.pending')}</Badge>;
       case 'completed':
-        return <Badge className="bg-purple-500">Completed</Badge>;
+        return <Badge className="bg-purple-500">{t('common.completed')}</Badge>;
       default:
-        return <Badge>Draft</Badge>;
+        return <Badge>{status}</Badge>;
     }
   };
 
@@ -169,9 +171,9 @@ const ExportsPage = () => {
     <DesignerLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-medium">Exports</h1>
+          <h1 className="text-3xl font-medium">{t('common.export')}</h1>
           <Input
-            placeholder="Search exports..."
+            placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
@@ -180,27 +182,27 @@ const ExportsPage = () => {
 
         <Tabs defaultValue="recent" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="recent">Recent Exports</TabsTrigger>
-            <TabsTrigger value="projects">Export by Project</TabsTrigger>
+            <TabsTrigger value="recent">{t('importExport.exportData')}</TabsTrigger>
+            <TabsTrigger value="projects">{t('importExport.exportDataDesc')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="recent" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Exports</CardTitle>
+                <CardTitle>{t('importExport.exportData')}</CardTitle>
                 <CardDescription>
-                  Recently generated exports across all projects
+                  {t('importExport.exportDataDesc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Format</TableHead>
-                      <TableHead>Project</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t('materials.form.type')}</TableHead>
+                      <TableHead>{t('common.projects')}</TableHead>
+                      <TableHead>{t('reports.dateGenerated')}</TableHead>
+                      <TableHead>{t('reports.size')}</TableHead>
+                      <TableHead className="text-right">{t('common.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -230,7 +232,7 @@ const ExportsPage = () => {
                     {filteredExports.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8">
-                          No exports found
+                          {t('reports.noReportsFound')}
                         </TableCell>
                       </TableRow>
                     )}
@@ -243,20 +245,20 @@ const ExportsPage = () => {
           <TabsContent value="projects" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Projects</CardTitle>
+                <CardTitle>{t('common.projects')}</CardTitle>
                 <CardDescription>
-                  Select a project to create or view exports
+                  {t('importExport.templates')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Project Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Last Export</TableHead>
-                      <TableHead>Export Count</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t('materials.form.name')}</TableHead>
+                      <TableHead>{t('common.status')}</TableHead>
+                      <TableHead>{t('reports.lastModified')}</TableHead>
+                      <TableHead>{t('reports.count')}</TableHead>
+                      <TableHead className="text-right">{t('common.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -271,7 +273,7 @@ const ExportsPage = () => {
                             size="sm" 
                             onClick={() => navigate(`/designer/exports/${project.id}`)}
                           >
-                            Export
+                            {t('common.export')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -279,7 +281,7 @@ const ExportsPage = () => {
                     {filteredProjects.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8">
-                          No projects found
+                          {t('reports.noReportsFound')}
                         </TableCell>
                       </TableRow>
                     )}

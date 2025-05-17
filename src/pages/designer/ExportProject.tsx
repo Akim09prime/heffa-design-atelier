@@ -14,6 +14,7 @@ import { SceneContainer } from '@/components/3d/SceneContainer';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const ExportProject = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -21,6 +22,7 @@ const ExportProject = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -32,8 +34,8 @@ const ExportProject = () => {
       } catch (error) {
         console.error('Failed to fetch project:', error);
         toast({
-          title: "Error",
-          description: "Failed to load project data",
+          title: t('common.error'),
+          description: t('reports.failedToLoad'),
           variant: "destructive",
         });
       } finally {
@@ -42,14 +44,14 @@ const ExportProject = () => {
     };
 
     fetchProject();
-  }, [projectId, toast]);
+  }, [projectId, toast, t]);
 
   if (loading) {
     return (
       <DesignerLayout>
         <div className="p-6">
           <div className="flex justify-center items-center h-64">
-            <p>Loading project data...</p>
+            <p>{t('common.loading')}</p>
           </div>
         </div>
       </DesignerLayout>
@@ -61,7 +63,7 @@ const ExportProject = () => {
       <DesignerLayout>
         <div className="p-6">
           <div className="flex justify-center items-center h-64">
-            <p>Project not found</p>
+            <p>{t('reports.noProjectFound')}</p>
           </div>
         </div>
       </DesignerLayout>
@@ -76,16 +78,16 @@ const ExportProject = () => {
             <Button variant="outline" size="icon" onClick={() => navigate('/designer/exports')}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-semibold">Export Project: {project.name}</h1>
+            <h1 className="text-2xl font-semibold">{t('common.export')}: {project.name}</h1>
           </div>
         </div>
 
         <Tabs defaultValue="export" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-4 mb-6">
-            <TabsTrigger value="export">Export Options</TabsTrigger>
-            <TabsTrigger value="cutting">Cutting List</TabsTrigger>
-            <TabsTrigger value="supplier">Supplier Orders</TabsTrigger>
-            <TabsTrigger value="preview">Project Preview</TabsTrigger>
+            <TabsTrigger value="export">{t('common.export')}</TabsTrigger>
+            <TabsTrigger value="cutting">{t('importExport.cuttingList')}</TabsTrigger>
+            <TabsTrigger value="supplier">{t('importExport.supplierOrder')}</TabsTrigger>
+            <TabsTrigger value="preview">{t('common.preview')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="export">
@@ -113,29 +115,29 @@ const ExportProject = () => {
                     />
                   </div>
                   <div className="w-full lg:w-1/2">
-                    <h3 className="text-xl font-medium mb-4">Project Details</h3>
+                    <h3 className="text-xl font-medium mb-4">{t('importExport.projectDetails')}</h3>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-sm text-muted-foreground">Project Name</p>
+                        <p className="text-sm text-muted-foreground">{t('materials.form.name')}</p>
                         <p className="font-medium">{project.name}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Description</p>
-                        <p>{project.description || 'No description provided'}</p>
+                        <p className="text-sm text-muted-foreground">{t('importExport.description')}</p>
+                        <p>{project.description || t('importExport.noDescription')}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Room Type</p>
+                        <p className="text-sm text-muted-foreground">{t('importExport.roomType')}</p>
                         <p className="font-medium capitalize">{project.roomType}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Dimensions</p>
+                        <p className="text-sm text-muted-foreground">{t('importExport.dimensions')}</p>
                         <p>
                           {project.dimensions.width}m × {project.dimensions.length}m × {project.dimensions.height}m
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Modules</p>
-                        <p>{project.modules.length} modules</p>
+                        <p className="text-sm text-muted-foreground">{t('common.modules')}</p>
+                        <p>{project.modules.length} {t('common.modules')}</p>
                       </div>
                     </div>
                   </div>

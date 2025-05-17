@@ -120,6 +120,26 @@ const translations: Translations = {
       en: 'Filter',
       ro: 'Filtrează'
     },
+    actions: {
+      en: 'Actions',
+      ro: 'Acțiuni'
+    },
+    preview: {
+      en: 'Preview',
+      ro: 'Previzualizare'
+    },
+    projects: {
+      en: 'Projects',
+      ro: 'Proiecte'
+    },
+    modules: {
+      en: 'Modules',
+      ro: 'Module'
+    },
+    loading: {
+      en: 'Loading...',
+      ro: 'Se încarcă...'
+    },
 
     // Status
     success: {
@@ -145,6 +165,14 @@ const translations: Translations = {
     lowStock: {
       en: 'Low Stock',
       ro: 'Stoc limitat'
+    },
+    approved: {
+      en: 'Approved',
+      ro: 'Aprobat'
+    },
+    status: {
+      en: 'Status',
+      ro: 'Status'
     },
   },
   
@@ -920,6 +948,30 @@ const translations: Translations = {
       en: 'No reports found matching your criteria',
       ro: 'Nu s-au găsit rapoarte care să corespundă criteriilor tale'
     },
+    failedToLoad: {
+      en: 'Failed to load report data',
+      ro: 'Nu s-au putut încărca datele raportului'
+    },
+    noProjectFound: {
+      en: 'Project not found',
+      ro: 'Proiectul nu a fost găsit'
+    },
+    lastModified: {
+      en: 'Last Modified',
+      ro: 'Ultima modificare'
+    },
+    count: {
+      en: 'Count',
+      ro: 'Număr'
+    },
+    size: {
+      en: 'Size',
+      ro: 'Dimensiune'
+    },
+    dateGenerated: {
+      en: 'Date Generated',
+      ro: 'Data generării'
+    },
   },
   
   // Import/Export page
@@ -941,12 +993,12 @@ const translations: Translations = {
       ro: 'Încarcă fișiere pentru a importa date în sistem'
     },
     exportData: {
-      en: 'Export Data',
-      ro: 'Export date'
+      en: 'Recent Exports',
+      ro: 'Exporturi recente'
     },
     exportDataDesc: {
-      en: 'Export system data in various formats',
-      ro: 'Exportă date din sistem în diverse formate'
+      en: 'Export by Project',
+      ro: 'Export după proiect'
     },
     templates: {
       en: 'Templates',
@@ -955,6 +1007,30 @@ const translations: Translations = {
     templatesDesc: {
       en: 'Download templates for data import',
       ro: 'Descarcă șabloane pentru import de date'
+    },
+    cuttingList: {
+      en: 'Cutting List',
+      ro: 'Listă de debitare'
+    },
+    supplierOrder: {
+      en: 'Supplier Orders',
+      ro: 'Comenzi furnizori'
+    },
+    projectDetails: {
+      en: 'Project Details',
+      ro: 'Detalii proiect'
+    },
+    noDescription: {
+      en: 'No description provided',
+      ro: 'Nu există descriere'
+    },
+    roomType: {
+      en: 'Room Type',
+      ro: 'Tip cameră'
+    },
+    dimensions: {
+      en: 'Dimensions',
+      ro: 'Dimensiuni'
     },
   },
   
