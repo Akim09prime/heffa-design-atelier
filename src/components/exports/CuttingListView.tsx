@@ -46,7 +46,7 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
       window.open(excelUrl, '_blank');
       toast({
         title: t('common.success'),
-        description: t('exportComplete'),
+        description: t('importExport.exportComplete'),
       });
     } catch (error) {
       toast({

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define available languages
@@ -1039,6 +1038,10 @@ const translations: Translations = {
     exportComplete: {
       en: 'Export Complete',
       ro: 'Export finalizat'
+    },
+    description: {
+      en: 'Description',
+      ro: 'Descriere'
     },
   },
   
