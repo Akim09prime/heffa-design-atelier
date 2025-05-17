@@ -1,364 +1,297 @@
 
 import React, { useState } from 'react';
-import { DesignerLayout } from '../../components/layout/DesignerLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { DesignerLayout } from '@/components/layout/DesignerLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { 
-  FileText, 
-  FileSpreadsheet, 
-  FileX, 
-  Download, 
-  Mail, 
-  FileDown
-} from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { ExportFormat } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { FileText, FileSpreadsheet, Code, Package, Download, Eye } from 'lucide-react';
+import { projectService } from '@/services/projectService';
+import { Project } from '@/types';
 
-const Exports = () => {
-  const { toast } = useToast();
-  const [exportType, setExportType] = useState<ExportFormat>('pdf');
-  const [loading, setLoading] = useState<Record<string, boolean>>({});
-  const [selectedProject, setSelectedProject] = useState('kitchen-project-2023');
+const projectMockData = [
+  {
+    id: 'proj-1',
+    name: 'Modern Kitchen',
+    status: 'approved',
+    lastExport: '2023-10-15',
+    exportCount: 5,
+  },
+  {
+    id: 'proj-2',
+    name: 'Classic Bedroom',
+    status: 'in_production',
+    lastExport: '2023-10-10',
+    exportCount: 3,
+  },
+  {
+    id: 'proj-3',
+    name: 'Minimalist Living Room',
+    status: 'completed',
+    lastExport: '2023-09-28',
+    exportCount: 8,
+  },
+];
+
+const recentExportsMockData = [
+  {
+    id: 'exp-1',
+    projectId: 'proj-1',
+    projectName: 'Modern Kitchen',
+    format: 'pdf',
+    date: '2023-10-15T10:30:00',
+    size: '2.3MB',
+    url: '/exports/pdf/modern_kitchen_offer.pdf',
+  },
+  {
+    id: 'exp-2',
+    projectId: 'proj-1',
+    projectName: 'Modern Kitchen',
+    format: 'dxf',
+    date: '2023-10-15T10:32:00',
+    size: '1.8MB',
+    url: '/exports/dxf/modern_kitchen_cnc.dxf',
+  },
+  {
+    id: 'exp-3',
+    projectId: 'proj-2',
+    projectName: 'Classic Bedroom',
+    format: 'excel',
+    date: '2023-10-10T14:15:00',
+    size: '980KB',
+    url: '/exports/excel/bedroom_cutting_list.xlsx',
+  },
+  {
+    id: 'exp-4',
+    projectId: 'proj-3',
+    projectName: 'Minimalist Living Room',
+    format: 'json',
+    date: '2023-09-28T09:45:00',
+    size: '126KB',
+    url: '/exports/json/living_room_backup.json',
+  },
+  {
+    id: 'exp-5',
+    projectId: 'proj-3',
+    projectName: 'Minimalist Living Room',
+    format: 'svg',
+    date: '2023-09-28T09:50:00',
+    size: '540KB',
+    url: '/exports/svg/living_room_fronts.svg',
+  },
+];
+
+const ExportsPage = () => {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [projects, setProjects] = useState<Project[]>([]);
   
-  // Mock projects for the demo
-  const projects = [
-    { id: 'kitchen-project-2023', name: 'Kitchen Remodel 2023' },
-    { id: 'office-furniture-set', name: 'Office Furniture Set' },
-    { id: 'bedroom-wardrobe', name: 'Master Bedroom Wardrobe' },
-  ];
+  // Initialize with mock data
+  React.useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const fetchedProjects = await projectService.getProjects();
+        setProjects(fetchedProjects);
+      } catch (error) {
+        console.error("Failed to fetch projects", error);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
 
-  const exportConfig = {
-    includeDetails: true,
-    includeImages: true,
-    includeAccessories: true,
-    includeCutting: true
+  const filteredProjects = projectMockData.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredExports = recentExportsMockData.filter(exp =>
+    exp.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getFormatIcon = (format: string) => {
+    switch (format) {
+      case 'pdf':
+        return <FileText className="h-5 w-5" />;
+      case 'excel':
+        return <FileSpreadsheet className="h-5 w-5" />;
+      case 'dxf':
+      case 'svg':
+        return <Code className="h-5 w-5" />;
+      case 'json':
+        return <Code className="h-5 w-5" />;
+      default:
+        return <Package className="h-5 w-5" />;
+    }
   };
 
-  const handleExport = async (format: ExportFormat, action: 'download' | 'email') => {
-    setLoading({ ...loading, [format]: true });
-    
-    // Simulate export process
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setLoading({ ...loading, [format]: false });
-    
-    if (action === 'download') {
-      toast({
-        title: "Export successful",
-        description: `${format.toUpperCase()} file has been generated and downloaded.`,
-      });
-    } else {
-      toast({
-        title: "Export emailed",
-        description: `${format.toUpperCase()} file has been sent to client and suppliers.`,
-      });
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case 'in_production':
+        return <Badge className="bg-blue-500">In Production</Badge>;
+      case 'completed':
+        return <Badge className="bg-purple-500">Completed</Badge>;
+      default:
+        return <Badge>Draft</Badge>;
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   return (
     <DesignerLayout>
       <div className="p-6">
-        <h1 className="text-3xl font-medium mb-6">Export Options</h1>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Project selection */}
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Project Selection</CardTitle>
-              <CardDescription>
-                Select the project you want to export
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <Select value={selectedProject} onValueChange={setSelectedProject}>
-                  <SelectTrigger className="w-[300px]">
-                    <SelectValue placeholder="Select a project" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="secondary">
-                  Refresh Projects
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Export options */}
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="document" className="w-full">
-              <TabsList className="grid grid-cols-4 mb-4">
-                <TabsTrigger value="document">Documents</TabsTrigger>
-                <TabsTrigger value="cutting">Cutting Lists</TabsTrigger>
-                <TabsTrigger value="cnc">CNC Files</TabsTrigger>
-                <TabsTrigger value="supplier">Supplier Orders</TabsTrigger>
-              </TabsList>
-              
-              {/* Documents Tab */}
-              <TabsContent value="document">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Document Exports</CardTitle>
-                    <CardDescription>
-                      Generate client-facing documents
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center">
-                            <FileText className="mr-2 h-5 w-5" />
-                            Client Offer (PDF)
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                          Complete offer with pricing, materials, and rendered images
-                        </CardContent>
-                        <CardFooter className="flex justify-between pt-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleExport('pdf', 'email')}
-                            disabled={loading['pdf']}
-                          >
-                            <Mail className="mr-2 h-4 w-4" />
-                            {loading['pdf'] ? 'Sending...' : 'Email to client'}
-                          </Button>
-                          <Button 
-                            onClick={() => handleExport('pdf', 'download')}
-                            size="sm"
-                            disabled={loading['pdf']}
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            {loading['pdf'] ? 'Processing...' : 'Download'}
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center">
-                            <FileDown className="mr-2 h-5 w-5" />
-                            Project JSON
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                          Export complete project data in JSON format for backup or transfer
-                        </CardContent>
-                        <CardFooter className="flex justify-end pt-2">
-                          <Button 
-                            onClick={() => handleExport('json', 'download')}
-                            size="sm"
-                            disabled={loading['json']}
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            {loading['json'] ? 'Processing...' : 'Download'}
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Cutting Lists Tab */}
-              <TabsContent value="cutting">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Cutting Lists</CardTitle>
-                    <CardDescription>
-                      Generate material cutting lists for production
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Card>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg flex items-center">
-                          <FileSpreadsheet className="mr-2 h-5 w-5" />
-                          Excel Cutting List
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="text-sm">
-                        Detailed spreadsheet with all panels, dimensions, and edgebanding
-                      </CardContent>
-                      <CardFooter className="flex justify-end pt-2">
-                        <Button 
-                          onClick={() => handleExport('excel', 'download')}
-                          size="sm"
-                          disabled={loading['excel']}
-                        >
-                          <Download className="mr-2 h-4 w-4" />
-                          {loading['excel'] ? 'Processing...' : 'Download Excel'}
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* CNC Files Tab */}
-              <TabsContent value="cnc">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>CNC Export Files</CardTitle>
-                    <CardDescription>
-                      Generate CNC-compatible files for automated cutting
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center">
-                            <FileX className="mr-2 h-5 w-5" />
-                            DXF Files
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                          Industry-standard DXF format for CNC machines
-                        </CardContent>
-                        <CardFooter className="flex justify-end pt-2">
-                          <Button 
-                            onClick={() => handleExport('dxf', 'download')}
-                            size="sm"
-                            disabled={loading['dxf']}
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            {loading['dxf'] ? 'Processing...' : 'Download DXF'}
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg flex items-center">
-                            <FileX className="mr-2 h-5 w-5" />
-                            SVG Files
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                          SVG format for modern CNC software and visualization
-                        </CardContent>
-                        <CardFooter className="flex justify-end pt-2">
-                          <Button 
-                            onClick={() => handleExport('svg', 'download')}
-                            size="sm"
-                            disabled={loading['svg']}
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            {loading['svg'] ? 'Processing...' : 'Download SVG'}
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              {/* Supplier Orders Tab */}
-              <TabsContent value="supplier">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Supplier Order Forms</CardTitle>
-                    <CardDescription>
-                      Generate order forms for different suppliers
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {['Egger Materials', 'Hafele Accessories', 'Blum Mechanisms'].map((supplier) => (
-                        <Card key={supplier}>
-                          <CardHeader className="pb-2">
-                            <CardTitle className="text-lg">{supplier}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="text-sm">
-                            Order form for {supplier.split(' ')[0]} products
-                          </CardContent>
-                          <CardFooter className="flex justify-between pt-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleExport('pdf', 'email')}
-                            >
-                              <Mail className="mr-2 h-4 w-4" />
-                              Email to supplier
-                            </Button>
-                            <Button size="sm" onClick={() => handleExport('pdf', 'download')}>
-                              <Download className="mr-2 h-4 w-4" />
-                              Download
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-          
-          {/* Export configuration panel */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Export Settings</CardTitle>
-              <CardDescription>
-                Configure export options
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="include-details" defaultChecked />
-                  <Label htmlFor="include-details">Include detailed specifications</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="include-images" defaultChecked />
-                  <Label htmlFor="include-images">Include rendered images</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="include-accessories" defaultChecked />
-                  <Label htmlFor="include-accessories">Include accessories</Label>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="include-cutting" defaultChecked />
-                  <Label htmlFor="include-cutting">Include cutting diagrams</Label>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-2">Company Details</h4>
-                <div className="text-xs text-muted-foreground">
-                  <p>HeffaDesign SRL</p>
-                  <p>CUI: RO12345678</p>
-                  <p>Email: office@heffadesign.com</p>
-                  <p>Phone: +40 721 234 567</p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                Update Company Details
-              </Button>
-            </CardFooter>
-          </Card>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-medium">Exports</h1>
+          <Input
+            placeholder="Search exports..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
         </div>
+
+        <Tabs defaultValue="recent" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="recent">Recent Exports</TabsTrigger>
+            <TabsTrigger value="projects">Export by Project</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="recent" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Exports</CardTitle>
+                <CardDescription>
+                  Recently generated exports across all projects
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Format</TableHead>
+                      <TableHead>Project</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Size</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredExports.map((exp) => (
+                      <TableRow key={exp.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getFormatIcon(exp.format)}
+                            <span className="uppercase">{exp.format}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{exp.projectName}</TableCell>
+                        <TableCell>{formatDateTime(exp.date)}</TableCell>
+                        <TableCell>{exp.size}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="ghost">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredExports.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8">
+                          No exports found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="projects" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Projects</CardTitle>
+                <CardDescription>
+                  Select a project to create or view exports
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Project Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Last Export</TableHead>
+                      <TableHead>Export Count</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProjects.map((project) => (
+                      <TableRow key={project.id}>
+                        <TableCell className="font-medium">{project.name}</TableCell>
+                        <TableCell>{getStatusBadge(project.status)}</TableCell>
+                        <TableCell>{formatDate(project.lastExport)}</TableCell>
+                        <TableCell>{project.exportCount}</TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            size="sm" 
+                            onClick={() => navigate(`/designer/exports/${project.id}`)}
+                          >
+                            Export
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredProjects.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8">
+                          No projects found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </DesignerLayout>
   );
 };
 
-export default Exports;
+export default ExportsPage;
