@@ -1,7 +1,7 @@
 
 import { Material, MaterialType, ProcessingType } from '@/types';
 
-// Sample materials data
+// Sample materials data with better image URLs
 export const sampleMaterials: Material[] = [
   {
     id: '1',
@@ -161,6 +161,11 @@ export const MaterialService = {
       ...material,
       id: Math.random().toString(36).substring(2, 9),
     };
+    
+    // Set default image if none provided
+    if (!newMaterial.textureUrl) {
+      newMaterial.textureUrl = 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500';
+    }
     
     // Here we'd add the material to the database
     console.log('Adding new material:', newMaterial);

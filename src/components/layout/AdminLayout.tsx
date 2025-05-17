@@ -57,7 +57,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-admin-950 admin-theme">
+    <div className="flex w-full min-h-screen bg-admin-950 admin-theme">
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>

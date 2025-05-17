@@ -15,7 +15,7 @@ import { MaterialForm } from '@/components/materials/MaterialForm';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 const Materials = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { toast } = useToast();
   const [materialType, setMaterialType] = useState<MaterialType>('PAL');
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -48,6 +48,12 @@ const Materials = () => {
     
     fetchMaterials();
   }, [materialType, toast, t]);
+
+  // Force refresh when language changes
+  useEffect(() => {
+    // This will trigger a re-render when language changes
+    console.log("Language changed to:", language);
+  }, [language]);
   
   // Filter materials when search query changes
   useEffect(() => {
@@ -177,9 +183,47 @@ const Materials = () => {
     });
   };
 
+  // Function to render tab content for each material type
+  const renderTabContent = (type: string) => {
+    const typeName = type.toUpperCase();
+    
+    return (
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader className="border-b border-gray-700">
+          <CardTitle className="text-white">{typeName} {t('materials.materials')}</CardTitle>
+          <CardDescription className="text-gray-400">
+            {typeName} {t('materials.materialsFrom')} {filteredMaterials.length} {t('materials.entries')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-gray-400">{t('materials.loading')}</p>
+            </div>
+          ) : filteredMaterials.length === 0 ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredMaterials.map((material) => (
+                <MaterialCard 
+                  key={material.id}
+                  material={material}
+                  onEdit={handleEditMaterial}
+                  onDelete={handleDeleteMaterial}
+                />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-6 w-full">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-medium text-white">{t('materials.title')}</h1>
@@ -196,15 +240,15 @@ const Materials = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" onClick={handleImportMaterials}>
+            <Button variant="outline" onClick={handleImportMaterials} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
               <Upload className="h-4 w-4 mr-2" />
               {t('common.import')}
             </Button>
-            <Button variant="outline" onClick={handleExportMaterials}>
+            <Button variant="outline" onClick={handleExportMaterials} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
               <Download className="h-4 w-4 mr-2" />
               {t('common.export')}
             </Button>
-            <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Button onClick={() => setIsAddDialogOpen(true)} className="bg-blue-600 text-white hover:bg-blue-500">
               <Plus className="h-4 w-4 mr-2" />
               {t('materials.addMaterial')}
             </Button>
@@ -214,6 +258,7 @@ const Materials = () => {
         <Tabs 
           defaultValue="pal" 
           onValueChange={handleTabChange}
+          className="w-full"
         >
           <TabsList className="mb-6 bg-gray-800">
             <TabsTrigger value="pal">PAL</TabsTrigger>
@@ -224,71 +269,13 @@ const Materials = () => {
             <TabsTrigger value="countertop">{t('materials.countertops')}</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="pal">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">PAL {t('materials.materials')}</CardTitle>
-                <CardDescription className="text-gray-400">
-                  PAL {t('materials.materialsFrom')} {filteredMaterials.length} {t('materials.entries')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-64">
-                    <p className="text-gray-400">{t('materials.loading')}</p>
-                  </div>
-                ) : filteredMaterials.length === 0 ? (
-                  <div className="flex justify-center items-center h-64">
-                    <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredMaterials.map((material) => (
-                      <MaterialCard 
-                        key={material.id}
-                        material={material}
-                        onEdit={handleEditMaterial}
-                        onDelete={handleDeleteMaterial}
-                      />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent value="pal" className="w-full">
+            {renderTabContent('pal')}
           </TabsContent>
           
           {['mdf', 'mdf-agt', 'pfl', 'glass', 'countertop'].map((type) => (
-            <TabsContent key={type} value={type}>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader className="border-b border-gray-700">
-                  <CardTitle className="text-white">{type.toUpperCase()} {t('materials.materials')}</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {type.toUpperCase()} {t('materials.materialsAndSupplies')} {filteredMaterials.length} {t('materials.entries')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6">
-                  {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
-                      <p className="text-gray-400">{t('materials.loading')}</p>
-                    </div>
-                  ) : filteredMaterials.length === 0 ? (
-                    <div className="flex justify-center items-center h-64">
-                      <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                      {filteredMaterials.map((material) => (
-                        <MaterialCard 
-                          key={material.id}
-                          material={material}
-                          onEdit={handleEditMaterial}
-                          onDelete={handleDeleteMaterial}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            <TabsContent key={type} value={type} className="w-full">
+              {renderTabContent(type)}
             </TabsContent>
           ))}
         </Tabs>

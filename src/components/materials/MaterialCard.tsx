@@ -20,11 +20,11 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
   const { t } = useTranslation();
   
   return (
-    <Card className="overflow-hidden h-full flex flex-col">
+    <Card className="overflow-hidden h-full flex flex-col material-card">
       <div 
-        className="aspect-square bg-gray-100 relative"
+        className="aspect-square relative material-image"
         style={{
-          backgroundImage: material.textureUrl ? `url(${material.textureUrl})` : undefined,
+          backgroundImage: material.textureUrl ? `url(${material.textureUrl})` : 'url(https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -33,13 +33,13 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
           <Button 
             variant="secondary" 
             size="icon" 
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(material);
             }}
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-4 w-4 text-white" />
           </Button>
           <Button 
             variant="destructive" 
@@ -56,27 +56,27 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
       </div>
       <CardContent className="p-4 flex-grow flex flex-col">
         <div className="flex-grow">
-          <h3 className="font-medium">{material.name}</h3>
-          <p className="text-sm text-muted-foreground">{material.code}</p>
-          <p className="text-sm text-muted-foreground">{material.manufacturer}</p>
+          <h3 className="font-medium text-white">{material.name}</h3>
+          <p className="text-sm text-gray-300">{material.code}</p>
+          <p className="text-sm text-gray-300">{material.manufacturer}</p>
         </div>
         <div className="flex justify-between mt-3">
-          <p className="text-sm font-medium">€{material.pricePerSqm.toFixed(2)}/m²</p>
-          <p className="text-xs text-muted-foreground">{material.thickness}mm</p>
+          <p className="text-sm font-medium text-white">€{material.pricePerSqm.toFixed(2)}/m²</p>
+          <p className="text-xs text-gray-300">{material.thickness}mm</p>
         </div>
         <div className="mt-2 flex flex-wrap gap-1">
           {material.paintable && (
-            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs">
+            <span className="px-2 py-0.5 rounded-full bg-blue-900 text-blue-100 text-xs">
               {t('materials.paintable')}
             </span>
           )}
           {material.cantable && (
-            <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs">
+            <span className="px-2 py-0.5 rounded-full bg-green-900 text-green-100 text-xs">
               {t('materials.cantable')}
             </span>
           )}
           <span className={`px-2 py-0.5 rounded-full text-xs ${
-            material.availability ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            material.availability ? 'bg-green-900 text-green-100' : 'bg-red-900 text-red-100'
           }`}>
             {material.availability ? t('common.inStock') : t('materials.outOfStock')}
           </span>

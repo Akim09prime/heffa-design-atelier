@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -38,6 +37,7 @@ const formSchema = z.object({
   pricePerSqm: z.coerce.number().min(0, { message: "Price must be a positive number" }),
   supplier: z.enum(["Egger", "AGT", "SticlaExpert", "Hafele", "Blum", "GTV", "Other"]),
   availability: z.boolean().default(true),
+  textureUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -69,6 +69,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   onCancel
 }) => {
   const { t } = useTranslation();
+  const [imagePreview, setImagePreview] = useState<string | null>(material?.textureUrl || null);
   
   // Default values for the form
   const defaultValues: Partial<FormValues> = {
@@ -82,6 +83,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     pricePerSqm: material?.pricePerSqm || 0,
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
+    textureUrl: material?.textureUrl || '',
   };
 
   const form = useForm<FormValues>({
@@ -90,7 +92,26 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   });
 
   const handleSubmit = (values: FormValues) => {
+    // Make sure to include the image URL
+    if (imagePreview && !values.textureUrl) {
+      values.textureUrl = imagePreview;
+    }
     onSubmit(values);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // In a real app, you would upload this to a server
+      // For now, we'll create a local URL for preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImagePreview(result);
+        form.setValue('textureUrl', result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -102,9 +123,9 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('materials.form.code')}</FormLabel>
+                <FormLabel className="text-white">{t('materials.form.code')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="PAL-W980-ST2-18" {...field} />
+                  <Input placeholder="PAL-W980-ST2-18" {...field} className="bg-gray-700 text-white border-gray-600" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,27 +137,54 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('materials.form.name')}</FormLabel>
+                <FormLabel className="text-white">{t('materials.form.name')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Alb W980 ST2" {...field} />
+                  <Input placeholder="Alb W980 ST2" {...field} className="bg-gray-700 text-white border-gray-600" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {/* Image upload field */}
+          <FormItem className="col-span-2">
+            <FormLabel className="text-white">Material Image</FormLabel>
+            <div className="flex items-start space-x-4">
+              <div className="flex-1">
+                <Input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageChange}
+                  className="bg-gray-700 text-white border-gray-600" 
+                />
+                <FormDescription className="text-gray-400">
+                  Upload an image for this material
+                </FormDescription>
+              </div>
+              {imagePreview && (
+                <div className="w-24 h-24 bg-gray-800 border border-gray-600 overflow-hidden">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+          </FormItem>
+
           <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('materials.form.type')}</FormLabel>
+                <FormLabel className="text-white">{t('materials.form.type')}</FormLabel>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-gray-700 text-white border-gray-600">
                       <SelectValue placeholder={t('materials.form.selectType')} />
                     </SelectTrigger>
                   </FormControl>
@@ -293,10 +341,10 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
             {t('common.cancel')}
           </Button>
-          <Button type="submit">
+          <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-500">
             {material ? t('materials.form.updateMaterial') : t('materials.form.createMaterial')}
           </Button>
         </div>
