@@ -1,161 +1,111 @@
 
-import { Project, FurnitureModule, ExportFormat, Material } from '@/types';
+import { Project, FurnitureModule, AccessoryItem } from '@/types';
 
+// Export formats
+type ExportFormat = 'pdf' | 'excel' | 'dxf' | 'svg' | 'json';
+
+// Export config interface
+interface ExportConfig {
+  format: ExportFormat;
+  includeDetails: boolean;
+  includeImages: boolean;
+  includeAccessories: boolean;
+  includeCutting: boolean;
+}
+
+// Default export config
+const defaultConfig: ExportConfig = {
+  format: 'pdf',
+  includeDetails: true,
+  includeImages: true,
+  includeAccessories: true,
+  includeCutting: true
+};
+
+// Export Service
 export const ExportService = {
-  // Export project data in various formats
-  exportProject: (project: Project, format: ExportFormat, includeDetails: boolean = true): Promise<Blob> => {
-    switch (format) {
-      case 'pdf':
-        return ExportService.exportToPdf(project, includeDetails);
-      case 'excel':
-        return ExportService.exportToExcel(project, includeDetails);
-      case 'dxf':
-        return ExportService.exportToDxf(project);
-      case 'svg':
-        return ExportService.exportToSvg(project);
-      case 'json':
-        return ExportService.exportToJson(project);
-      default:
-        throw new Error(`Unsupported export format: ${format}`);
-    }
+  // Generate PDF offer
+  generatePdfOffer: async (project: Project, config: Partial<ExportConfig> = {}): Promise<string> => {
+    const exportConfig = { ...defaultConfig, ...config, format: 'pdf' };
+    
+    // In a real app, this would generate a PDF using a library
+    console.log('Generating PDF offer for project:', project.id, 'with config:', exportConfig);
+    
+    // Return mock PDF URL
+    return Promise.resolve(`/exports/pdf/project_${project.id}_${Date.now()}.pdf`);
   },
   
-  // Export to PDF (client offer or cutting sheets)
-  exportToPdf: async (project: Project, includeDetails: boolean): Promise<Blob> => {
-    // This would normally use a PDF generation library like pdfmake or jsPDF
-    console.log('Exporting project to PDF', { project, includeDetails });
+  // Generate Excel cutting sheet
+  generateExcelCuttingSheet: async (project: Project, config: Partial<ExportConfig> = {}): Promise<string> => {
+    const exportConfig = { ...defaultConfig, ...config, format: 'excel' };
     
-    // Mock PDF export (in reality, we'd generate an actual PDF)
-    const mockPdfContent = `
-      Project: ${project.name}
-      Description: ${project.description}
-      Room Type: ${project.roomType}
-      Number of Modules: ${project.modules.length}
-      ${includeDetails ? 'Detailed information for each module...' : ''}
-    `;
+    // In a real app, this would generate an Excel file using a library
+    console.log('Generating Excel cutting sheet for project:', project.id, 'with config:', exportConfig);
     
-    // Return a mock PDF blob
-    return new Blob([mockPdfContent], { type: 'application/pdf' });
+    // Return mock Excel URL
+    return Promise.resolve(`/exports/excel/cutting_${project.id}_${Date.now()}.xlsx`);
   },
   
-  // Export to Excel (cutting lists, accessory lists)
-  exportToExcel: async (project: Project, includeDetails: boolean): Promise<Blob> => {
-    // This would normally use a library like xlsx or exceljs
-    console.log('Exporting project to Excel', { project, includeDetails });
+  // Generate DXF files for CNC
+  generateDxfFiles: async (project: Project, config: Partial<ExportConfig> = {}): Promise<string[]> => {
+    const exportConfig = { ...defaultConfig, ...config, format: 'dxf' };
     
-    // Mock Excel export
-    const mockExcelContent = `Project,${project.name}
-      Module,Type,Width,Height,Depth,Material,Quantity
-      ${project.modules.map(module => 
-        `${module.name},${module.type},${module.width},${module.height},${module.depth},Materials...`
-      ).join('\n')}
-    `;
+    // In a real app, this would generate DXF files for CNC machines
+    console.log('Generating DXF files for project:', project.id, 'with config:', exportConfig);
     
-    // Return a mock Excel blob
-    return new Blob([mockExcelContent], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    // Find modules that need CNC processing
+    const modulesNeedingCnc = project.modules.filter(module => 
+      module.processingOptions.some(p => p.type.includes('cnc'))
+    );
+    
+    // Return mock DXF URLs
+    return Promise.resolve(modulesNeedingCnc.map(module => 
+      `/exports/dxf/${project.id}_${module.id}_${Date.now()}.dxf`
+    ));
   },
   
-  // Export to DXF (CNC cutting files)
-  exportToDxf: async (project: Project): Promise<Blob> => {
-    console.log('Exporting project to DXF', { project });
-    
-    // Mock DXF export
-    const mockDxfContent = 'DXF file content for CNC machine';
-    
-    // Return a mock DXF blob
-    return new Blob([mockDxfContent], { type: 'application/dxf' });
-  },
-  
-  // Export to SVG (visual representation)
-  exportToSvg: async (project: Project): Promise<Blob> => {
-    console.log('Exporting project to SVG', { project });
-    
-    // Mock SVG export
-    const mockSvgContent = `
-      <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="white"/>
-        <text x="10" y="20" font-family="Arial" font-size="16">${project.name}</text>
-        <!-- More SVG content would be generated here -->
-      </svg>
-    `;
-    
-    // Return a mock SVG blob
-    return new Blob([mockSvgContent], { type: 'image/svg+xml' });
-  },
-  
-  // Export to JSON (complete project backup)
-  exportToJson: async (project: Project): Promise<Blob> => {
-    console.log('Exporting project to JSON', { project });
-    
-    // Convert project to JSON
+  // Export project as JSON
+  exportAsJson: async (project: Project): Promise<string> => {
+    // In a real app, this would properly format and save the JSON data
     const projectJson = JSON.stringify(project, null, 2);
+    console.log('Exporting project as JSON:', project.id);
     
-    // Return JSON blob
-    return new Blob([projectJson], { type: 'application/json' });
+    // In a browser environment, this would trigger a download
+    // Mock implementation returns the JSON string
+    return Promise.resolve(projectJson);
   },
   
-  // Generate a client offer PDF
-  generateClientOffer: async (
+  // Generate a ZIP file with all exports
+  generateZipBundle: async (project: Project): Promise<string> => {
+    // In a real app, this would generate all export types and bundle them
+    console.log('Generating ZIP bundle for project:', project.id);
+    
+    // Return mock ZIP URL
+    return Promise.resolve(`/exports/zip/${project.id}_complete_${Date.now()}.zip`);
+  },
+  
+  // Email exports to recipients
+  emailExports: async (
     project: Project, 
-    materials: Material[], 
-    clientInfo: { name: string, email: string, phone: string }
-  ): Promise<Blob> => {
-    console.log('Generating client offer PDF', { project, clientInfo });
+    recipientEmail: string, 
+    exportTypes: ExportFormat[], 
+    message: string = ''
+  ): Promise<boolean> => {
+    // In a real app, this would generate the requested exports and email them
+    console.log('Emailing exports to:', recipientEmail);
+    console.log('Export types:', exportTypes);
+    console.log('Message:', message);
     
-    // This would normally create a detailed PDF with pricing, materials, etc.
-    const mockOfferContent = `
-      CLIENT OFFER
-      
-      Client: ${clientInfo.name}
-      Contact: ${clientInfo.email} | ${clientInfo.phone}
-      
-      Project: ${project.name}
-      Description: ${project.description}
-      
-      MODULES:
-      ${project.modules.map(module => 
-        `- ${module.name}: ${module.width}x${module.height}x${module.depth}mm - €${module.price.toFixed(2)}`
-      ).join('\n')}
-      
-      TOTAL PRICE: €${project.modules.reduce((sum, module) => sum + module.price, 0).toFixed(2)}
-    `;
-    
-    // Return a mock PDF blob
-    return new Blob([mockOfferContent], { type: 'application/pdf' });
+    // Mock successful email
+    return Promise.resolve(true);
   },
   
-  // Generate cutting sheets for suppliers
-  generateCuttingSheets: async (project: Project, materials: Material[]): Promise<Blob> => {
-    console.log('Generating cutting sheets', { project });
+  // Preview PDF before sending
+  previewPdf: async (project: Project): Promise<string> => {
+    // In a real app, this would generate a temporary PDF for preview
+    console.log('Generating PDF preview for project:', project.id);
     
-    // Mock cutting sheet content
-    const mockCuttingSheetContent = `
-      CUTTING SHEETS
-      
-      Project: ${project.name}
-      
-      PAL CUTTING:
-      ${project.modules.flatMap(module => 
-        module.materials
-          .filter(mat => {
-            const material = materials.find(m => m.id === mat.materialId);
-            return material && material.type === 'PAL';
-          })
-          .map(mat => `- ${mat.part}: ${mat.quantity}m²`)
-      ).join('\n')}
-      
-      MDF CUTTING:
-      ${project.modules.flatMap(module => 
-        module.materials
-          .filter(mat => {
-            const material = materials.find(m => m.id === mat.materialId);
-            return material && (material.type === 'MDF' || material.type === 'MDF-AGT');
-          })
-          .map(mat => `- ${mat.part}: ${mat.quantity}m²`)
-      ).join('\n')}
-    `;
-    
-    // Return a mock Excel blob
-    return new Blob([mockCuttingSheetContent], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    // Return mock PDF data URL that could be displayed in an iframe
+    return Promise.resolve('data:application/pdf;base64,JVBERi0xLjcKJeLjz9MKNSAwIG...');
   }
 };

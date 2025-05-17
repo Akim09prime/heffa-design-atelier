@@ -1,8 +1,9 @@
 
 import { AccessoryItem, AccessoryType } from '@/types';
 
-// Sample accessories data
+// Sample accessories data with expanded properties matching PAS 4 requirements
 export const sampleAccessories: AccessoryItem[] = [
+  // Hinges (Balamale)
   {
     id: '1',
     code: 'BL-HG-CLIPTOP-110',
@@ -36,6 +37,8 @@ export const sampleAccessories: AccessoryItem[] = [
       material: 'metal'
     }
   },
+
+  // Slides (Glisiere)
   {
     id: '3',
     code: 'BL-GL-TB-500',
@@ -69,6 +72,8 @@ export const sampleAccessories: AccessoryItem[] = [
       fullExtension: true
     }
   },
+
+  // Push Systems
   {
     id: '5',
     code: 'GTV-PUSH-MAG',
@@ -84,6 +89,8 @@ export const sampleAccessories: AccessoryItem[] = [
       color: 'gray'
     }
   },
+
+  // Feet
   {
     id: '6',
     code: 'LG-REG-100-BLACK',
@@ -101,6 +108,8 @@ export const sampleAccessories: AccessoryItem[] = [
       maxLoad: 50
     }
   },
+
+  // Profiles
   {
     id: '7',
     code: 'PRF-ALU-GLASS',
@@ -118,6 +127,8 @@ export const sampleAccessories: AccessoryItem[] = [
       color: 'silver'
     }
   },
+
+  // Shelf Supports
   {
     id: '8',
     code: 'SUP-RAFT-5MM',
@@ -134,6 +145,8 @@ export const sampleAccessories: AccessoryItem[] = [
       type: 'pin'
     }
   },
+
+  // Handles
   {
     id: '9',
     code: 'HND-PROF-128-INOX',
