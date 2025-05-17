@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 // Define form schema using Zod
 const formSchema = z.object({
@@ -67,7 +68,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   onSubmit,
   onCancel
 }) => {
-  const { toast } = useToast();
+  const { t } = useTranslation();
   
   // Default values for the form
   const defaultValues: Partial<FormValues> = {
@@ -90,10 +91,6 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
 
   const handleSubmit = (values: FormValues) => {
     onSubmit(values);
-    toast({
-      title: material ? "Material Updated" : "Material Created",
-      description: `Successfully ${material ? 'updated' : 'created'} material: ${values.name}`,
-    });
   };
 
   return (
@@ -105,7 +102,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Material Code</FormLabel>
+                <FormLabel>{t('materials.form.code')}</FormLabel>
                 <FormControl>
                   <Input placeholder="PAL-W980-ST2-18" {...field} />
                 </FormControl>
@@ -119,7 +116,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t('materials.form.name')}</FormLabel>
                 <FormControl>
                   <Input placeholder="Alb W980 ST2" {...field} />
                 </FormControl>
@@ -133,14 +130,14 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
+                <FormLabel>{t('materials.form.type')}</FormLabel>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select material type" />
+                      <SelectValue placeholder={t('materials.form.selectType')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -148,8 +145,8 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
                     <SelectItem value="MDF">MDF</SelectItem>
                     <SelectItem value="MDF-AGT">MDF-AGT</SelectItem>
                     <SelectItem value="PFL">PFL</SelectItem>
-                    <SelectItem value="GLASS">GLASS</SelectItem>
-                    <SelectItem value="COUNTERTOP">COUNTERTOP</SelectItem>
+                    <SelectItem value="GLASS">{t('materials.glass')}</SelectItem>
+                    <SelectItem value="COUNTERTOP">{t('materials.countertops')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -162,7 +159,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="thickness"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thickness (mm)</FormLabel>
+                <FormLabel>{t('materials.form.thickness')}</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -176,7 +173,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="manufacturer"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Manufacturer</FormLabel>
+                <FormLabel>{t('materials.form.manufacturer')}</FormLabel>
                 <FormControl>
                   <Input placeholder="Egger" {...field} />
                 </FormControl>
@@ -190,14 +187,14 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="supplier"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Supplier</FormLabel>
+                <FormLabel>{t('materials.form.supplier')}</FormLabel>
                 <Select 
                   onValueChange={field.onChange} 
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select supplier" />
+                      <SelectValue placeholder={t('materials.form.selectSupplier')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -207,7 +204,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
                     <SelectItem value="Hafele">Hafele</SelectItem>
                     <SelectItem value="Blum">Blum</SelectItem>
                     <SelectItem value="GTV">GTV</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="Other">{t('materials.form.other')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -220,7 +217,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
             name="pricePerSqm"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price per m²</FormLabel>
+                <FormLabel>{t('materials.form.pricePerSqm')}</FormLabel>
                 <FormControl>
                   <Input type="number" step="0.01" {...field} />
                 </FormControl>
@@ -242,9 +239,9 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Paintable</FormLabel>
+                    <FormLabel>{t('materials.form.paintable')}</FormLabel>
                     <FormDescription>
-                      Can this material be painted?
+                      {t('materials.form.paintableDesc')}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -263,9 +260,9 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Cantable</FormLabel>
+                    <FormLabel>{t('materials.form.cantable')}</FormLabel>
                     <FormDescription>
-                      Can this material have edge banding?
+                      {t('materials.form.cantableDesc')}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -284,9 +281,9 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>In Stock</FormLabel>
+                    <FormLabel>{t('materials.form.inStock')}</FormLabel>
                     <FormDescription>
-                      Is this material currently available?
+                      {t('materials.form.inStockDesc')}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -297,10 +294,10 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit">
-            {material ? 'Update Material' : 'Create Material'}
+            {material ? t('materials.form.updateMaterial') : t('materials.form.createMaterial')}
           </Button>
         </div>
       </form>

@@ -145,7 +145,7 @@ export const MaterialService = {
   // Get all materials
   getAllMaterials: async (): Promise<Material[]> => {
     // In a real app, this would be an API call
-    return Promise.resolve(sampleMaterials);
+    return Promise.resolve([...sampleMaterials]);
   },
 
   // Get materials by type
@@ -165,7 +165,10 @@ export const MaterialService = {
     // Here we'd add the material to the database
     console.log('Adding new material:', newMaterial);
     
-    return Promise.resolve(newMaterial);
+    // Add the new material to our local sample data
+    sampleMaterials.push(newMaterial as Material);
+    
+    return Promise.resolve(newMaterial as Material);
   },
 
   // Update material
@@ -186,7 +189,8 @@ export const MaterialService = {
       ...material,
     };
     
-    // Here we'd update the material in the database
+    // Update the material in our local sample data
+    sampleMaterials[existingMaterialIndex] = updatedMaterial;
     
     return Promise.resolve(updatedMaterial);
   },
@@ -196,7 +200,15 @@ export const MaterialService = {
     // In a real app, this would be an API call
     console.log(`Deleting material ${id}`);
     
-    // Here we'd delete the material from the database
+    // Find the material index
+    const materialIndex = sampleMaterials.findIndex(m => m.id === id);
+    
+    if (materialIndex === -1) {
+      throw new Error(`Material with ID ${id} not found`);
+    }
+    
+    // Remove the material from our local sample data
+    sampleMaterials.splice(materialIndex, 1);
     
     return Promise.resolve();
   }

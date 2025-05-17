@@ -12,8 +12,10 @@ import { MaterialType, Material } from '@/types';
 import { MaterialService } from '@/services/materialService';
 import { MaterialCard } from '@/components/materials/MaterialCard';
 import { MaterialForm } from '@/components/materials/MaterialForm';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const Materials = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [materialType, setMaterialType] = useState<MaterialType>('PAL');
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -35,8 +37,8 @@ const Materials = () => {
       } catch (error) {
         console.error('Error fetching materials:', error);
         toast({
-          title: 'Error',
-          description: 'Failed to load materials data',
+          title: t('common.error'),
+          description: t('materials.failedToLoad'),
           variant: 'destructive',
         });
       } finally {
@@ -45,7 +47,7 @@ const Materials = () => {
     };
     
     fetchMaterials();
-  }, [materialType, toast]);
+  }, [materialType, toast, t]);
   
   // Filter materials when search query changes
   useEffect(() => {
@@ -65,13 +67,37 @@ const Materials = () => {
     setMaterialType(value.toUpperCase() as MaterialType);
   };
   
-  const handleAddMaterial = (formData: any) => {
-    // In a real app, this would add the material to the database
-    toast({
-      title: 'Material Added',
-      description: `${formData.name} has been added successfully`,
-    });
-    setIsAddDialogOpen(false);
+  const handleAddMaterial = async (formData: any) => {
+    setIsLoading(true);
+    try {
+      // Create a new material object from form data
+      const newMaterial = {
+        ...formData,
+        compatibleOperations: [],
+        type: materialType
+      };
+      
+      // Call the service to add the material
+      const addedMaterial = await MaterialService.addMaterial(newMaterial);
+      
+      // Update the local state with the new material
+      setMaterials(prevMaterials => [...prevMaterials, addedMaterial]);
+      
+      toast({
+        title: t('materials.materialAdded'),
+        description: `${formData.name} ${t('materials.hasBeenAdded')}`,
+      });
+    } catch (error) {
+      console.error('Error adding material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.failedToAdd'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+      setIsAddDialogOpen(false);
+    }
   };
   
   const handleEditMaterial = (material: Material) => {
@@ -79,36 +105,75 @@ const Materials = () => {
     setIsEditDialogOpen(true);
   };
   
-  const handleUpdateMaterial = (formData: any) => {
+  const handleUpdateMaterial = async (formData: any) => {
     if (!selectedMaterial) return;
     
-    // In a real app, this would update the material in the database
-    toast({
-      title: 'Material Updated',
-      description: `${formData.name} has been updated successfully`,
-    });
-    setIsEditDialogOpen(false);
+    setIsLoading(true);
+    try {
+      // Call the service to update the material
+      const updatedMaterial = await MaterialService.updateMaterial(selectedMaterial.id, {
+        ...formData,
+        type: selectedMaterial.type
+      });
+      
+      // Update the local state with the updated material
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => m.id === selectedMaterial.id ? updatedMaterial : m)
+      );
+      
+      toast({
+        title: t('materials.materialUpdated'),
+        description: `${formData.name} ${t('materials.hasBeenUpdated')}`,
+      });
+    } catch (error) {
+      console.error('Error updating material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.failedToUpdate'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+      setIsEditDialogOpen(false);
+    }
   };
   
-  const handleDeleteMaterial = (material: Material) => {
-    // In a real app, this would delete the material from the database
-    toast({
-      title: 'Material Deleted',
-      description: `${material.name} has been deleted successfully`,
-    });
+  const handleDeleteMaterial = async (material: Material) => {
+    setIsLoading(true);
+    try {
+      // Call the service to delete the material
+      await MaterialService.deleteMaterial(material.id);
+      
+      // Update the local state by removing the deleted material
+      setMaterials(prevMaterials => prevMaterials.filter(m => m.id !== material.id));
+      
+      toast({
+        title: t('materials.materialDeleted'),
+        description: `${material.name} ${t('materials.hasBeenDeleted')}`,
+      });
+    } catch (error) {
+      console.error('Error deleting material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.failedToDelete'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleImportMaterials = () => {
     toast({
-      title: 'Import Materials',
-      description: 'Material import functionality would be implemented here',
+      title: t('common.import'),
+      description: t('materials.importFunctionality'),
     });
   };
   
   const handleExportMaterials = () => {
     toast({
-      title: 'Export Materials',
-      description: 'Material export functionality would be implemented here',
+      title: t('common.export'),
+      description: t('materials.exportFunctionality'),
     });
   };
 
@@ -117,15 +182,15 @@ const Materials = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-medium text-white">Materials Database</h1>
-            <p className="text-gray-300">Manage all materials in the system</p>
+            <h1 className="text-3xl font-medium text-white">{t('materials.title')}</h1>
+            <p className="text-gray-300">{t('materials.description')}</p>
           </div>
           <div className="flex flex-wrap w-full lg:w-auto gap-4">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search materials..."
+                placeholder={t('materials.searchPlaceholder')}
                 className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,15 +198,15 @@ const Materials = () => {
             </div>
             <Button variant="outline" onClick={handleImportMaterials}>
               <Upload className="h-4 w-4 mr-2" />
-              Import
+              {t('common.import')}
             </Button>
             <Button variant="outline" onClick={handleExportMaterials}>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              {t('common.export')}
             </Button>
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Material
+              {t('materials.addMaterial')}
             </Button>
           </div>
         </div>
@@ -155,26 +220,26 @@ const Materials = () => {
             <TabsTrigger value="mdf">MDF</TabsTrigger>
             <TabsTrigger value="mdf-agt">MDF-AGT</TabsTrigger>
             <TabsTrigger value="pfl">PFL</TabsTrigger>
-            <TabsTrigger value="glass">Glass</TabsTrigger>
-            <TabsTrigger value="countertop">Countertops</TabsTrigger>
+            <TabsTrigger value="glass">{t('materials.glass')}</TabsTrigger>
+            <TabsTrigger value="countertop">{t('materials.countertops')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="pal">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">PAL Materials</CardTitle>
+                <CardTitle className="text-white">PAL {t('materials.materials')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  PAL materials from Egger and other suppliers. Total: {filteredMaterials.length} entries
+                  PAL {t('materials.materialsFrom')} {filteredMaterials.length} {t('materials.entries')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6">
                 {isLoading ? (
                   <div className="flex justify-center items-center h-64">
-                    <p className="text-gray-400">Loading materials...</p>
+                    <p className="text-gray-400">{t('materials.loading')}</p>
                   </div>
                 ) : filteredMaterials.length === 0 ? (
                   <div className="flex justify-center items-center h-64">
-                    <p className="text-gray-400">No materials found. Add some materials to get started.</p>
+                    <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -196,19 +261,19 @@ const Materials = () => {
             <TabsContent key={type} value={type}>
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="border-b border-gray-700">
-                  <CardTitle className="text-white">{type.toUpperCase()} Materials</CardTitle>
+                  <CardTitle className="text-white">{type.toUpperCase()} {t('materials.materials')}</CardTitle>
                   <CardDescription className="text-gray-400">
-                    {type.toUpperCase()} materials and supplies. Total: {filteredMaterials.length} entries
+                    {type.toUpperCase()} {t('materials.materialsAndSupplies')} {filteredMaterials.length} {t('materials.entries')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-64">
-                      <p className="text-gray-400">Loading materials...</p>
+                      <p className="text-gray-400">{t('materials.loading')}</p>
                     </div>
                   ) : filteredMaterials.length === 0 ? (
                     <div className="flex justify-center items-center h-64">
-                      <p className="text-gray-400">No materials found. Add some materials to get started.</p>
+                      <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -233,7 +298,7 @@ const Materials = () => {
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[600px] bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Add New Material</DialogTitle>
+            <DialogTitle className="text-white">{t('materials.addNewMaterial')}</DialogTitle>
           </DialogHeader>
           <MaterialForm 
             onSubmit={handleAddMaterial}
@@ -246,7 +311,7 @@ const Materials = () => {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[600px] bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Material</DialogTitle>
+            <DialogTitle className="text-white">{t('materials.editMaterial')}</DialogTitle>
           </DialogHeader>
           {selectedMaterial && (
             <MaterialForm 

@@ -4,6 +4,7 @@ import { Material } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash } from 'lucide-react';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface MaterialCardProps {
   material: Material;
@@ -16,6 +17,8 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
   onEdit,
   onDelete
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <Card className="overflow-hidden h-full flex flex-col">
       <div 
@@ -31,7 +34,10 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             variant="secondary" 
             size="icon" 
             className="h-8 w-8 rounded-full"
-            onClick={() => onEdit(material)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(material);
+            }}
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -39,7 +45,10 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             variant="destructive" 
             size="icon" 
             className="h-8 w-8 rounded-full"
-            onClick={() => onDelete(material)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(material);
+            }}
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -58,18 +67,18 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
         <div className="mt-2 flex flex-wrap gap-1">
           {material.paintable && (
             <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs">
-              Paintable
+              {t('materials.paintable')}
             </span>
           )}
           {material.cantable && (
             <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs">
-              Cantable
+              {t('materials.cantable')}
             </span>
           )}
           <span className={`px-2 py-0.5 rounded-full text-xs ${
             material.availability ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
           }`}>
-            {material.availability ? 'In Stock' : 'Out of Stock'}
+            {material.availability ? t('common.inStock') : t('materials.outOfStock')}
           </span>
         </div>
       </CardContent>

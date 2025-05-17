@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
 // Define available languages
@@ -114,6 +113,10 @@ const translations: Translations = {
       en: 'Upload',
       ro: 'Încarcă'
     },
+    filter: {
+      en: 'Filter',
+      ro: 'Filtrează'
+    },
 
     // Status
     success: {
@@ -140,6 +143,344 @@ const translations: Translations = {
       en: 'Low Stock',
       ro: 'Stoc limitat'
     },
+  },
+  
+  // Materials page
+  materials: {
+    title: {
+      en: 'Materials Database',
+      ro: 'Baza de date Materiale'
+    },
+    description: {
+      en: 'Manage all materials in the system',
+      ro: 'Gestionează toate materialele din sistem'
+    },
+    searchPlaceholder: {
+      en: 'Search materials...',
+      ro: 'Caută materiale...'
+    },
+    addMaterial: {
+      en: 'Add Material',
+      ro: 'Adaugă Material'
+    },
+    addNewMaterial: {
+      en: 'Add New Material',
+      ro: 'Adaugă Material Nou'
+    },
+    editMaterial: {
+      en: 'Edit Material',
+      ro: 'Editează Material'
+    },
+    materials: {
+      en: 'Materials',
+      ro: 'Materiale'
+    },
+    materialsFrom: {
+      en: 'materials from Egger and other suppliers. Total:',
+      ro: 'materiale de la Egger și alți furnizori. Total:'
+    },
+    materialsAndSupplies: {
+      en: 'materials and supplies. Total:',
+      ro: 'materiale și consumabile. Total:'
+    },
+    entries: {
+      en: 'entries',
+      ro: 'intrări'
+    },
+    loading: {
+      en: 'Loading materials...',
+      ro: 'Se încarcă materialele...'
+    },
+    noMaterialsFound: {
+      en: 'No materials found. Add some materials to get started.',
+      ro: 'Nu s-au găsit materiale. Adaugă materiale pentru a începe.'
+    },
+    materialAdded: {
+      en: 'Material Added',
+      ro: 'Material Adăugat'
+    },
+    materialUpdated: {
+      en: 'Material Updated',
+      ro: 'Material Actualizat'
+    },
+    materialDeleted: {
+      en: 'Material Deleted',
+      ro: 'Material Șters'
+    },
+    hasBeenAdded: {
+      en: 'has been added successfully',
+      ro: 'a fost adăugat cu succes'
+    },
+    hasBeenUpdated: {
+      en: 'has been updated successfully',
+      ro: 'a fost actualizat cu succes'
+    },
+    hasBeenDeleted: {
+      en: 'has been deleted successfully',
+      ro: 'a fost șters cu succes'
+    },
+    addedToProject: {
+      en: 'has been added to your project',
+      ro: 'a fost adăugat la proiectul tău'
+    },
+    failedToLoad: {
+      en: 'Failed to load materials data',
+      ro: 'Nu s-au putut încărca datele materialelor'
+    },
+    failedToAdd: {
+      en: 'Failed to add material',
+      ro: 'Nu s-a putut adăuga materialul'
+    },
+    failedToUpdate: {
+      en: 'Failed to update material',
+      ro: 'Nu s-a putut actualiza materialul'
+    },
+    failedToDelete: {
+      en: 'Failed to delete material',
+      ro: 'Nu s-a putut șterge materialul'
+    },
+    importFunctionality: {
+      en: 'Material import functionality would be implemented here',
+      ro: 'Funcționalitatea de import materiale ar fi implementată aici'
+    },
+    exportFunctionality: {
+      en: 'Material export functionality would be implemented here',
+      ro: 'Funcționalitatea de export materiale ar fi implementată aici'
+    },
+    glass: {
+      en: 'Glass',
+      ro: 'Sticlă'
+    },
+    countertops: {
+      en: 'Countertops',
+      ro: 'Blaturi'
+    },
+    paintable: {
+      en: 'Paintable',
+      ro: 'Vopsibil'
+    },
+    cantable: {
+      en: 'Cantable',
+      ro: 'Aplicare Cant'
+    },
+    outOfStock: {
+      en: 'Out of Stock',
+      ro: 'Indisponibil'
+    },
+    form: {
+      code: {
+        en: 'Material Code',
+        ro: 'Cod Material'
+      },
+      name: {
+        en: 'Name',
+        ro: 'Nume'
+      },
+      type: {
+        en: 'Type',
+        ro: 'Tip'
+      },
+      selectType: {
+        en: 'Select material type',
+        ro: 'Selectează tipul materialului'
+      },
+      thickness: {
+        en: 'Thickness (mm)',
+        ro: 'Grosime (mm)'
+      },
+      manufacturer: {
+        en: 'Manufacturer',
+        ro: 'Producător'
+      },
+      supplier: {
+        en: 'Supplier',
+        ro: 'Furnizor'
+      },
+      selectSupplier: {
+        en: 'Select supplier',
+        ro: 'Selectează furnizorul'
+      },
+      pricePerSqm: {
+        en: 'Price per m²',
+        ro: 'Preț pe m²'
+      },
+      paintable: {
+        en: 'Paintable',
+        ro: 'Vopsibil'
+      },
+      paintableDesc: {
+        en: 'Can this material be painted?',
+        ro: 'Poate fi vopsit acest material?'
+      },
+      cantable: {
+        en: 'Cantable',
+        ro: 'Aplicare Cant'
+      },
+      cantableDesc: {
+        en: 'Can this material have edge banding?',
+        ro: 'Se poate aplica cant pe acest material?'
+      },
+      inStock: {
+        en: 'In Stock',
+        ro: 'În Stoc'
+      },
+      inStockDesc: {
+        en: 'Is this material currently available?',
+        ro: 'Este acest material disponibil în prezent?'
+      },
+      updateMaterial: {
+        en: 'Update Material',
+        ro: 'Actualizează Material'
+      },
+      createMaterial: {
+        en: 'Create Material',
+        ro: 'Creează Material'
+      },
+      other: {
+        en: 'Other',
+        ro: 'Altele'
+      },
+    }
+  },
+  
+  // Settings page translations for different user types
+  settings: {
+    title: {
+      en: 'System Settings',
+      ro: 'Setări sistem'
+    },
+    description: {
+      en: 'Configure application settings and preferences',
+      ro: 'Configurează setările și preferințele aplicației'
+    },
+    saveChanges: {
+      en: 'Save Changes',
+      ro: 'Salvează modificările'
+    },
+    changeLanguage: {
+      en: 'Change Language',
+      ro: 'Schimbă limba'
+    },
+    settingsSaved: {
+      en: 'Settings Saved',
+      ro: 'Setările au fost salvate'
+    },
+    changesSavedSuccess: {
+      en: 'Your changes have been saved successfully.',
+      ro: 'Modificările tale au fost salvate cu succes.'
+    },
+    languageChanged: {
+      en: 'Language Changed',
+      ro: 'Limba a fost schimbată'
+    },
+    languageSetTo: {
+      en: {
+        en: 'Language set to English',
+        ro: 'Limba a fost setată la Engleză'
+      },
+      ro: {
+        en: 'Language set to Romanian',
+        ro: 'Limba a fost setată la Română'
+      }
+    },
+    general: {
+      en: 'General Settings',
+      ro: 'Setări generale'
+    },
+    generalDesc: {
+      en: 'Basic system configuration',
+      ro: 'Configurație de bază a sistemului'
+    },
+    pricing: {
+      en: 'Pricing Settings',
+      ro: 'Setări de preț'
+    },
+    pricingDesc: {
+      en: 'Configure pricing rules and calculations',
+      ro: 'Configurează regulile și calculele de preț'
+    },
+    appearance: {
+      en: 'Appearance',
+      ro: 'Aspect'
+    },
+    appearanceDesc: {
+      en: 'Configure the appearance and branding of the application',
+      ro: 'Configurează aspectul și branding-ul aplicației'
+    },
+    notifications: {
+      en: 'Notifications',
+      ro: 'Notificări'
+    },
+    notificationsDesc: {
+      en: 'Configure system notifications and alerts',
+      ro: 'Configurează notificările de sistem și alertele'
+    },
+    backups: {
+      en: 'Backups & Restore',
+      ro: 'Backup & Restaurare'
+    },
+    backupsDesc: {
+      en: 'Backup your system data and restore from previous backups',
+      ro: 'Fă backup la datele sistemului și restaurează din backup-uri anterioare'
+    },
+    languages: {
+      en: 'Languages',
+      ro: 'Limbi'
+    },
+    languagesDesc: {
+      en: 'Configure language settings and translations',
+      ro: 'Configurează setările de limbă și traducerile'
+    },
+    designer: {
+      profile: {
+        en: 'Profile',
+        ro: 'Profil'
+      },
+      profileDesc: {
+        en: 'Update your personal information',
+        ro: 'Actualizează informațiile personale'
+      },
+      preferences: {
+        en: 'Preferences',
+        ro: 'Preferințe'
+      },
+      preferencesDesc: {
+        en: 'Configure designer preferences',
+        ro: 'Configurează preferințele pentru designeri'
+      }
+    },
+    client: {
+      description: {
+        en: 'Manage your account settings and preferences',
+        ro: 'Gestionează setările și preferințele contului tău'
+      },
+      account: {
+        en: 'Account',
+        ro: 'Cont'
+      },
+      accountDesc: {
+        en: 'Update your personal information',
+        ro: 'Actualizează informațiile personale'
+      },
+      billing: {
+        en: 'Billing',
+        ro: 'Facturare'
+      },
+      billingDesc: {
+        en: 'Manage billing information and payment methods',
+        ro: 'Gestionează informațiile de facturare și metodele de plată'
+      }
+    }
+  },
+  
+  // Designer pages
+  designer: {
+    materials: {
+      subtitle: {
+        en: 'Browse and select materials for your projects',
+        ro: 'Răsfoiește și selectează materiale pentru proiectele tale'
+      }
+    }
   },
   
   // Accessories page
@@ -274,91 +615,6 @@ const translations: Translations = {
     },
   },
   
-  // Settings page
-  settings: {
-    title: {
-      en: 'System Settings',
-      ro: 'Setări sistem'
-    },
-    description: {
-      en: 'Configure application settings and preferences',
-      ro: 'Configurează setările și preferințele aplicației'
-    },
-    saveChanges: {
-      en: 'Save Changes',
-      ro: 'Salvează modificările'
-    },
-    changeLanguage: {
-      en: 'Change Language',
-      ro: 'Schimbă limba'
-    },
-    settingsSaved: {
-      en: 'Settings Saved',
-      ro: 'Setările au fost salvate'
-    },
-    changesSavedSuccess: {
-      en: 'Your changes have been saved successfully.',
-      ro: 'Modificările tale au fost salvate cu succes.'
-    },
-    languageChanged: {
-      en: 'Language Changed',
-      ro: 'Limba a fost schimbată'
-    },
-    languageSetTo: {
-      en: 'Language set to English',
-      ro: 'Limba a fost setată la Română'
-    },
-    general: {
-      en: 'General Settings',
-      ro: 'Setări generale'
-    },
-    generalDesc: {
-      en: 'Basic system configuration',
-      ro: 'Configurație de bază a sistemului'
-    },
-    pricing: {
-      en: 'Pricing Settings',
-      ro: 'Setări de preț'
-    },
-    pricingDesc: {
-      en: 'Configure pricing rules and calculations',
-      ro: 'Configurează regulile și calculele de preț'
-    },
-    appearance: {
-      en: 'Appearance',
-      ro: 'Aspect'
-    },
-    appearanceDesc: {
-      en: 'Configure the appearance and branding of the application',
-      ro: 'Configurează aspectul și branding-ul aplicației'
-    },
-    notifications: {
-      en: 'Notifications',
-      ro: 'Notificări'
-    },
-    notificationsDesc: {
-      en: 'Configure system notifications and alerts',
-      ro: 'Configurează notificările de sistem și alertele'
-    },
-    backups: {
-      en: 'Backups & Restore',
-      ro: 'Backup & Restaurare'
-    },
-    backupsDesc: {
-      en: 'Backup your system data and restore from previous backups',
-      ro: 'Fă backup la datele sistemului și restaurează din backup-uri anterioare'
-    },
-    languages: {
-      en: 'Languages',
-      ro: 'Limbi'
-    },
-    languagesDesc: {
-      en: 'Configure language settings and translations',
-      ro: 'Configurează setările de limbă și traducerile'
-    },
-    // More settings translations...
-  },
-
   // Users page
   users: {
     title: {
