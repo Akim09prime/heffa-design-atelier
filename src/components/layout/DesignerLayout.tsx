@@ -160,7 +160,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
             <div className="px-4 py-3 border-t border-gray-100">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10 border-2 border-blue-100">
-                  <AvatarImage src={user?.avatar} alt={user?.name} />
+                  {/* Using User icon as fallback by default instead of trying to load potentially missing image */}
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-violet-500 text-white">
                     <User size={16} />
                   </AvatarFallback>
