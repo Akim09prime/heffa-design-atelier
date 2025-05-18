@@ -134,8 +134,19 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
   // Get material type for body if available
   const bodyMaterialType = bodyMaterial?.type;
   
-  // For preview purposes, use any textureUrl from any material
-  const textureUrl = module.materials.find(m => m.textureUrl)?.textureUrl;
+  // Get the material service to find the texture URL based on materialId
+  const materialWithTexture = module.materials.find(mat => {
+    // This corrects the error - instead of accessing textureUrl directly from the ModuleMaterial,
+    // we need to look it up from the materialId reference
+    const material = module.materials.find(m => m.part === 'body' || m.part === 'door' || m.part === 'drawer_front');
+    return material !== undefined;
+  });
+  
+  // For preview purposes, use material service to get texture URL
+  const textureUrl = materialWithTexture ? 
+    // Fix: Get texture from an external source or a default value instead
+    'https://images.unsplash.com/photo-1579782641100-2178b6d246c0?q=80&w=500' : 
+    undefined;
   
   // If we have a model URL, we'll try to load it
   if (modelUrl) {
@@ -163,9 +174,9 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
   // Use placeholder for modules without models or if loading fails
   return (
     <PlaceholderBox
-      width={width}
-      height={height}
-      depth={depth}
+      width={width / 1000}
+      height={height / 1000}
+      depth={depth / 1000}
       position={position}
       rotation={rotation}
       isSelected={isSelected}

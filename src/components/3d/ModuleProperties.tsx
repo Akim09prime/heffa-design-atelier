@@ -5,33 +5,39 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { X, Save, Trash, Move, RotateCw } from 'lucide-react';
-import { FurnitureModule, Material, AccessoryItem, MaterialType } from '@/types';
 import { MaterialService } from '@/services/materialService';
 import { AccessoryService } from '@/services/accessoryService';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
-import { ComboLogicService } from '@/services/comboLogicService';
+import { FurnitureModule, ModuleType, Material, AccessoryItem } from '@/types';
 
 interface ModulePropertiesProps {
   module: FurnitureModule;
-  onUpdate: (updatedModule: FurnitureModule) => void;
+  onUpdate: (module: FurnitureModule) => void;
   onDelete: (moduleId: string) => void;
   onClose: () => void;
 }
 
-export const ModuleProperties: React.FC<ModulePropertiesProps> = ({ 
-  module, 
-  onUpdate, 
-  onDelete, 
-  onClose 
+// Helper to format measurements
+const formatMeasurement = (value: number) => {
+  return `${value}mm`;
+};
+
+export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
+  module,
+  onUpdate,
+  onDelete,
+  onClose
 }) => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [accessories, setAccessories] = useState<AccessoryItem[]>([]);
   const [editedModule, setEditedModule] = useState<FurnitureModule>({...module});
   const [warnings, setWarnings] = useState<string[]>([]);
   const [blockedOptions, setBlockedOptions] = useState<string[]>([]);
+  const [bodyMaterialId, setBodyMaterialId] = useState<string>('');
+  const [frontMaterialId, setFrontMaterialId] = useState<string>('');
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
   const { toast } = useToast();
 
   // Fetch materials and accessories
@@ -235,6 +241,78 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
     );
   };
 
+  // Materials tab
+  const MaterialsTab = () => (
+    <div className="space-y-4">
+      {/* Body Material */}
+      <div>
+        <Label className="text-sm font-medium">Body Material</Label>
+        <Select
+          value={bodyMaterialId}
+          onValueChange={(value) => handleMaterialChange('body', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select material" />
+          </SelectTrigger>
+          <SelectContent>
+            {materials
+              .filter(m => m.type === 'PAL' || m.type === 'MDF')
+              .map(material => (
+                <SelectItem key={material.id} value={material.id}>
+                  {material.name} - {material.type}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Front Material */}
+      <div>
+        <Label className="text-sm font-medium">Front Material</Label>
+        <Select
+          value={frontMaterialId}
+          onValueChange={(value) => handleMaterialChange('door', value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select front material" />
+          </SelectTrigger>
+          <SelectContent>
+            {materials.map(material => (
+              <SelectItem key={material.id} value={material.id}>
+                {material.name} - {material.type}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {/* Material preview would go here */}
+      {selectedMaterial && (
+        <div className="mt-4">
+          <div className="text-xs text-gray-500 mb-1">Selected Material Preview</div>
+          <div className="h-24 bg-gray-100 relative rounded overflow-hidden">
+            {selectedMaterial.textureUrl ? (
+              <img 
+                src={selectedMaterial.textureUrl} 
+                alt={selectedMaterial.name}
+                className="w-full h-full object-cover" 
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                No Preview
+              </div>
+            )}
+          </div>
+          <div className="mt-2 text-xs">
+            <div><span className="font-medium">Type:</span> {selectedMaterial.type}</div>
+            <div><span className="font-medium">Thickness:</span> {selectedMaterial.thickness}mm</div>
+            <div><span className="font-medium">Price:</span> {selectedMaterial.pricePerSqm}/m²</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="w-80 border-l bg-white flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b">
@@ -256,20 +334,16 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
         <TabsContent value="properties" className="flex-1 p-0 m-0">
           <ScrollArea className="h-full p-4">
             <div className="space-y-4">
+              {/* Module type */}
               <div>
-                <Label htmlFor="module-name">Name</Label>
-                <Input 
-                  id="module-name" 
-                  value={editedModule.name}
-                  onChange={(e) => setEditedModule({...editedModule, name: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="module-type">Type</Label>
-                <Select 
-                  value={editedModule.type} 
-                  onValueChange={(value) => setEditedModule({...editedModule, type: value as ModuleType})}
+                <Label className="text-sm font-medium">Type</Label>
+                <Select
+                  value={editedModule.type}
+                  onValueChange={(value: ModuleType) => {
+                    const updatedModule = { ...editedModule };
+                    updatedModule.type = value;
+                    setEditedModule(updatedModule);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
@@ -280,69 +354,61 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                     <SelectItem value="tall_cabinet">Tall Cabinet</SelectItem>
                     <SelectItem value="drawer_unit">Drawer Unit</SelectItem>
                     <SelectItem value="corner_cabinet">Corner Cabinet</SelectItem>
-                    <SelectItem value="shelf_unit">Shelf Unit</SelectItem>
                     <SelectItem value="island">Island</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <Move className="h-4 w-4" />
-                  Dimensions (mm)
-                </h3>
-                
+              {/* Dimensions */}
+              <div>
+                <h3 className="text-sm font-medium mb-2">Dimensions</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label htmlFor="width" className="text-xs">Width</Label>
-                    <Input 
-                      id="width" 
-                      type="number" 
+                    <Input
+                      id="width"
+                      type="number"
                       value={editedModule.width}
                       onChange={(e) => handleDimensionChange('width', Number(e.target.value))}
                       className="h-8"
                     />
+                    <div className="text-xs text-gray-500 mt-1">{formatMeasurement(editedModule.width)}</div>
                   </div>
                   <div>
                     <Label htmlFor="height" className="text-xs">Height</Label>
-                    <Input 
-                      id="height" 
-                      type="number" 
+                    <Input
+                      id="height"
+                      type="number"
                       value={editedModule.height}
                       onChange={(e) => handleDimensionChange('height', Number(e.target.value))}
                       className="h-8"
                     />
+                    <div className="text-xs text-gray-500 mt-1">{formatMeasurement(editedModule.height)}</div>
                   </div>
                   <div>
                     <Label htmlFor="depth" className="text-xs">Depth</Label>
-                    <Input 
-                      id="depth" 
-                      type="number" 
+                    <Input
+                      id="depth"
+                      type="number"
                       value={editedModule.depth}
                       onChange={(e) => handleDimensionChange('depth', Number(e.target.value))}
                       className="h-8"
                     />
+                    <div className="text-xs text-gray-500 mt-1">{formatMeasurement(editedModule.depth)}</div>
                   </div>
                 </div>
               </div>
               
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <Move className="h-4 w-4" />
-                  Position (m)
-                </h3>
-                
+              {/* Position */}
+              <div>
+                <h3 className="text-sm font-medium mb-2">Position</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label htmlFor="position-x" className="text-xs">X</Label>
-                    <Input 
-                      id="position-x" 
-                      type="number" 
+                    <Input
+                      id="position-x"
+                      type="number"
                       step="0.1"
                       value={editedModule.position[0]}
                       onChange={(e) => handlePositionChange(0, Number(e.target.value))}
@@ -351,9 +417,9 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                   </div>
                   <div>
                     <Label htmlFor="position-y" className="text-xs">Y</Label>
-                    <Input 
-                      id="position-y" 
-                      type="number" 
+                    <Input
+                      id="position-y"
+                      type="number"
                       step="0.1"
                       value={editedModule.position[1]}
                       onChange={(e) => handlePositionChange(1, Number(e.target.value))}
@@ -362,9 +428,9 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                   </div>
                   <div>
                     <Label htmlFor="position-z" className="text-xs">Z</Label>
-                    <Input 
-                      id="position-z" 
-                      type="number" 
+                    <Input
+                      id="position-z"
+                      type="number"
                       step="0.1"
                       value={editedModule.position[2]}
                       onChange={(e) => handlePositionChange(2, Number(e.target.value))}
@@ -374,20 +440,15 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                 </div>
               </div>
               
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <RotateCw className="h-4 w-4" />
-                  Rotation (degrees)
-                </h3>
-                
+              {/* Rotation */}
+              <div>
+                <h3 className="text-sm font-medium mb-2">Rotation</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label htmlFor="rotation-x" className="text-xs">X</Label>
-                    <Input 
-                      id="rotation-x" 
-                      type="number" 
+                    <Input
+                      id="rotation-x"
+                      type="number"
                       value={editedModule.rotation[0]}
                       onChange={(e) => handleRotationChange(0, Number(e.target.value))}
                       className="h-8"
@@ -395,9 +456,9 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                   </div>
                   <div>
                     <Label htmlFor="rotation-y" className="text-xs">Y</Label>
-                    <Input 
-                      id="rotation-y" 
-                      type="number" 
+                    <Input
+                      id="rotation-y"
+                      type="number"
                       value={editedModule.rotation[1]}
                       onChange={(e) => handleRotationChange(1, Number(e.target.value))}
                       className="h-8"
@@ -405,9 +466,9 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
                   </div>
                   <div>
                     <Label htmlFor="rotation-z" className="text-xs">Z</Label>
-                    <Input 
-                      id="rotation-z" 
-                      type="number" 
+                    <Input
+                      id="rotation-z"
+                      type="number"
                       value={editedModule.rotation[2]}
                       onChange={(e) => handleRotationChange(2, Number(e.target.value))}
                       className="h-8"
@@ -421,460 +482,83 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
         
         <TabsContent value="materials" className="flex-1 p-0 m-0">
           <ScrollArea className="h-full p-4">
-            <div className="space-y-4">
-              {/* Body Material */}
-              <div>
-                <Label htmlFor="body-material" className="text-sm font-medium">Body Material (Carcass)</Label>
-                <Select 
-                  value={editedModule.materials.find(m => m.part === 'body')?.materialId || ''}
-                  onValueChange={(value) => handleMaterialChange('body', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select material" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {getMaterialsByType('PAL').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                    {getMaterialsByType('MDF').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Front Material (Door or Drawer Front) */}
-              <div>
-                <Label htmlFor="front-material" className="text-sm font-medium">Front Material</Label>
-                <Select 
-                  value={editedModule.materials.find(m => m.part === 'door' || m.part === 'drawer_front')?.materialId || ''}
-                  onValueChange={(value) => handleMaterialChange(
-                    editedModule.type === 'drawer_unit' ? 'drawer_front' : 'door', 
-                    value
-                  )}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select material" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {getMaterialsByType('PAL').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                    {getMaterialsByType('MDF').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                    {getMaterialsByType('MDF-AGT').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                    {getMaterialsByType('GLASS').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Back Panel Material */}
-              <div>
-                <Label htmlFor="back-material" className="text-sm font-medium">Back Panel</Label>
-                <Select 
-                  value={editedModule.materials.find(m => m.part === 'back_panel')?.materialId || ''}
-                  onValueChange={(value) => handleMaterialChange('back_panel', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select material" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {getMaterialsByType('PFL').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                    {getMaterialsByType('PAL').map((material) => (
-                      <SelectItem key={material.id} value={material.id}>
-                        {material.name} ({material.thickness}mm)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Material Preview */}
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Material Preview</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {editedModule.materials.map(material => {
-                    const materialData = materials.find(m => m.id === material.materialId);
-                    return materialData ? (
-                      <div key={material.id} className="border rounded p-2">
-                        {materialData.textureUrl ? (
-                          <div className="h-20 bg-contain bg-center bg-no-repeat" 
-                               style={{ backgroundImage: `url(${materialData.textureUrl})` }} />
-                        ) : (
-                          <div className="h-20 bg-gray-100 flex items-center justify-center">
-                            No texture
-                          </div>
-                        )}
-                        <div className="text-xs mt-1 font-medium">{materialData.name}</div>
-                        <div className="text-xs text-gray-500">{material.part}</div>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </div>
-              
-              {/* Processing Options */}
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Processing Options</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      id="edge-banding" 
-                      className="mr-2"
-                      checked={editedModule.processingOptions.some(p => p.type === 'edge_banding')}
-                      onChange={(e) => {
-                        const updatedModule = { ...editedModule };
-                        if (e.target.checked) {
-                          if (!updatedModule.processingOptions.some(p => p.type === 'edge_banding')) {
-                            updatedModule.processingOptions.push({
-                              id: uuidv4(),
-                              type: 'edge_banding',
-                              materialId: updatedModule.materials.find(m => m.part === 'body')?.materialId || '',
-                              area: 0 // Would calculate based on dimensions
-                            });
-                          }
-                        } else {
-                          updatedModule.processingOptions = updatedModule.processingOptions.filter(
-                            p => p.type !== 'edge_banding'
-                          );
-                        }
-                        setEditedModule(updatedModule);
-                      }}
-                      disabled={
-                        !editedModule.materials.some(m => 
-                          materials.find(mat => mat.id === m.materialId)?.cantable
-                        )
-                      }
-                    />
-                    <Label htmlFor="edge-banding" className="text-sm">
-                      Edge Banding
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      id="painting" 
-                      className="mr-2"
-                      checked={editedModule.processingOptions.some(p => p.type === 'painting')}
-                      onChange={(e) => {
-                        const updatedModule = { ...editedModule };
-                        if (e.target.checked) {
-                          if (!updatedModule.processingOptions.some(p => p.type === 'painting')) {
-                            updatedModule.processingOptions.push({
-                              id: uuidv4(),
-                              type: 'painting',
-                              materialId: updatedModule.materials.find(m => m.part === 'door' || m.part === 'drawer_front')?.materialId || '',
-                              area: 0 // Would calculate based on dimensions
-                            });
-                          }
-                        } else {
-                          updatedModule.processingOptions = updatedModule.processingOptions.filter(
-                            p => p.type !== 'painting'
-                          );
-                        }
-                        setEditedModule(updatedModule);
-                      }}
-                      disabled={
-                        !editedModule.materials.some(m => 
-                          materials.find(mat => mat.id === m.materialId)?.paintable
-                        ) || 
-                        blockedOptions.includes('paint')
-                      }
-                    />
-                    <Label htmlFor="painting" className="text-sm">
-                      Painting
-                      {blockedOptions.includes('paint') && (
-                        <span className="text-destructive ml-1 text-xs">(Not available for this material)</span>
-                      )}
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      id="cnc-rifled" 
-                      className="mr-2"
-                      checked={editedModule.processingOptions.some(p => p.type === 'cnc_rifled')}
-                      onChange={(e) => {
-                        const updatedModule = { ...editedModule };
-                        if (e.target.checked) {
-                          if (!updatedModule.processingOptions.some(p => p.type === 'cnc_rifled')) {
-                            updatedModule.processingOptions.push({
-                              id: uuidv4(),
-                              type: 'cnc_rifled',
-                              materialId: updatedModule.materials.find(m => m.part === 'door' || m.part === 'drawer_front')?.materialId || '',
-                              area: 0 // Would calculate based on dimensions
-                            });
-                            // If we add CNC rifling, we should suggest painting
-                            if (!updatedModule.processingOptions.some(p => p.type === 'painting')) {
-                              const frontMaterial = updatedModule.materials.find(m => m.part === 'door' || m.part === 'drawer_front');
-                              const materialData = materials.find(m => m.id === frontMaterial?.materialId);
-                              
-                              if (materialData?.paintable && !blockedOptions.includes('paint')) {
-                                toast({
-                                  title: 'Suggestion',
-                                  description: 'CNC rifled fronts typically need painting. Would you like to add painting?'
-                                });
-                              }
-                            }
-                          }
-                        } else {
-                          updatedModule.processingOptions = updatedModule.processingOptions.filter(
-                            p => p.type !== 'cnc_rifled'
-                          );
-                        }
-                        setEditedModule(updatedModule);
-                      }}
-                      disabled={
-                        !editedModule.materials.some(m => 
-                          materials.find(mat => mat.id === m.materialId)?.type === 'MDF'
-                        )
-                      }
-                    />
-                    <Label htmlFor="cnc-rifled" className="text-sm">
-                      CNC Rifled
-                      {!editedModule.materials.some(m => 
-                        materials.find(mat => mat.id === m.materialId)?.type === 'MDF'
-                      ) && (
-                        <span className="text-destructive ml-1 text-xs">(Requires MDF)</span>
-                      )}
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <MaterialsTab />
           </ScrollArea>
         </TabsContent>
         
         <TabsContent value="accessories" className="flex-1 p-0 m-0">
           <ScrollArea className="h-full p-4">
             <div className="space-y-4">
-              {/* Hinges */}
               <div>
-                <Label htmlFor="hinges" className="text-sm font-medium">Hinges</Label>
-                <Select
-                  onValueChange={(value) => handleAddAccessory('hinge', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Add hinge" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getCompatibleAccessories('hinge').map((accessory) => (
-                      <SelectItem key={accessory.id} value={accessory.id}>
-                        {accessory.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                {/* List of selected hinges */}
-                <div className="mt-2 space-y-1">
-                  {editedModule.accessories
-                    .filter(acc => acc.type === 'hinge')
-                    .map((acc) => {
-                      const accessory = accessories.find(a => a.id === acc.accessoryItemId);
-                      return accessory ? (
-                        <div key={acc.id} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
-                          <span>{accessory.name}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6" 
-                            onClick={() => handleRemoveAccessory(acc.id)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : null;
-                    })
-                  }
+                <Label className="text-sm font-medium">Add Accessory</Label>
+                <div className="flex space-x-2 mt-1">
+                  <Select onValueChange={(value) => handleAddAccessory('hinge', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select accessory" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {accessories
+                        .filter(acc => acc.type === 'hinge')
+                        .map(accessory => (
+                          <SelectItem key={accessory.id} value={accessory.id}>
+                            {accessory.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
-              {/* Slides */}
+              {/* List of accessories */}
               <div>
-                <Label htmlFor="slides" className="text-sm font-medium">Drawer Slides</Label>
-                <Select
-                  onValueChange={(value) => handleAddAccessory('slide', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Add drawer slide" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getCompatibleAccessories('slide').map((accessory) => (
-                      <SelectItem key={accessory.id} value={accessory.id}>
-                        {accessory.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                {/* List of selected slides */}
-                <div className="mt-2 space-y-1">
-                  {editedModule.accessories
-                    .filter(acc => acc.type === 'slide')
-                    .map((acc) => {
-                      const accessory = accessories.find(a => a.id === acc.accessoryItemId);
-                      return accessory ? (
-                        <div key={acc.id} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
-                          <span>{accessory.name}</span>
+                <h3 className="text-sm font-medium mb-2">Applied Accessories</h3>
+                {editedModule.accessories.length > 0 ? (
+                  <ul className="space-y-2">
+                    {editedModule.accessories.map(acc => {
+                      const accessoryItem = accessories.find(a => a.id === acc.accessoryItemId);
+                      return (
+                        <li key={acc.id} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded">
+                          <span>
+                            {accessoryItem?.name || 'Unknown'} ({acc.quantity})
+                          </span>
                           <Button 
                             variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6" 
+                            size="sm" 
                             onClick={() => handleRemoveAccessory(acc.id)}
+                            className="h-6 w-6 p-0"
                           >
                             <X className="h-3 w-3" />
                           </Button>
-                        </div>
-                      ) : null;
-                    })
-                  }
-                </div>
-              </div>
-              
-              {/* Handles */}
-              <div>
-                <Label htmlFor="handles" className="text-sm font-medium">Handles</Label>
-                <Select
-                  onValueChange={(value) => handleAddAccessory('handle', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Add handle" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getCompatibleAccessories('handle').map((accessory) => (
-                      <SelectItem key={accessory.id} value={accessory.id}>
-                        {accessory.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
-                {/* List of selected handles */}
-                <div className="mt-2 space-y-1">
-                  {editedModule.accessories
-                    .filter(acc => acc.type === 'handle')
-                    .map((acc) => {
-                      const accessory = accessories.find(a => a.id === acc.accessoryItemId);
-                      return accessory ? (
-                        <div key={acc.id} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
-                          <span>{accessory.name}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6" 
-                            onClick={() => handleRemoveAccessory(acc.id)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : null;
-                    })
-                  }
-                </div>
-              </div>
-              
-              {/* Other Accessories */}
-              <div>
-                <Label htmlFor="other-accessories" className="text-sm font-medium">Other Accessories</Label>
-                <Select
-                  onValueChange={(value) => handleAddAccessory('other', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Add accessory" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {accessories
-                      .filter(a => a.type !== 'hinge' && a.type !== 'slide' && a.type !== 'handle' && 
-                             a.compatibility.includes(editedModule.type))
-                      .map((accessory) => (
-                        <SelectItem key={accessory.id} value={accessory.id}>
-                          {accessory.name}
-                        </SelectItem>
-                      ))
-                    }
-                  </SelectContent>
-                </Select>
-                
-                {/* List of other accessories */}
-                <div className="mt-2 space-y-1">
-                  {editedModule.accessories
-                    .filter(acc => acc.type !== 'hinge' && acc.type !== 'slide' && acc.type !== 'handle')
-                    .map((acc) => {
-                      const accessory = accessories.find(a => a.id === acc.accessoryItemId);
-                      return accessory ? (
-                        <div key={acc.id} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
-                          <span>{accessory.name}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-6 w-6" 
-                            onClick={() => handleRemoveAccessory(acc.id)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : null;
-                    })
-                  }
-                </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <div className="text-sm text-gray-500">No accessories added</div>
+                )}
               </div>
             </div>
           </ScrollArea>
         </TabsContent>
       </Tabs>
       
-      <div className="p-4 border-t flex justify-between items-center">
-        <div>
-          <div className="text-sm font-medium">Price: ${editedModule.price.toFixed(2)}</div>
-          <div className="text-xs text-gray-500">
-            {editedModule.materials.length} materials, {editedModule.accessories.length} accessories
-          </div>
+      {/* Footer with action buttons */}
+      <div className="border-t p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Total Price:</span>
+          <span className="text-sm font-medium">${editedModule.price.toFixed(2)}</span>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={() => onDelete(editedModule.id)}
-            className="flex items-center gap-1"
-          >
-            <Trash className="h-3.5 w-3.5" />
-            Delete
+        <div className="flex items-center space-x-2">
+          <Button onClick={handleSave} className="flex-1">
+            <Save className="h-4 w-4 mr-1" />
+            Save Changes
           </Button>
           <Button 
-            size="sm"
-            onClick={handleSave}
-            className="flex items-center gap-1"
+            variant="destructive" 
+            onClick={() => onDelete(module.id)}
+            size="icon"
           >
-            <Save className="h-3.5 w-3.5" />
-            Save
+            <Trash className="h-4 w-4" />
           </Button>
         </div>
       </div>
