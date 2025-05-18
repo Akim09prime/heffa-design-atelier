@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 // Create a wrapper component that uses the context
 const SettingsContent = () => {
@@ -155,14 +156,16 @@ const SettingsContent = () => {
   );
 };
 
-// Main Settings component that wraps the content with the TranslationProvider
+// Main Settings component that wraps the content with the required providers
 const Settings = () => {
   return (
-    <AdminLayout>
-      <TranslationProvider>
-        <SettingsContent />
-      </TranslationProvider>
-    </AdminLayout>
+    <AuthProvider>
+      <AdminLayout>
+        <TranslationProvider>
+          <SettingsContent />
+        </TranslationProvider>
+      </AdminLayout>
+    </AuthProvider>
   );
 };
 
