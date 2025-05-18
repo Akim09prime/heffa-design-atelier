@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -103,6 +104,7 @@ const NewProject = () => {
 
   const handleContinueTo3D = () => {
     if (projectId) {
+      console.log(`Navigating to 3D editor for project ${projectId}`);
       navigate(`/designer/projects/${projectId}/3d-editor`);
     } else {
       toast({
@@ -115,6 +117,7 @@ const NewProject = () => {
 
   const handleEditProject = () => {
     if (projectId) {
+      console.log(`Navigating to edit project ${projectId}`);
       navigate(`/designer/projects/${projectId}`);
     } else {
       toast({

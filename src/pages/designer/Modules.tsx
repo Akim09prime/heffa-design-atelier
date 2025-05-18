@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -18,6 +19,13 @@ const Modules = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('base');
   const [hoveredModule, setHoveredModule] = useState<number | null>(null);
+  const [newModuleData, setNewModuleData] = useState({
+    name: '',
+    category: 'base',
+    width: '600',
+    depth: '560',
+    height: '800'
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -25,23 +33,49 @@ const Modules = () => {
     setIsNewModuleDialogOpen(true);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    setNewModuleData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
   const handleCreateModule = () => {
+    // Validate form
+    if (!newModuleData.name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Module name is required",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const moduleId = Math.floor(Math.random() * 1000) + 100;
     setIsNewModuleDialogOpen(false);
+    
     toast({
       title: "Module created",
       description: "Your new module has been created successfully",
     });
+    
+    // Navigate to the new module
+    navigate(`/designer/modules/${moduleId}`);
   };
 
   const handleContinueTo3D = (moduleId: number) => {
+    console.log(`Navigating to 3D setup for module ${moduleId}`);
     toast({
       title: "Opening 3D Setup",
       description: "Preparing 3D environment for module configuration",
     });
+    // Make sure this route exists in your App.tsx
     navigate(`/designer/modules/${moduleId}/3d-setup`);
   };
 
   const handleModuleClick = (moduleId: number) => {
+    console.log(`Navigating to module details ${moduleId}`);
     navigate(`/designer/modules/${moduleId}`);
   };
 
@@ -207,6 +241,8 @@ const Modules = () => {
                   id="name"
                   className="col-span-3"
                   placeholder="Enter module name"
+                  value={newModuleData.name}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -216,6 +252,8 @@ const Modules = () => {
                 <select
                   id="category"
                   className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={newModuleData.category}
+                  onChange={handleInputChange}
                 >
                   <option value="base">Base Cabinet</option>
                   <option value="wall">Wall Cabinet</option>
@@ -234,7 +272,8 @@ const Modules = () => {
                   type="number"
                   className="col-span-3"
                   placeholder="600"
-                  defaultValue="600"
+                  value={newModuleData.width}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -246,7 +285,8 @@ const Modules = () => {
                   type="number"
                   className="col-span-3"
                   placeholder="560"
-                  defaultValue="560"
+                  value={newModuleData.depth}
+                  onChange={handleInputChange}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -258,7 +298,8 @@ const Modules = () => {
                   type="number"
                   className="col-span-3"
                   placeholder="800"
-                  defaultValue="800"
+                  value={newModuleData.height}
+                  onChange={handleInputChange}
                 />
               </div>
             </div>
