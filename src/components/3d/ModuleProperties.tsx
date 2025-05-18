@@ -10,6 +10,7 @@ import { ModuleMaterialsPanel } from './ModuleMaterialsPanel';
 import { ModuleAccessoriesPanel } from './ModuleAccessoriesPanel';
 import { ModuleTypeSelector } from './ModuleTypeSelector';
 import { ModuleHeader, PropertiesFooter, useModuleProperties } from './module-properties';
+import { toast } from '@/hooks/use-toast';
 
 // Define the ModulePropertiesProps interface
 interface ModulePropertiesProps {
@@ -38,6 +39,26 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
     handleTypeChange,
     handleSave
   } = useModuleProperties(module, onUpdate);
+
+  const handleSaveWithFeedback = () => {
+    handleSave();
+    toast({
+      title: "Module Saved",
+      description: "Module properties have been updated",
+      variant: "default"
+    });
+  };
+
+  const handleDeleteWithConfirmation = () => {
+    if (typeof onDelete === 'function') {
+      onDelete(module.id);
+      toast({
+        title: "Module Deleted",
+        description: "Module has been removed from the scene",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="w-80 border-l bg-white flex flex-col h-full">
@@ -107,8 +128,8 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
         totalPrice={editedModule.price}
         showPriceBreakdown={showPriceBreakdown}
         setShowPriceBreakdown={setShowPriceBreakdown}
-        onSave={handleSave}
-        onDelete={() => onDelete(module.id)}
+        onSave={handleSaveWithFeedback}
+        onDelete={handleDeleteWithConfirmation}
       />
     </div>
   );

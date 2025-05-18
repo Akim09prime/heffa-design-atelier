@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { db } from '../../firebase-config';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 
 interface Props {
   className?: string;
@@ -21,6 +21,7 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
   const mountRef = useRef<HTMLDivElement>(null);
   const [wireframeMode, setWireframeMode] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
+  const [inputErrors, setInputErrors] = useState<{[key: string]: string}>({});
   const modules = useRef<THREE.Mesh[]>([]);
   const selectedModule = useRef<THREE.Mesh | null>(null);
 
@@ -198,10 +199,18 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
         });
         
         await setDoc(doc(db, 'scenes', userId), { data });
-        toast.success('Scene saved successfully');
+        toast({
+          title: "Scene Saved",
+          description: "Your design scene has been saved successfully",
+          variant: "default"
+        });
       } catch (error) {
         console.error("Error saving scene:", error);
-        toast.error('Error saving scene');
+        toast({
+          title: "Save Failed",
+          description: "There was an error saving your scene",
+          variant: "destructive"
+        });
       }
     }
 
@@ -232,10 +241,18 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
           if (wireframeMode) addCote(mesh);
         });
         
-        toast.success('Scene loaded successfully');
+        toast({
+          title: "Scene Loaded",
+          description: "Your design scene has been loaded successfully",
+          variant: "default"
+        });
       } catch (error) {
         console.error("Error loading scene:", error);
-        toast.error('Error loading scene');
+        toast({
+          title: "Load Failed", 
+          description: "There was an error loading your scene",
+          variant: "destructive"
+        });
       }
     }
 
@@ -283,7 +300,11 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
         if (wireframeMode) addCote(mesh);
         
         // Notify that module was added
-        toast.info('Module added to scene');
+        toast({
+          title: "Module Added",
+          description: "New module has been added to your scene",
+          variant: "default"
+        });
       }
     }
 
@@ -355,23 +376,40 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
   }, [wireframeMode, userId]);
 
   const toggleMode = () => {
-    setWireframeMode(!wireframeMode);
     if (window.toggleWireframeMode) {
       window.toggleWireframeMode();
+    }
+  };
+
+  const validateNumericInput = (value: string, field: string): boolean => {
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue <= 0) {
+      setInputErrors(prev => ({ ...prev, [field]: 'Enter a valid positive number' }));
+      return false;
+    } else {
+      setInputErrors(prev => ({ ...prev, [field]: '' }));
+      return true;
     }
   };
 
   const handleEdit = (field: string, value: string) => {
     if (!selectedModule.current) return;
     
+    if (!validateNumericInput(value, field)) return;
+    
     const mesh = selectedModule.current;
     const val = parseFloat(value);
-    
-    if (isNaN(val)) return;
     
     if (field === 'width') mesh.scale.x = val;
     if (field === 'height') mesh.scale.y = val;
     if (field === 'depth') mesh.scale.z = val;
+
+    // Show success toast
+    toast({
+      title: "Module Updated",
+      description: `${field.charAt(0).toUpperCase() + field.slice(1)} updated to ${val}m`,
+      variant: "default"
+    });
   };
 
   const handleSave = () => {
@@ -384,47 +422,63 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     <div className={`flex w-full ${className}`}>
       <div className="w-full h-[80vh] relative" ref={mountRef}>
         <div className="absolute top-4 right-4 flex space-x-2">
-          <button
+          <Button
             className="bg-amber-600 text-white px-4 py-2 rounded shadow hover:bg-amber-700 transition"
             onClick={toggleMode}
           >
             {wireframeMode ? 'Realistic Mode' : 'Wireframe Mode'}
-          </button>
-          <button
+          </Button>
+          <Button
             className="bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-800 transition"
             onClick={handleSave}
           >
             💾 Save Scene
-          </button>
+          </Button>
         </div>
 
         {showEditor && (
           <div className="absolute bottom-4 right-4 bg-white p-3 rounded shadow border min-w-[250px]">
             <h2 className="font-bold mb-2 font-playfair text-[#6A4B31]">Edit Module</h2>
-            <label className="block text-sm mb-1">Width (m)</label>
-            <input 
-              type="number" 
-              step="0.1"
-              className="w-full mb-2 border px-2 py-1 rounded" 
-              onChange={(e) => handleEdit('width', e.target.value)} 
-              defaultValue={selectedModule.current?.scale.x || 0}
-            />
-            <label className="block text-sm mb-1">Height (m)</label>
-            <input 
-              type="number"
-              step="0.1" 
-              className="w-full mb-2 border px-2 py-1 rounded" 
-              onChange={(e) => handleEdit('height', e.target.value)} 
-              defaultValue={selectedModule.current?.scale.y || 0}
-            />
-            <label className="block text-sm mb-1">Depth (m)</label>
-            <input 
-              type="number"
-              step="0.1" 
-              className="w-full mb-2 border px-2 py-1 rounded" 
-              onChange={(e) => handleEdit('depth', e.target.value)} 
-              defaultValue={selectedModule.current?.scale.z || 0}
-            />
+            <div className="space-y-2">
+              <div>
+                <label className="block text-sm mb-1">Width (m)</label>
+                <input 
+                  type="number" 
+                  step="0.1"
+                  min="0.1"
+                  className={`w-full mb-2 border px-2 py-1 rounded ${inputErrors.width ? 'border-red-500' : ''}`}
+                  onChange={(e) => handleEdit('width', e.target.value)} 
+                  defaultValue={selectedModule.current?.scale.x || 0}
+                />
+                {inputErrors.width && <p className="text-xs text-red-500">{inputErrors.width}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Height (m)</label>
+                <input 
+                  type="number"
+                  step="0.1"
+                  min="0.1" 
+                  className={`w-full mb-2 border px-2 py-1 rounded ${inputErrors.height ? 'border-red-500' : ''}`}
+                  onChange={(e) => handleEdit('height', e.target.value)} 
+                  defaultValue={selectedModule.current?.scale.y || 0}
+                />
+                {inputErrors.height && <p className="text-xs text-red-500">{inputErrors.height}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Depth (m)</label>
+                <input 
+                  type="number"
+                  step="0.1"
+                  min="0.1" 
+                  className={`w-full mb-2 border px-2 py-1 rounded ${inputErrors.depth ? 'border-red-500' : ''}`}
+                  onChange={(e) => handleEdit('depth', e.target.value)} 
+                  defaultValue={selectedModule.current?.scale.z || 0}
+                />
+                {inputErrors.depth && <p className="text-xs text-red-500">{inputErrors.depth}</p>}
+              </div>
+            </div>
           </div>
         )}
       </div>
