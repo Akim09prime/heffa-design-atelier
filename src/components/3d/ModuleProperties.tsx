@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,7 +14,7 @@ import { ModuleRotationPanel } from './ModuleRotationPanel';
 import { ModuleMaterialsPanel } from './ModuleMaterialsPanel';
 import { ModuleAccessoriesPanel } from './ModuleAccessoriesPanel';
 import { ModuleTypeSelector } from './ModuleTypeSelector';
-import { PriceCalculationService } from '@/services/PriceCalculationService';
+import { PricingService } from '@/services/pricingService';
 
 // Define the ModulePropertiesProps interface
 interface ModulePropertiesProps {
@@ -111,20 +110,27 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
   // Calculate price whenever module changes
   useEffect(() => {
     if (materials.length > 0 && accessories.length > 0) {
-      const { total, breakdown } = PriceCalculationService.calculateModulePrice(
-        editedModule, 
-        materials, 
-        accessories
-      );
-      
-      // Update module price
-      setEditedModule(prev => ({
-        ...prev,
-        price: total
-      }));
-      
-      // Update price breakdown
-      setPriceBreakdown(breakdown);
+      try {
+        console.log('Calculating price for module:', editedModule);
+        const { total, breakdown } = PricingService.calculateModulePrice(
+          editedModule, 
+          materials, 
+          accessories
+        );
+        
+        console.log('Price calculation result:', { total, breakdown });
+        
+        // Update module price
+        setEditedModule(prev => ({
+          ...prev,
+          price: total
+        }));
+        
+        // Update price breakdown
+        setPriceBreakdown(breakdown);
+      } catch (error) {
+        console.error('Error calculating price:', error);
+      }
     }
   }, [editedModule.materials, editedModule.accessories, editedModule.processingOptions, materials, accessories]);
 
@@ -136,24 +142,33 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
 
   // Save changes handler
   const handleSave = () => {
-    // Final price calculation
-    const { total } = PriceCalculationService.calculateModulePrice(
-      editedModule,
-      materials,
-      accessories
-    );
-    
-    const updatedModule = {
-      ...editedModule,
-      price: total
-    };
-    
-    onUpdate(updatedModule);
-    
-    toast({
-      title: 'Module Updated',
-      description: 'Your changes have been saved successfully.'
-    });
+    try {
+      // Final price calculation
+      const { total } = PricingService.calculateModulePrice(
+        editedModule,
+        materials,
+        accessories
+      );
+      
+      const updatedModule = {
+        ...editedModule,
+        price: total
+      };
+      
+      onUpdate(updatedModule);
+      
+      toast({
+        title: 'Module Updated',
+        description: 'Your changes have been saved successfully.'
+      });
+    } catch (error) {
+      console.error('Error saving module:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save module changes',
+        variant: 'destructive'
+      });
+    }
   };
 
   return (

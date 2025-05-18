@@ -1,11 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SceneContainer } from '@/components/3d/SceneContainer';
-import { Project, FurnitureModule } from '@/types';
+import { Project, FurnitureModule, Material, AccessoryItem } from '@/types';
 import { ProjectService } from '@/services/projectService';
+import { MaterialService } from '@/services/materialService';
+import { AccessoryService } from '@/services/accessoryService';
+import { PricingService } from '@/services/pricingService';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronLeft, Save, Share, Download, Layers, File } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,15 +22,35 @@ import { v4 as uuidv4 } from 'uuid';
 const ProjectEditor3D = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<Project | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [accessories, setAccessories] = useState<AccessoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [showLibrary, setShowLibrary] = useState(true);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // Get selected module
   const selectedModule = project?.modules.find(m => m.id === selectedModuleId);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch materials and accessories for pricing calculations
+        const fetchedMaterials = await MaterialService.getAllMaterials();
+        setMaterials(fetchedMaterials);
+        
+        const fetchedAccessories = await AccessoryService.getAllAccessories();
+        setAccessories(fetchedAccessories);
+      } catch (error) {
+        console.error('Failed to fetch materials and accessories:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -94,11 +118,34 @@ const ProjectEditor3D = () => {
     fetchProject();
   }, [projectId, toast]);
 
+  // Calculate total project price whenever modules change
+  useEffect(() => {
+    if (project && materials.length > 0 && accessories.length > 0) {
+      try {
+        const price = PricingService.calculateProjectPrice(
+          project.modules, 
+          materials, 
+          accessories
+        );
+        setTotalPrice(price);
+      } catch (error) {
+        console.error('Error calculating project price:', error);
+      }
+    }
+  }, [project?.modules, materials, accessories]);
+
   // Handle save project
   const handleSave = async () => {
     if (!project) return;
     
     try {
+      // Calculate final project price
+      const finalPrice = PricingService.calculateProjectPrice(
+        project.modules,
+        materials,
+        accessories
+      );
+      
       // Save the project to the database
       await ProjectService.updateProject(project.id, {
         modules: project.modules,
@@ -109,6 +156,7 @@ const ProjectEditor3D = () => {
             modules: project.modules.map(m => ({
               id: m.id,
               type: m.type,
+              price: m.price,
               dim: {
                 L: m.width,
                 H: m.height,
@@ -127,7 +175,8 @@ const ProjectEditor3D = () => {
                 z: m.position[2]
               },
               rotation: m.rotation[1] // Using y-rotation as main rotation
-            }))
+            })),
+            totalPrice: finalPrice
           }
         },
         updatedAt: new Date()
