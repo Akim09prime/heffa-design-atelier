@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, PerspectiveCamera } from '@react-three/drei';
 import { Room } from './Room';
@@ -13,6 +13,8 @@ interface SceneContainerProps {
   roomHeight?: number;
   showGrid?: boolean;
   enableOrbitControls?: boolean;
+  onSelectModule?: (moduleId: string | null) => void;
+  selectedModuleId?: string | null;
 }
 
 export const SceneContainer: React.FC<SceneContainerProps> = ({
@@ -22,6 +24,8 @@ export const SceneContainer: React.FC<SceneContainerProps> = ({
   roomHeight = 2.8,
   showGrid = true,
   enableOrbitControls = true,
+  onSelectModule,
+  selectedModuleId
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -43,7 +47,9 @@ export const SceneContainer: React.FC<SceneContainerProps> = ({
           length={roomLength} 
           height={roomHeight} 
           modules={modules} 
-          showGrid={showGrid} 
+          showGrid={showGrid}
+          onSelectModule={onSelectModule}
+          selectedModuleId={selectedModuleId}
         />
         <Environment preset="apartment" />
         {enableOrbitControls && (
