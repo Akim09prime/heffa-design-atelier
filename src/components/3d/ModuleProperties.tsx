@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { X, Save, Trash } from 'lucide-react';
+import { X, Save, Trash, DollarSign } from 'lucide-react';
 import { MaterialService } from '@/services/materialService';
 import { AccessoryService } from '@/services/accessoryService';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ import { ModuleRotationPanel } from './ModuleRotationPanel';
 import { ModuleMaterialsPanel } from './ModuleMaterialsPanel';
 import { ModuleAccessoriesPanel } from './ModuleAccessoriesPanel';
 import { ModuleTypeSelector } from './ModuleTypeSelector';
+import { PriceCalculationService } from '@/services/PriceCalculationService';
 
 // Define the ModulePropertiesProps interface
 interface ModulePropertiesProps {
@@ -35,6 +36,13 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
   const [editedModule, setEditedModule] = useState<FurnitureModule>({...module});
   const [warnings, setWarnings] = useState<string[]>([]);
   const [blockedOptions, setBlockedOptions] = useState<string[]>([]);
+  const [priceBreakdown, setPriceBreakdown] = useState<{
+    materials: number;
+    accessories: number;
+    processing: number;
+    labor: number;
+  }>({ materials: 0, accessories: 0, processing: 0, labor: 0 });
+  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
   const { toast } = useToast();
 
   // Fetch materials and accessories
@@ -100,6 +108,26 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
     }
   }, [materials, editedModule.type, editedModule.materials, toast]);
 
+  // Calculate price whenever module changes
+  useEffect(() => {
+    if (materials.length > 0 && accessories.length > 0) {
+      const { total, breakdown } = PriceCalculationService.calculateModulePrice(
+        editedModule, 
+        materials, 
+        accessories
+      );
+      
+      // Update module price
+      setEditedModule(prev => ({
+        ...prev,
+        price: total
+      }));
+      
+      // Update price breakdown
+      setPriceBreakdown(breakdown);
+    }
+  }, [editedModule.materials, editedModule.accessories, editedModule.processingOptions, materials, accessories]);
+
   // Module type change handler
   const handleTypeChange = (type: ModuleType) => {
     const updatedModule = { ...editedModule, type };
@@ -108,51 +136,24 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
 
   // Save changes handler
   const handleSave = () => {
-    // Calculate price based on materials, accessories, etc.
-    const updatedModule = calculatePrice(editedModule);
+    // Final price calculation
+    const { total } = PriceCalculationService.calculateModulePrice(
+      editedModule,
+      materials,
+      accessories
+    );
+    
+    const updatedModule = {
+      ...editedModule,
+      price: total
+    };
+    
     onUpdate(updatedModule);
     
     toast({
       title: 'Module Updated',
       description: 'Your changes have been saved successfully.'
     });
-  };
-
-  // Helper function to calculate module price based on materials and accessories
-  const calculatePrice = (moduleToPrice: FurnitureModule): FurnitureModule => {
-    const calculatedModule = { ...moduleToPrice };
-    
-    // Calculate materials cost
-    const materialsCost = calculatedModule.materials.reduce((total, mat) => {
-      const materialData = materials.find(m => m.id === mat.materialId);
-      
-      if (materialData) {
-        // A simple calculation based on dimensions, would be more complex in real app
-        const area = calculatedModule.width * calculatedModule.height / 1000000; // Convert to m²
-        return total + materialData.pricePerSqm * mat.quantity * area;
-      }
-      
-      return total;
-    }, 0);
-    
-    // Calculate accessories cost
-    const accessoriesCost = calculatedModule.accessories.reduce((total, acc) => {
-      const accessoryData = accessories.find(a => a.id === acc.accessoryItemId);
-      
-      if (accessoryData) {
-        return total + accessoryData.price * acc.quantity;
-      }
-      
-      return total;
-    }, 0);
-    
-    // Add processing costs (would have more complex logic in a real app)
-    const processingCost = calculatedModule.processingOptions.length * 50;
-    
-    // Set the calculated price
-    calculatedModule.price = materialsCost + accessoriesCost + processingCost;
-    
-    return calculatedModule;
   };
 
   return (
@@ -221,12 +222,49 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
         </TabsContent>
       </Tabs>
       
-      {/* Footer with action buttons */}
+      {/* Footer with price breakdown and action buttons */}
       <div className="border-t p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Total Price:</span>
-          <span className="text-sm font-medium">${editedModule.price.toFixed(2)}</span>
+        <div>
+          <div className="flex items-center justify-between">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1 p-0 h-auto text-sm font-medium"
+              onClick={() => setShowPriceBreakdown(!showPriceBreakdown)}
+            >
+              <DollarSign className="h-4 w-4" />
+              Price Breakdown
+            </Button>
+            <span className="text-sm font-medium">${editedModule.price.toFixed(2)}</span>
+          </div>
+          
+          {/* Price breakdown details */}
+          {showPriceBreakdown && (
+            <div className="mt-2 text-xs space-y-1 bg-gray-50 p-2 rounded">
+              <div className="flex justify-between">
+                <span>Materials:</span>
+                <span>${priceBreakdown.materials.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Accessories:</span>
+                <span>${priceBreakdown.accessories.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Processing:</span>
+                <span>${priceBreakdown.processing.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Labor:</span>
+                <span>${priceBreakdown.labor.toFixed(2)}</span>
+              </div>
+              <div className="border-t pt-1 flex justify-between font-medium">
+                <span>Total:</span>
+                <span>${editedModule.price.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
         </div>
+        
         <div className="flex items-center space-x-2">
           <Button onClick={handleSave} className="flex-1">
             <Save className="h-4 w-4 mr-1" />

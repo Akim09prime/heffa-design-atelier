@@ -1,9 +1,10 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { FurnitureModule as FurnitureModuleType } from '../../types';
+import { FurnitureModule as FurnitureModuleType, Material } from '../../types';
 import * as THREE from 'three';
+import { MaterialService } from '@/services/materialService';
 
 interface FurnitureModuleProps {
   module: FurnitureModuleType;
@@ -11,7 +12,7 @@ interface FurnitureModuleProps {
   onClick?: () => void;
 }
 
-// Placeholder model for modules without a specific model
+// Placeholder box for modules without a model
 const PlaceholderBox: React.FC<{ 
   width: number; 
   height: number; 
@@ -20,7 +21,8 @@ const PlaceholderBox: React.FC<{
   rotation: [number, number, number];
   isSelected?: boolean;
   onClick?: () => void;
-  textureUrl?: string;
+  bodyTextureUrl?: string;
+  frontTextureUrl?: string;
   materialType?: string;
 }> = ({ 
   width, 
@@ -30,33 +32,48 @@ const PlaceholderBox: React.FC<{
   rotation, 
   isSelected = false, 
   onClick,
-  textureUrl,
+  bodyTextureUrl,
+  frontTextureUrl,
   materialType
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [bodyTexture, setBodyTexture] = useState<THREE.Texture | null>(null);
+  const [frontTexture, setFrontTexture] = useState<THREE.Texture | null>(null);
   
-  // Load texture if URL is provided
-  useEffect(() => {
-    if (textureUrl) {
-      const loader = new THREE.TextureLoader();
-      loader.load(
-        textureUrl,
-        (loadedTexture) => {
-          loadedTexture.wrapS = THREE.RepeatWrapping;
-          loadedTexture.wrapT = THREE.RepeatWrapping;
-          loadedTexture.repeat.set(1, 1);
-          setTexture(loadedTexture);
+  // Function to load a texture from URL
+  const loadTexture = (url: string): Promise<THREE.Texture> => {
+    return new Promise((resolve, reject) => {
+      new THREE.TextureLoader().load(
+        url,
+        (texture) => {
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(1, 1);
+          resolve(texture);
         },
         undefined,
-        (error) => {
-          console.error('Error loading texture:', error);
-        }
+        reject
       );
+    });
+  };
+  
+  // Load textures when URLs change
+  useEffect(() => {
+    if (bodyTextureUrl) {
+      loadTexture(bodyTextureUrl)
+        .then(setBodyTexture)
+        .catch(err => console.error('Error loading body texture:', err));
     }
-  }, [textureUrl]);
+    
+    if (frontTextureUrl) {
+      loadTexture(frontTextureUrl)
+        .then(setFrontTexture)
+        .catch(err => console.error('Error loading front texture:', err));
+    }
+  }, [bodyTextureUrl, frontTextureUrl]);
 
+  // Selection animation
   useFrame(() => {
     if (meshRef.current && isSelected) {
       meshRef.current.scale.lerp(new THREE.Vector3(1.02, 1.02, 1.02), 0.1);
@@ -68,6 +85,35 @@ const PlaceholderBox: React.FC<{
   // Selection outline effect
   const outlineColor = isSelected ? new THREE.Color(0x4c9aff) : new THREE.Color(0x000000);
   const outlineOpacity = isSelected ? 0.8 : 0;
+  
+  // Create materials based on textures
+  const bodyMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      map: bodyTexture || null,
+      color: bodyTexture ? 0xffffff : (isSelected ? 0xE7DFD1 : (hovered ? 0xD5C7B2 : 0xE7DFD1)),
+      metalness: 0.1,
+      roughness: 0.8
+    });
+  }, [bodyTexture, isSelected, hovered]);
+  
+  const frontMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      map: frontTexture || null,
+      color: frontTexture ? 0xffffff : (isSelected ? 0xB29978 : (hovered ? 0xD5C7B2 : 0xBEAC94)),
+      metalness: 0.1,
+      roughness: 0.7
+    });
+  }, [frontTexture, isSelected, hovered]);
+  
+  // Create material array for the cube
+  const materials = [
+    bodyMaterial, // Right
+    bodyMaterial, // Left
+    bodyMaterial, // Top
+    bodyMaterial, // Bottom
+    frontMaterial, // Front
+    bodyMaterial, // Back
+  ];
 
   return (
     <group>
@@ -101,20 +147,13 @@ const PlaceholderBox: React.FC<{
         onPointerOut={() => setHovered(false)}
       >
         <boxGeometry args={[width, height, depth]} />
-        {texture ? (
-          <meshStandardMaterial 
-            map={texture}
-            metalness={0.1} 
-            roughness={0.8}
-            color={isSelected ? new THREE.Color(0xffffff).multiplyScalar(1.2) : 0xffffff} 
+        {materials.map((material, index) => (
+          <primitive 
+            key={index} 
+            object={material} 
+            attach={`material-${index}`} 
           />
-        ) : (
-          <meshStandardMaterial 
-            color={isSelected ? "#B29978" : hovered ? "#D5C7B2" : "#E7DFD1"} 
-            metalness={0.1} 
-            roughness={0.8} 
-          />
-        )}
+        ))}
       </mesh>
     </group>
   );
@@ -126,27 +165,38 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
   onClick 
 }) => {
   const { width, height, depth, position, rotation, modelUrl } = module;
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [bodyTextureUrl, setBodyTextureUrl] = useState<string | undefined>();
+  const [frontTextureUrl, setFrontTextureUrl] = useState<string | undefined>();
   
-  // Find the main body material texture URL if available
+  // Find body and front materials
   const bodyMaterial = module.materials.find(m => m.part === 'body');
   const frontMaterial = module.materials.find(m => m.part === 'door' || m.part === 'drawer_front');
   
-  // Get material type for body if available
-  const bodyMaterialType = bodyMaterial?.type;
-  
-  // Get the material service to find the texture URL based on materialId
-  const materialWithTexture = module.materials.find(mat => {
-    // This corrects the error - instead of accessing textureUrl directly from the ModuleMaterial,
-    // we need to look it up from the materialId reference
-    const material = module.materials.find(m => m.part === 'body' || m.part === 'door' || m.part === 'drawer_front');
-    return material !== undefined;
-  });
-  
-  // For preview purposes, use material service to get texture URL
-  const textureUrl = materialWithTexture ? 
-    // Fix: Get texture from an external source or a default value instead
-    'https://images.unsplash.com/photo-1579782641100-2178b6d246c0?q=80&w=500' : 
-    undefined;
+  // Load materials to get textures
+  useEffect(() => {
+    const loadMaterials = async () => {
+      try {
+        const allMaterials = await MaterialService.getAllMaterials();
+        setMaterials(allMaterials);
+        
+        // Set texture URLs based on material IDs
+        if (bodyMaterial) {
+          const materialData = allMaterials.find(m => m.id === bodyMaterial.materialId);
+          setBodyTextureUrl(materialData?.textureUrl);
+        }
+        
+        if (frontMaterial) {
+          const materialData = allMaterials.find(m => m.id === frontMaterial.materialId);
+          setFrontTextureUrl(materialData?.textureUrl);
+        }
+      } catch (error) {
+        console.error("Failed to load materials:", error);
+      }
+    };
+    
+    loadMaterials();
+  }, [bodyMaterial, frontMaterial]);
   
   // If we have a model URL, we'll try to load it
   if (modelUrl) {
@@ -181,8 +231,9 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
       rotation={rotation}
       isSelected={isSelected}
       onClick={onClick}
-      textureUrl={textureUrl}
-      materialType={bodyMaterialType}
+      bodyTextureUrl={bodyTextureUrl}
+      frontTextureUrl={frontTextureUrl}
+      materialType={bodyMaterial?.type}
     />
   );
 };

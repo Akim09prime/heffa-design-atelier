@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -8,10 +7,12 @@ import { SceneContainer } from '@/components/3d/SceneContainer';
 import { Project, FurnitureModule } from '@/types';
 import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Share, Download, Layers } from 'lucide-react';
+import { ChevronLeft, Save, Share, Download, Layers, Export } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ModuleLibrary } from '@/components/3d/ModuleLibrary';
 import { ModuleProperties } from '@/components/3d/ModuleProperties';
+import { ExportOptions } from '@/components/exports/ExportOptions';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { v4 as uuidv4 } from 'uuid';
 
 const ProjectEditor3D = () => {
@@ -20,6 +21,7 @@ const ProjectEditor3D = () => {
   const [loading, setLoading] = useState(true);
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [showLibrary, setShowLibrary] = useState(true);
+  const [showExportDialog, setShowExportDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -200,6 +202,11 @@ const ProjectEditor3D = () => {
     });
   };
 
+  // Export project dialog
+  const handleOpenExport = () => {
+    setShowExportDialog(true);
+  };
+
   if (loading) {
     return (
       <DesignerLayout>
@@ -258,8 +265,8 @@ const ProjectEditor3D = () => {
                 <Save size={16} className="mr-2" />
                 Save
               </Button>
-              <Button onClick={() => navigate(`/designer/exports/${projectId}`)}>
-                <Download size={16} className="mr-2" />
+              <Button onClick={handleOpenExport}>
+                <Export size={16} className="mr-2" />
                 Export
               </Button>
             </div>
@@ -304,6 +311,16 @@ const ProjectEditor3D = () => {
             />
           )}
         </div>
+        
+        {/* Export Dialog */}
+        <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <ExportOptions 
+              project={project} 
+              onClose={() => setShowExportDialog(false)} 
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </DesignerLayout>
   );
