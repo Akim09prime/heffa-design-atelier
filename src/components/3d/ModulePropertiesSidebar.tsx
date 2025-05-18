@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FurnitureModule, Material, AccessoryItem } from '@/types';
-import { X, Save, Trash, Move, RotateRight, Cube, ArrowsOut } from 'lucide-react';
+import { X, Save, Trash, Move, RotateCw, Box, Maximize } from 'lucide-react';
 import { MaterialService } from '@/services/materialService';
 import { AccessoryService } from '@/services/accessoryService';
 import { v4 as uuidv4 } from 'uuid';
@@ -291,7 +291,7 @@ export const ModulePropertiesSidebar: React.FC<ModulePropertiesSidebarProps> = (
               {/* Rotation */}
               <div>
                 <h3 className="text-sm font-medium mb-2 flex items-center">
-                  <RotateRight className="h-4 w-4 mr-1" /> Rotation
+                  <RotateCw className="h-4 w-4 mr-1" /> Rotation
                 </h3>
                 <div className="grid grid-cols-3 gap-2">
                   <div>

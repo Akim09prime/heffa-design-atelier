@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, X, Plus, Cube } from 'lucide-react';
+import { Search, X, Plus, Box } from 'lucide-react';
 import { FurnitureModule, ModuleType, ProjectType } from '@/types';
 import { ModuleLibrary } from './ModuleLibrary';
 import { v4 as uuidv4 } from 'uuid';
