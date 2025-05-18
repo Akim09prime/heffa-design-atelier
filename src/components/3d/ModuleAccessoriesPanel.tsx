@@ -168,7 +168,6 @@ export const ModuleAccessoriesPanel: React.FC<ModuleAccessoriesPanelProps> = ({
                   value={selectedAccessory} 
                   onValueChange={setSelectedAccessory}
                   disabled={compatibleAccessoriesForType.length === 0}
-                  className="flex-1"
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select accessory" />
