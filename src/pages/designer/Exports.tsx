@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DesignerLayout } from '@/components/layout/DesignerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, FileSpreadsheet, Code, Package, Download, Eye } from 'lucide-react';
 import { ProjectService } from '@/services/projectService';
 import { Project } from '@/types';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 
 const projectMockData = [
   {
@@ -92,7 +91,7 @@ const recentExportsMockData = [
   },
 ];
 
-const ExportsPage = () => {
+const ExportsPageContent = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState<Project[]>([]);
@@ -168,131 +167,140 @@ const ExportsPage = () => {
   };
 
   return (
-    <DesignerLayout>
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-medium">{t('common.export')}</h1>
-          <Input
-            placeholder={t('common.search')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
-          />
-        </div>
-
-        <Tabs defaultValue="recent" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="recent">{t('importExport.exportData')}</TabsTrigger>
-            <TabsTrigger value="projects">{t('importExport.exportDataDesc')}</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="recent" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('importExport.exportData')}</CardTitle>
-                <CardDescription>
-                  {t('importExport.exportDataDesc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('materials.form.type')}</TableHead>
-                      <TableHead>{t('common.projects')}</TableHead>
-                      <TableHead>{t('reports.dateGenerated')}</TableHead>
-                      <TableHead>{t('reports.size')}</TableHead>
-                      <TableHead className="text-right">{t('common.actions')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredExports.map((exp) => (
-                      <TableRow key={exp.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            {getFormatIcon(exp.format)}
-                            <span className="uppercase">{exp.format}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>{exp.projectName}</TableCell>
-                        <TableCell>{formatDateTime(exp.date)}</TableCell>
-                        <TableCell>{exp.size}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button size="sm" variant="ghost">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="ghost">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredExports.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8">
-                          {t('reports.noReportsFound')}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="projects" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('common.projects')}</CardTitle>
-                <CardDescription>
-                  {t('importExport.templates')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('materials.form.name')}</TableHead>
-                      <TableHead>{t('common.status')}</TableHead>
-                      <TableHead>{t('reports.lastModified')}</TableHead>
-                      <TableHead>{t('reports.count')}</TableHead>
-                      <TableHead className="text-right">{t('common.actions')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProjects.map((project) => (
-                      <TableRow key={project.id}>
-                        <TableCell className="font-medium">{project.name}</TableCell>
-                        <TableCell>{getStatusBadge(project.status)}</TableCell>
-                        <TableCell>{formatDate(project.lastExport)}</TableCell>
-                        <TableCell>{project.exportCount}</TableCell>
-                        <TableCell className="text-right">
-                          <Button 
-                            size="sm" 
-                            onClick={() => navigate(`/designer/exports/${project.id}`)}
-                          >
-                            {t('common.export')}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredProjects.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center py-8">
-                          {t('reports.noReportsFound')}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-medium">{t('common.export')}</h1>
+        <Input
+          placeholder={t('common.search')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
-    </DesignerLayout>
+
+      <Tabs defaultValue="recent" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="recent">{t('importExport.exportData')}</TabsTrigger>
+          <TabsTrigger value="projects">{t('importExport.exportDataDesc')}</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="recent" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('importExport.exportData')}</CardTitle>
+              <CardDescription>
+                {t('importExport.exportDataDesc')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('materials.form.type')}</TableHead>
+                    <TableHead>{t('common.projects')}</TableHead>
+                    <TableHead>{t('reports.dateGenerated')}</TableHead>
+                    <TableHead>{t('reports.size')}</TableHead>
+                    <TableHead className="text-right">{t('common.actions')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredExports.map((exp) => (
+                    <TableRow key={exp.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getFormatIcon(exp.format)}
+                          <span className="uppercase">{exp.format}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{exp.projectName}</TableCell>
+                      <TableCell>{formatDateTime(exp.date)}</TableCell>
+                      <TableCell>{exp.size}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button size="sm" variant="ghost">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {filteredExports.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        {t('reports.noReportsFound')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="projects" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('common.projects')}</CardTitle>
+              <CardDescription>
+                {t('importExport.templates')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('materials.form.name')}</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead>{t('reports.lastModified')}</TableHead>
+                    <TableHead>{t('reports.count')}</TableHead>
+                    <TableHead className="text-right">{t('common.actions')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredProjects.map((project) => (
+                    <TableRow key={project.id}>
+                      <TableCell className="font-medium">{project.name}</TableCell>
+                      <TableCell>{getStatusBadge(project.status)}</TableCell>
+                      <TableCell>{formatDate(project.lastExport)}</TableCell>
+                      <TableCell>{project.exportCount}</TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          size="sm" 
+                          onClick={() => navigate(`/designer/exports/${project.id}`)}
+                        >
+                          {t('common.export')}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {filteredProjects.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        {t('reports.noReportsFound')}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+// Main component that wraps the content in TranslationProvider
+const ExportsPage = () => {
+  return (
+    <TranslationProvider>
+      <DesignerLayout>
+        <ExportsPageContent />
+      </DesignerLayout>
+    </TranslationProvider>
   );
 };
 
