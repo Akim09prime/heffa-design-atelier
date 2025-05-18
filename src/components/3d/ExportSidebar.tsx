@@ -232,6 +232,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
               <Button 
                 onClick={handlePDFExport}
                 className="flex justify-start bg-[#6A4B31] hover:bg-[#5a3f2a] text-white"
+                variant="default"
               >
                 <FileText className="mr-2 h-4 w-4" />
                 Export to PDF

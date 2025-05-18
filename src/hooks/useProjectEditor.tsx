@@ -35,11 +35,16 @@ export const useProjectEditor = (projectId: string | undefined) => {
         setAccessories(fetchedAccessories);
       } catch (error) {
         console.error('Failed to fetch materials and accessories:', error);
+        toast({
+          title: 'Data Loading Issue',
+          description: 'Some materials or accessories data could not be loaded',
+          variant: 'destructive',
+        });
       }
     };
     
     fetchData();
-  }, []);
+  }, [toast]);
 
   // Fetch project
   useEffect(() => {
@@ -172,10 +177,7 @@ export const useProjectEditor = (projectId: string | undefined) => {
         updatedAt: new Date()
       });
       
-      toast({
-        title: 'Project Saved',
-        description: 'Your project has been saved successfully',
-      });
+      return true; // Indicate successful save
     } catch (error) {
       console.error('Failed to save project:', error);
       toast({
@@ -183,6 +185,7 @@ export const useProjectEditor = (projectId: string | undefined) => {
         description: 'Failed to save project',
         variant: 'destructive',
       });
+      return false; // Indicate failed save
     }
   };
 
@@ -206,11 +209,6 @@ export const useProjectEditor = (projectId: string | undefined) => {
     });
     
     setSelectedModuleId(newModule.id);
-    
-    toast({
-      title: 'Module Added',
-      description: `${newModule.name} has been added to the scene`,
-    });
   };
 
   const handleUpdateModule = (updatedModule: FurnitureModule) => {
@@ -233,11 +231,6 @@ export const useProjectEditor = (projectId: string | undefined) => {
     });
     
     setSelectedModuleId(null);
-    
-    toast({
-      title: 'Module Deleted',
-      description: 'The module has been removed from the scene',
-    });
   };
 
   return {

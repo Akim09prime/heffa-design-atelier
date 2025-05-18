@@ -217,7 +217,14 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     async function loadScene() {
       try {
         const snapshot = await getDoc(doc(db, 'scenes', userId));
-        if (!snapshot.exists()) return;
+        if (!snapshot.exists()) {
+          toast({
+            title: "No Saved Scene",
+            description: "No previous scene found for this project",
+            variant: "default"
+          });
+          return;
+        }
         
         // Clear existing modules
         modules.current.forEach(mesh => scene.remove(mesh));
@@ -331,7 +338,14 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     animate();
 
     // Load existing scene data
-    loadScene();
+    loadScene().catch(err => {
+      console.error("Failed to load scene:", err);
+      toast({
+        title: "Connection Error",
+        description: "Could not connect to server. Working in offline mode.",
+        variant: "destructive"
+      });
+    });
 
     // Set up methods that need to be called from outside this effect
     window.saveScene = saveScene;
@@ -358,6 +372,13 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
             });
           }
         }
+      });
+      
+      // Show mode toggle notification
+      toast({
+        title: newMode ? "Wireframe Mode" : "Realistic Mode",
+        description: newMode ? "Switched to wireframe view" : "Switched to realistic view",
+        variant: "default"
       });
     };
 
@@ -423,13 +444,15 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
       <div className="w-full h-[80vh] relative" ref={mountRef}>
         <div className="absolute top-4 right-4 flex space-x-2">
           <Button
-            className="bg-amber-600 text-white px-4 py-2 rounded shadow hover:bg-amber-700 transition"
+            variant="default"
+            className="bg-amber-600 hover:bg-amber-700 text-white"
             onClick={toggleMode}
           >
             {wireframeMode ? 'Realistic Mode' : 'Wireframe Mode'}
           </Button>
           <Button
-            className="bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-800 transition"
+            variant="default"
+            className="bg-green-700 hover:bg-green-800 text-white"
             onClick={handleSave}
           >
             💾 Save Scene

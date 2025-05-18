@@ -12,9 +12,11 @@ import { ExportSidebar } from '@/components/3d/ExportSidebar';
 import { ExportOptions } from '@/components/exports/ExportOptions';
 import { useProjectEditor } from '@/hooks/useProjectEditor';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useToast } from '@/hooks/use-toast';
 
 const ProjectEditor3D = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const { toast } = useToast();
   const {
     project,
     loading,
@@ -32,6 +34,27 @@ const ProjectEditor3D = () => {
     setShowExportDialog
   } = useProjectEditor(projectId);
 
+  // Handle any keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Save on Ctrl+S
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (handleSave) {
+          handleSave();
+          toast({
+            title: "Project Saved",
+            description: "Project saved with keyboard shortcut (Ctrl+S)",
+            variant: "default"
+          });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave, toast]);
+
   if (loading) {
     return <ProjectLoadingState />;
   }
@@ -47,7 +70,14 @@ const ProjectEditor3D = () => {
         <ProjectHeader
           projectName={project.name}
           onBack={handleBack}
-          onSave={handleSave}
+          onSave={() => {
+            handleSave();
+            toast({
+              title: "Project Saved",
+              description: "Your project has been saved successfully",
+              variant: "default"
+            });
+          }}
           onExport={() => setShowExportDialog(true)}
           showLibrary={showLibrary}
           onToggleLibrary={() => setShowLibrary(!showLibrary)}
@@ -65,7 +95,14 @@ const ProjectEditor3D = () => {
                 </TabsList>
                 <TabsContent value="library" className="flex-1 p-0 m-0 overflow-auto">
                   <ModuleLibrary
-                    onAddModule={handleAddModule}
+                    onAddModule={(module) => {
+                      handleAddModule(module);
+                      toast({
+                        title: "Module Added",
+                        description: `${module.name} has been added to your scene`,
+                        variant: "default"
+                      });
+                    }}
                   />
                 </TabsContent>
                 <TabsContent value="export" className="flex-1 p-0 m-0 overflow-auto">
@@ -95,8 +132,22 @@ const ProjectEditor3D = () => {
           {selectedModule && (
             <ModuleProperties
               module={selectedModule}
-              onUpdate={handleUpdateModule}
-              onDelete={handleDeleteModule}
+              onUpdate={(updatedModule) => {
+                handleUpdateModule(updatedModule);
+                toast({
+                  title: "Module Updated",
+                  description: "Module properties have been updated",
+                  variant: "default"
+                });
+              }}
+              onDelete={(moduleId) => {
+                handleDeleteModule(moduleId);
+                toast({
+                  title: "Module Deleted",
+                  description: "Module has been removed from the scene",
+                  variant: "destructive"
+                });
+              }}
               onClose={() => setSelectedModuleId(null)}
             />
           )}
