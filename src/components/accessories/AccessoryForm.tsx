@@ -109,6 +109,11 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
     onChange('properties', { ...properties, [key]: value });
   };
 
+  // Helper function to convert boolean to string for className
+  const getErrorClass = (hasError: boolean): string => {
+    return hasError ? "border-red-500" : "";
+  };
+
   return (
     <div className="grid gap-4 py-4">
       <div className="grid grid-cols-4 items-start gap-4">
@@ -116,7 +121,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
         <div className="col-span-3 space-y-1">
           <Input 
             id="code" 
-            className={errors.code ? "border-red-500" : ""}
+            className={getErrorClass(!!errors.code)}
             value={accessory.code || ''}
             onChange={(e) => onChange('code', e.target.value)}
             placeholder="Enter product code"
@@ -135,7 +140,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
         <div className="col-span-3 space-y-1">
           <Input 
             id="name" 
-            className={errors.name ? "border-red-500" : ""}
+            className={getErrorClass(!!errors.name)}
             value={accessory.name || ''}
             onChange={(e) => onChange('name', e.target.value)}
             placeholder="Enter accessory name"
@@ -156,7 +161,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
             value={accessory.type || ''} 
             onValueChange={(value) => onChange('type', value as AccessoryType)}
           >
-            <SelectTrigger id="type" className={errors.type ? "border-red-500" : ""}>
+            <SelectTrigger id="type" className={getErrorClass(!!errors.type)}>
               <SelectValue placeholder="Select accessory type" />
             </SelectTrigger>
             <SelectContent>
@@ -183,7 +188,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
             value={accessory.manufacturer || ''} 
             onValueChange={(value) => onChange('manufacturer', value)}
           >
-            <SelectTrigger id="manufacturer" className={errors.manufacturer ? "border-red-500" : ""}>
+            <SelectTrigger id="manufacturer" className={getErrorClass(!!errors.manufacturer)}>
               <SelectValue placeholder="Select manufacturer" />
             </SelectTrigger>
             <SelectContent>

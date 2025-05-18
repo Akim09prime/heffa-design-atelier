@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from '@react-three/drei';
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
@@ -62,9 +62,76 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     const grid = new THREE.GridHelper(10, 20, '#cccccc', '#cccccc');
     scene.add(grid);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-
+    // Create our own orbit controls without using the imported OrbitControls
+    let isDragging = false;
+    let previousMousePosition = {
+      x: 0,
+      y: 0
+    };
+    let cameraTarget = new THREE.Vector3(0, 0.5, 0);
+    let cameraDistance = camera.position.distanceTo(cameraTarget);
+    
+    // Initialize camera position
+    camera.position.set(
+      cameraTarget.x + cameraDistance * Math.sin(0) * Math.cos(0),
+      cameraTarget.y + cameraDistance * Math.sin(Math.PI/4),
+      cameraTarget.z + cameraDistance * Math.cos(0) * Math.cos(0)
+    );
+    camera.lookAt(cameraTarget);
+    
+    // Handle orbit controls manually
+    container.addEventListener('mousedown', (event) => {
+      isDragging = true;
+      previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    });
+    
+    container.addEventListener('mousemove', (event) => {
+      if (!isDragging) return;
+      
+      const deltaMove = {
+        x: event.clientX - previousMousePosition.x,
+        y: event.clientY - previousMousePosition.y
+      };
+      
+      // Convert to radians for rotation
+      const deltaRotationQuaternion = new THREE.Quaternion()
+        .setFromEuler(new THREE.Euler(
+          deltaMove.y * 0.01,
+          deltaMove.x * 0.01,
+          0,
+          'XYZ'
+        ));
+      
+      // Apply rotation to camera position
+      const position = new THREE.Vector3().subVectors(camera.position, cameraTarget);
+      position.applyQuaternion(deltaRotationQuaternion);
+      camera.position.copy(position.add(cameraTarget));
+      camera.lookAt(cameraTarget);
+      
+      previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+    });
+    
+    container.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+    
+    // Mouse wheel zoom
+    container.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      
+      const zoomAmount = event.deltaY * 0.001;
+      cameraDistance = Math.max(1, Math.min(10, cameraDistance + zoomAmount));
+      
+      const direction = new THREE.Vector3().subVectors(camera.position, cameraTarget).normalize();
+      camera.position.copy(cameraTarget).addScaledVector(direction, cameraDistance);
+    });
+    
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -186,7 +253,6 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
 
     const animate = () => {
       requestAnimationFrame(animate);
-      controls.update();
       renderer.render(scene, camera);
     };
     animate();
