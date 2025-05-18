@@ -1,7 +1,9 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { SceneContainer } from '@/components/3d/SceneContainer';
+import { ThreeDRoomCanvas } from '@/components/3d/3DRoomCanvas';
 import { FurnitureModule } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProjectSceneViewProps {
   modules: FurnitureModule[];
@@ -10,6 +12,7 @@ interface ProjectSceneViewProps {
   roomHeight: number;
   onSelectModule: (id: string | null) => void;
   selectedModuleId: string | null;
+  useAdvanced3D?: boolean;
 }
 
 export const ProjectSceneView = ({
@@ -18,21 +21,31 @@ export const ProjectSceneView = ({
   roomLength,
   roomHeight,
   onSelectModule,
-  selectedModuleId
+  selectedModuleId,
+  useAdvanced3D = true // Set to true to use the new 3D room canvas
 }: ProjectSceneViewProps) => {
+  const { user } = useAuth();
+  
   return (
     <Card className="m-4 flex-1 shadow-md border-gray-200 overflow-hidden">
       <CardContent className="p-0 h-full">
-        <SceneContainer
-          modules={modules}
-          roomWidth={roomWidth}
-          roomLength={roomLength}
-          roomHeight={roomHeight}
-          showGrid={true}
-          enableOrbitControls={true}
-          onSelectModule={onSelectModule}
-          selectedModuleId={selectedModuleId}
-        />
+        {useAdvanced3D ? (
+          <ThreeDRoomCanvas 
+            userId={user?.id || 'demoUser'} 
+            className="h-full"
+          />
+        ) : (
+          <SceneContainer
+            modules={modules}
+            roomWidth={roomWidth}
+            roomLength={roomLength}
+            roomHeight={roomHeight}
+            showGrid={true}
+            enableOrbitControls={true}
+            onSelectModule={onSelectModule}
+            selectedModuleId={selectedModuleId}
+          />
+        )}
       </CardContent>
     </Card>
   );

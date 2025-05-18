@@ -96,7 +96,29 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
       thumbnailUrl: template.thumbnailUrl
     };
     
+    // Send message to 3D Canvas
+    window.postMessage({ 
+      type: 'addModule',
+      width: template.width,
+      height: template.height,
+      depth: template.depth,
+      color: getModuleColor(template.type as ModuleType)
+    }, '*');
+    
     onAddModule(newModule);
+  };
+
+  // Helper function to assign colors based on module type
+  const getModuleColor = (type: ModuleType): string => {
+    switch(type) {
+      case 'base_cabinet': return '#c1a57b';
+      case 'wall_cabinet': return '#d8c3a5';
+      case 'drawer_unit': return '#ad9572';
+      case 'tall_cabinet': return '#a68a64';
+      case 'corner_cabinet': return '#b6976f';
+      case 'island': return '#d2b48c';
+      default: return '#c1a57b';
+    }
   };
 
   return (

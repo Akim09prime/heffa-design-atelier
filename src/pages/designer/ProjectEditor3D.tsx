@@ -70,6 +70,7 @@ const ProjectEditor3D = () => {
               roomHeight={(project.dimensions?.height || 2400) / 1000} // Convert to meters
               onSelectModule={setSelectedModuleId}
               selectedModuleId={selectedModuleId}
+              useAdvanced3D={true}
             />
           </div>
 
