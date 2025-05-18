@@ -4,6 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Material, FurnitureModule, MaterialType } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { useUi } from '@/contexts/UiContext';
+import { Loader } from 'lucide-react';
 
 interface ModuleMaterialsPanelProps {
   module: FurnitureModule;
@@ -16,7 +18,9 @@ export const ModuleMaterialsPanel: React.FC<ModuleMaterialsPanelProps> = ({
   materials,
   onUpdate
 }) => {
+  const { showSuccessToast, showErrorToast, isLoading, setLoading } = useUi();
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [loadingMaterial, setLoadingMaterial] = useState<Record<string, boolean>>({});
   
   // Find current materials in the module
   const bodyMaterial = module.materials.find(m => m.part === 'body');
@@ -35,37 +39,54 @@ export const ModuleMaterialsPanel: React.FC<ModuleMaterialsPanelProps> = ({
   }, [module]);
 
   // Material change handler
-  const handleMaterialChange = (partType: 'body' | 'door' | 'drawer_front' | 'back_panel' | 'shelf', materialId: string) => {
-    const updatedModule = { ...module };
+  const handleMaterialChange = async (partType: 'body' | 'door' | 'drawer_front' | 'back_panel' | 'shelf', materialId: string) => {
+    if (!materialId) return;
     
-    // Update state based on part type
-    if (partType === 'body') {
-      setBodyMaterialId(materialId);
-    } else if (partType === 'door' || partType === 'drawer_front') {
-      setFrontMaterialId(materialId);
-    }
-    
-    // Find the material in the module or create a new one
-    const materialIndex = updatedModule.materials.findIndex(m => m.part === partType);
-    
-    if (materialIndex >= 0) {
-      // Update existing material
-      updatedModule.materials[materialIndex].materialId = materialId;
-    } else {
-      // Add new material
-      const selectedMaterial = materials.find(m => m.id === materialId);
-      if (selectedMaterial) {
-        updatedModule.materials.push({
-          id: uuidv4(),
-          type: selectedMaterial.type,
-          materialId,
-          part: partType,
-          quantity: calculatePartQuantity(updatedModule, partType) // Calculate based on dimensions
-        });
+    try {
+      setLoadingMaterial(prev => ({ ...prev, [partType]: true }));
+      
+      // Update state based on part type
+      if (partType === 'body') {
+        setBodyMaterialId(materialId);
+      } else if (partType === 'door' || partType === 'drawer_front') {
+        setFrontMaterialId(materialId);
       }
+      
+      const updatedModule = { ...module };
+      
+      // Find the material in the module or create a new one
+      const materialIndex = updatedModule.materials.findIndex(m => m.part === partType);
+      
+      if (materialIndex >= 0) {
+        // Update existing material
+        updatedModule.materials[materialIndex].materialId = materialId;
+      } else {
+        // Add new material
+        const selectedMat = materials.find(m => m.id === materialId);
+        if (selectedMat) {
+          updatedModule.materials.push({
+            id: uuidv4(),
+            type: selectedMat.type,
+            materialId,
+            part: partType,
+            quantity: calculatePartQuantity(updatedModule, partType) // Calculate based on dimensions
+          });
+        }
+      }
+      
+      onUpdate(updatedModule);
+      
+      const material = materials.find(m => m.id === materialId);
+      showSuccessToast(
+        'Material Updated',
+        `${material?.name || 'Material'} applied to ${partType.replace('_', ' ')}`
+      );
+    } catch (error) {
+      console.error(`Error updating ${partType} material:`, error);
+      showErrorToast('Material Update Failed', (error as Error).message);
+    } finally {
+      setLoadingMaterial(prev => ({ ...prev, [partType]: false }));
     }
-    
-    onUpdate(updatedModule);
   };
 
   // Calculate material quantity based on part type and module dimensions
@@ -103,13 +124,17 @@ export const ModuleMaterialsPanel: React.FC<ModuleMaterialsPanelProps> = ({
     <div className="space-y-4">
       {/* Body Material */}
       <div>
-        <Label className="text-sm font-medium">Body Material</Label>
+        <Label className="text-sm font-medium flex items-center">
+          Body Material
+          {loadingMaterial.body && <Loader size={14} className="animate-spin ml-2" />}
+        </Label>
         <Select
           value={bodyMaterialId}
           onValueChange={(value) => {
             handleMaterialChange('body', value);
             handleSelectMaterialForPreview(value);
           }}
+          disabled={loadingMaterial.body}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select material" />
@@ -137,13 +162,17 @@ export const ModuleMaterialsPanel: React.FC<ModuleMaterialsPanelProps> = ({
 
       {/* Front Material */}
       <div>
-        <Label className="text-sm font-medium">Front Material</Label>
+        <Label className="text-sm font-medium flex items-center">
+          Front Material
+          {loadingMaterial.door && <Loader size={14} className="animate-spin ml-2" />}
+        </Label>
         <Select
           value={frontMaterialId}
           onValueChange={(value) => {
             handleMaterialChange('door', value);
             handleSelectMaterialForPreview(value);
           }}
+          disabled={loadingMaterial.door}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select front material" />

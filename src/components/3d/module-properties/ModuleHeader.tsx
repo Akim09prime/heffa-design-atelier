@@ -12,7 +12,13 @@ export const ModuleHeader: React.FC<ModuleHeaderProps> = ({ name, onClose }) => 
   return (
     <div className="flex items-center justify-between p-4 border-b">
       <h2 className="font-medium">{name}</h2>
-      <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={onClose} 
+        className="h-8 w-8 hover:bg-gray-100"
+        aria-label="Close properties panel"
+      >
         <X className="h-4 w-4" />
       </Button>
     </div>

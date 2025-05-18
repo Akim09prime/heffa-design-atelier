@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { AdminLayout } from '../components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,18 +6,33 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useUi } from '@/contexts/UiContext';
 import {
   Database, FileText, Settings, Upload, Download,
   BarChart3, PieChart, Users, Package, AlertCircle,
-  ArrowUpRightFromCircle, Plus
+  ArrowUpRightFromCircle, Plus, Loader
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { isLoading, setLoading, showSuccessToast, showErrorToast } = useUi();
+  
+  // Sample data for export functionality
+  const materialsData = [
+    { id: "EG1000", name: "White Oak", type: "PAL", price: 15.00, status: "In Stock" },
+    { id: "EG1001", name: "Dark Walnut", type: "MDF", price: 23.00, status: "Low Stock" },
+    { id: "EG1002", name: "Matte Black", type: "MDF-AGT", price: 31.00, status: "In Stock" },
+    { id: "EG1003", name: "Brushed Gray", type: "PFL", price: 39.00, status: "In Stock" },
+    { id: "EG1004", name: "Natural Maple", type: "GLASS", price: 47.00, status: "Low Stock" }
+  ];
   
   const handleNavigation = (path: string, title: string) => {
     navigate(path);
@@ -28,11 +42,101 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleExportExcel = async () => {
+    try {
+      setLoading('export-excel', true);
+      
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Convert data to worksheet
+      const ws = XLSX.utils.json_to_sheet(materialsData);
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, "Materials");
+      
+      // Generate buffer
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      
+      // Convert buffer to Blob
+      const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      // Save file
+      saveAs(blob, "materials-catalog.xlsx");
+      
+      showSuccessToast('Export Successful', 'Materials data exported to Excel');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      showErrorToast('Export Failed', (error as Error).message);
+    } finally {
+      setLoading('export-excel', false);
+    }
+  };
+  
+  const handleExportPdf = async () => {
+    try {
+      setLoading('export-pdf', true);
+      
+      // Create PDF document
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(20);
+      doc.text("Materials Catalog", 20, 20);
+      
+      // Add date
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+      
+      // Prepare table data
+      const tableData = [
+        ['Code', 'Name', 'Type', 'Price', 'Status'],
+        ...materialsData.map(item => [
+          item.id,
+          item.name,
+          item.type,
+          `$${item.price.toFixed(2)}/m²`,
+          item.status
+        ])
+      ];
+      
+      // @ts-ignore - jsPDF-autotable types are not properly recognized
+      doc.autoTable({
+        startY: 40,
+        head: [tableData[0]],
+        body: tableData.slice(1),
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: 255 }
+      });
+      
+      // Save the PDF
+      doc.save("materials-catalog.pdf");
+      
+      showSuccessToast('Export Successful', 'Materials data exported to PDF');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      showErrorToast('Export Failed', (error as Error).message);
+    } finally {
+      setLoading('export-pdf', false);
+    }
+  };
+  
   const handleAction = (action: string) => {
-    toast({
-      title: `${action} initiated`,
-      description: "Processing your request...",
-    });
+    if (action === "Export") {
+      // Show export options
+      const exportType = window.confirm("Choose export format: \nClick OK for PDF, Cancel for Excel") ? "PDF" : "Excel";
+      
+      if (exportType === "PDF") {
+        handleExportPdf();
+      } else {
+        handleExportExcel();
+      }
+    } else {
+      toast({
+        title: `${action} initiated`,
+        description: "Processing your request...",
+      });
+    }
   };
 
   return (
@@ -54,8 +158,17 @@ const AdminDashboard = () => {
               variant="outline" 
               className="border-blue-400/30 text-blue-400 hover:bg-blue-800/30 transition-all hover:scale-105"
               onClick={() => handleAction("Export")}
+              disabled={isLoading('export-pdf') || isLoading('export-excel')}
             >
-              <Download size={16} className="mr-2" /> Export
+              {(isLoading('export-pdf') || isLoading('export-excel')) ? (
+                <>
+                  <Loader size={16} className="mr-2 animate-spin" /> Exporting...
+                </>
+              ) : (
+                <>
+                  <Download size={16} className="mr-2" /> Export
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -295,7 +408,7 @@ const AdminDashboard = () => {
                 <CardContent className="pb-0">
                   <div className="flex justify-center">
                     <div className="w-full h-52 bg-admin-700/20 rounded-md flex flex-col items-center justify-center border border-admin-700/50 overflow-hidden relative">
-                      <div className="absolute inset-0 bg-[conic-gradient(at_bottom_left,var(--tw-gradient-stops))] from-indigo-900 via-purple-900 to-blue-900 opacity-20"></div>
+                      <div className="absolute inset-0 bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-indigo-900 via-purple-900 to-blue-900 opacity-20"></div>
                       <div className="relative z-10 flex flex-col items-center">
                         <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-2">
                           <span className="text-xl font-bold text-white">78%</span>

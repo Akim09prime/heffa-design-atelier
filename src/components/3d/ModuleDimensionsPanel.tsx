@@ -1,8 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FurnitureModule } from '@/types';
+import { validateNumericInput, parseNumericInput } from '@/utils/validators';
+import { useToast } from '@/hooks/use-toast';
+import { showErrorToast } from '@/utils/toast';
 
 // Helper to format measurements
 const formatMeasurement = (value: number) => {
@@ -18,10 +21,48 @@ export const ModuleDimensionsPanel: React.FC<ModuleDimensionsPanelProps> = ({
   module,
   onUpdate
 }) => {
-  const handleDimensionChange = (dimension: 'width' | 'height' | 'depth', value: number) => {
+  const { toast } = useToast();
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const handleDimensionChange = (dimension: 'width' | 'height' | 'depth', value: string) => {
+    // Validate input
+    if (!validateNumericInput(value, { min: 1 })) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [dimension]: 'Please enter a valid number greater than 0'
+      }));
+      return;
+    }
+
+    // Clear validation error
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[dimension];
+      return newErrors;
+    });
+
+    // Update module with parsed value
+    const numValue = parseFloat(value);
     const updatedModule = { ...module };
-    updatedModule[dimension] = value;
-    onUpdate(updatedModule);
+    updatedModule[dimension] = numValue;
+    
+    try {
+      onUpdate(updatedModule);
+    } catch (error) {
+      console.error(`Error updating ${dimension}:`, error);
+      showErrorToast(toast, `Failed to update ${dimension}`, (error as Error).message);
+    }
+  };
+
+  const handleBlur = (dimension: 'width' | 'height' | 'depth') => {
+    // If the value is invalid, reset to the previous valid value
+    if (validationErrors[dimension]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[dimension];
+        return newErrors;
+      });
+    }
   };
 
   return (
@@ -34,10 +75,16 @@ export const ModuleDimensionsPanel: React.FC<ModuleDimensionsPanelProps> = ({
             id="width"
             type="number"
             value={module.width}
-            onChange={(e) => handleDimensionChange('width', Number(e.target.value))}
-            className="h-8"
+            onChange={(e) => handleDimensionChange('width', e.target.value)}
+            onBlur={() => handleBlur('width')}
+            className={`h-8 ${validationErrors.width ? 'border-red-500' : ''}`}
+            aria-invalid={!!validationErrors.width}
           />
-          <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.width)}</div>
+          {validationErrors.width ? (
+            <p className="text-xs text-red-500 mt-1">{validationErrors.width}</p>
+          ) : (
+            <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.width)}</div>
+          )}
         </div>
         <div>
           <Label htmlFor="height" className="text-xs">Height</Label>
@@ -45,10 +92,16 @@ export const ModuleDimensionsPanel: React.FC<ModuleDimensionsPanelProps> = ({
             id="height"
             type="number"
             value={module.height}
-            onChange={(e) => handleDimensionChange('height', Number(e.target.value))}
-            className="h-8"
+            onChange={(e) => handleDimensionChange('height', e.target.value)}
+            onBlur={() => handleBlur('height')}
+            className={`h-8 ${validationErrors.height ? 'border-red-500' : ''}`}
+            aria-invalid={!!validationErrors.height}
           />
-          <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.height)}</div>
+          {validationErrors.height ? (
+            <p className="text-xs text-red-500 mt-1">{validationErrors.height}</p>
+          ) : (
+            <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.height)}</div>
+          )}
         </div>
         <div>
           <Label htmlFor="depth" className="text-xs">Depth</Label>
@@ -56,10 +109,16 @@ export const ModuleDimensionsPanel: React.FC<ModuleDimensionsPanelProps> = ({
             id="depth"
             type="number"
             value={module.depth}
-            onChange={(e) => handleDimensionChange('depth', Number(e.target.value))}
-            className="h-8"
+            onChange={(e) => handleDimensionChange('depth', e.target.value)}
+            onBlur={() => handleBlur('depth')}
+            className={`h-8 ${validationErrors.depth ? 'border-red-500' : ''}`}
+            aria-invalid={!!validationErrors.depth}
           />
-          <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.depth)}</div>
+          {validationErrors.depth ? (
+            <p className="text-xs text-red-500 mt-1">{validationErrors.depth}</p>
+          ) : (
+            <div className="text-xs text-gray-500 mt-1">{formatMeasurement(module.depth)}</div>
+          )}
         </div>
       </div>
     </div>
