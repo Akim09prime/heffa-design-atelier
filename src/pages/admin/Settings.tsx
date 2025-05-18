@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { UiProvider, useUi } from '@/contexts/UiContext';
+import { Loader } from 'lucide-react';
 
 // Create a wrapper component that uses the context
 const SettingsContent = () => {
