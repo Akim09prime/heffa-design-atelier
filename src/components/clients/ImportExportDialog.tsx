@@ -6,7 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Client } from '@/types';
-import { Download, Upload } from 'lucide-react';
+import { Download, Upload, AlertCircle, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 interface ImportExportDialogProps {
   isOpen: boolean;
@@ -25,38 +27,80 @@ export const ImportExportDialog = ({
   const [importData, setImportData] = useState<string>("");
   const [importFile, setImportFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<boolean>(false);
+  const [parsedClients, setParsedClients] = useState<Client[]>([]);
+  const [parsing, setParsing] = useState<boolean>(false);
 
-  const handleImport = () => {
+  const validateClientData = (parsedData: any[]): boolean => {
+    if (!Array.isArray(parsedData)) {
+      setError("Invalid format. Import data must be an array of clients");
+      return false;
+    }
+    
+    // Basic validation
+    const isValid = parsedData.every(client => 
+      client && typeof client === 'object' && 
+      client.name && typeof client.name === 'string' && 
+      client.email && typeof client.email === 'string'
+    );
+
+    if (!isValid) {
+      setError("Invalid client data. Every client must have a name and email");
+      return false;
+    }
+    
+    return true;
+  };
+
+  const parseImportData = () => {
     try {
+      setParsing(true);
+      setError(null);
+      setImportSuccess(false);
+      
       if (!importData.trim()) {
         setError("Please provide some data to import");
+        setParsing(false);
         return;
       }
 
       const parsedData = JSON.parse(importData) as Client[];
       
-      if (!Array.isArray(parsedData)) {
-        setError("Invalid format. Import data must be an array of clients");
+      if (!validateClientData(parsedData)) {
+        setParsing(false);
         return;
       }
 
-      // Basic validation
-      const isValid = parsedData.every(client => 
-        client.name && typeof client.name === 'string' && 
-        client.email && typeof client.email === 'string'
-      );
+      // Process client data to ensure it has all required fields
+      const processedClients = parsedData.map(client => ({
+        ...client,
+        id: client.id || `c${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        projects: client.projects || 0,
+        status: client.status || 'pending',
+        lastActive: client.lastActive || new Date().toISOString().split('T')[0]
+      }));
 
-      if (!isValid) {
-        setError("Invalid client data. Every client must have a name and email");
-        return;
-      }
+      setParsedClients(processedClients);
+      setImportSuccess(true);
+      setParsing(false);
+    } catch (e) {
+      console.error("Error parsing import data:", e);
+      setError("Invalid JSON format");
+      setParsing(false);
+    }
+  };
 
-      onImport(parsedData);
+  const handleImport = () => {
+    if (parsedClients.length > 0) {
+      onImport(parsedClients);
       onOpenChange(false);
       setImportData("");
+      setImportFile(null);
       setError(null);
-    } catch (e) {
-      setError("Invalid JSON format");
+      setImportSuccess(false);
+      setParsedClients([]);
+    } else {
+      parseImportData();
     }
   };
 
@@ -65,6 +109,9 @@ export const ImportExportDialog = ({
     
     const file = e.target.files[0];
     setImportFile(file);
+    setError(null);
+    setImportSuccess(false);
+    setParsedClients([]);
     
     const reader = new FileReader();
     reader.onload = (evt) => {
@@ -87,6 +134,14 @@ export const ImportExportDialog = ({
     
     URL.revokeObjectURL(url);
     onOpenChange(false);
+  };
+
+  const resetImport = () => {
+    setImportData("");
+    setImportFile(null);
+    setError(null);
+    setImportSuccess(false);
+    setParsedClients([]);
   };
 
   return (
@@ -123,14 +178,41 @@ export const ImportExportDialog = ({
                 <Textarea
                   placeholder="Paste JSON data here..."
                   value={importData}
-                  onChange={(e) => setImportData(e.target.value)}
+                  onChange={(e) => {
+                    setImportData(e.target.value);
+                    setError(null);
+                    setImportSuccess(false);
+                    setParsedClients([]);
+                  }}
                   className="h-32 mt-1"
                 />
               </div>
               
+              {parsing && (
+                <div className="mt-2">
+                  <p className="text-sm text-muted-foreground mb-2">Parsing data...</p>
+                  <Progress value={50} className="h-1" />
+                </div>
+              )}
+              
               {error && (
-                <div className="text-red-500 text-sm mt-2">
-                  {error}
+                <div className="bg-red-50 border border-red-200 rounded-md p-3 mt-2">
+                  <div className="flex items-center text-red-600 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    <p>{error}</p>
+                  </div>
+                </div>
+              )}
+              
+              {importSuccess && (
+                <div className="bg-green-50 border border-green-200 rounded-md p-3 mt-2">
+                  <div className="flex items-center text-green-600 text-sm mb-2">
+                    <Check className="h-4 w-4 mr-2" />
+                    <p>Successfully parsed {parsedClients.length} clients</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Badge variant="outline">{parsedClients.length} clients ready to import</Badge>
+                  </div>
                 </div>
               )}
             </div>
@@ -143,21 +225,50 @@ export const ImportExportDialog = ({
               <p className="text-sm text-muted-foreground mt-2">
                 This will generate a JSON file with all your current client data
               </p>
+              
+              {clients.length > 0 && (
+                <div className="mt-4">
+                  <Badge variant="outline" className="mb-2">
+                    {clients.filter(c => c.status === 'active').length} active clients
+                  </Badge>
+                  {' '}
+                  <Badge variant="outline" className="mb-2">
+                    {clients.filter(c => c.status === 'inactive').length} inactive clients
+                  </Badge>
+                  {' '}
+                  <Badge variant="outline" className="mb-2">
+                    {clients.filter(c => c.status === 'pending').length} pending clients
+                  </Badge>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
 
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+          <Button variant="outline" onClick={() => {
+            if (activeTab === "import" && (importFile || importData.trim())) {
+              resetImport();
+            } else {
+              onOpenChange(false);
+            }
+          }}>
+            {activeTab === "import" && (importFile || importData.trim()) ? "Reset" : "Cancel"}
           </Button>
           {activeTab === "import" ? (
-            <Button onClick={handleImport} disabled={!importData.trim()}>
+            <Button 
+              onClick={handleImport} 
+              disabled={parsing || (!importSuccess && !importData.trim())}
+              className={importSuccess ? "bg-green-600 hover:bg-green-700" : ""}
+            >
               <Upload className="h-4 w-4 mr-2" />
-              Import Clients
+              {importSuccess ? "Confirm Import" : "Validate & Import"}
             </Button>
           ) : (
-            <Button onClick={handleExport}>
+            <Button 
+              onClick={handleExport}
+              disabled={clients.length === 0}
+            >
               <Download className="h-4 w-4 mr-2" />
               Export Clients
             </Button>

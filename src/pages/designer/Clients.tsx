@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ const Clients = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isImportExportDialogOpen, setIsImportExportDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [isFormValid, setIsFormValid] = useState(false);
   const [newClient, setNewClient] = useState<Partial<Client>>({
     name: "",
     email: "",
@@ -83,10 +84,10 @@ const Clients = () => {
   };
 
   const handleAddClient = () => {
-    if (!newClient.name || !newClient.email) {
+    if (!isFormValid) {
       toast({
-        title: "Error",
-        description: "Name and email are required fields",
+        title: "Validation Error",
+        description: "Please correct the form errors before submitting",
         variant: "destructive",
       });
       return;
@@ -126,27 +127,29 @@ const Clients = () => {
   };
   
   const handleEditClient = () => {
-    if (!selectedClient || !selectedClient.name || !selectedClient.email) {
+    if (!isFormValid) {
       toast({
-        title: "Error",
-        description: "Name and email are required fields",
+        title: "Validation Error",
+        description: "Please correct the form errors before submitting",
         variant: "destructive",
       });
       return;
     }
     
-    // Update client in the list
-    setClients(prevClients => 
-      prevClients.map(c => c.id === selectedClient.id ? selectedClient : c)
-    );
-    
-    toast({
-      title: "Client Updated",
-      description: `${selectedClient.name}'s information has been updated`,
-    });
-    
-    setIsEditClientDialogOpen(false);
-    setSelectedClient(null);
+    if (selectedClient) {
+      // Update client in the list
+      setClients(prevClients => 
+        prevClients.map(c => c.id === selectedClient.id ? selectedClient : c)
+      );
+      
+      toast({
+        title: "Client Updated",
+        description: `${selectedClient.name}'s information has been updated`,
+      });
+      
+      setIsEditClientDialogOpen(false);
+      setSelectedClient(null);
+    }
   };
   
   const handleDeleteClient = (client: Client) => {
@@ -378,11 +381,17 @@ const Clients = () => {
           </DialogHeader>
           <ClientForm 
             client={newClient} 
-            onChange={handleNewClientChange} 
+            onChange={handleNewClientChange}
+            onValidationChange={setIsFormValid}
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddClientDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleAddClient}>Add Client</Button>
+            <Button 
+              onClick={handleAddClient}
+              disabled={!isFormValid}
+            >
+              Add Client
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -401,11 +410,17 @@ const Clients = () => {
               client={selectedClient} 
               onChange={handleEditClientChange}
               isEditing={true}
+              onValidationChange={setIsFormValid}
             />
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditClientDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleEditClient}>Save Changes</Button>
+            <Button 
+              onClick={handleEditClient}
+              disabled={!isFormValid}
+            >
+              Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
