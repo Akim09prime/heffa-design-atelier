@@ -9,7 +9,7 @@ import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Printer, ChevronRight, Save } from 'lucide-react';
+import { Printer, ChevronRight, Save, Calculator } from 'lucide-react';
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -143,6 +143,19 @@ const NewProject = () => {
       });
     }
   };
+  
+  const handleCreateQuote = () => {
+    if (projectId) {
+      console.log(`Navigating to quote creation for project ${projectId}`);
+      navigate(`/designer/projects/${projectId}/quote`);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Please create a project first before generating a quote',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <DesignerLayout>
@@ -159,8 +172,8 @@ const NewProject = () => {
             />
           </CardContent>
           {projectId && (
-            <CardFooter className="bg-gray-50 border-t border-gray-200 flex justify-between gap-4 p-4">
-              <div className="flex gap-2">
+            <CardFooter className="bg-gray-50 border-t border-gray-200 flex flex-wrap justify-between gap-4 p-4">
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   variant="outline" 
                   onClick={handleEditProject}
@@ -175,6 +188,14 @@ const NewProject = () => {
                   className="fancy-btn"
                 >
                   Browse Modules
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCreateQuote}
+                  className="fancy-btn"
+                >
+                  <Calculator size={16} className="mr-2" />
+                  Create Quote
                 </Button>
               </div>
               <Button 

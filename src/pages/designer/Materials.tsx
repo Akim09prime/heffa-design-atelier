@@ -122,7 +122,7 @@ const MaterialsContent = () => {
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                       }}
-                    ></div>
+                    />
                     <CardContent className="p-4">
                       <h3 className="font-medium">{material.code}</h3>
                       <p className="text-sm text-muted-foreground">{material.name}</p>
@@ -161,7 +161,7 @@ const MaterialsContent = () => {
                           backgroundSize: 'cover',
                           backgroundPosition: 'center',
                         }}
-                      ></div>
+                      />
                       <CardContent className="p-4">
                         <h3 className="font-medium">{material.code}</h3>
                         <p className="text-sm text-muted-foreground">{material.name}</p>
