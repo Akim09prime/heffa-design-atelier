@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { MaterialService } from '@/services/materialService';
 import { Material, MaterialType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { showSuccessToast } from '@/utils/toast';
+import { UiProvider } from '@/contexts/UiContext';
 
-const Materials = () => {
+// Create a MaterialsContent component that uses hooks
+const MaterialsContent = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [materialType, setMaterialType] = useState<MaterialType>('PAL');
@@ -57,10 +60,7 @@ const Materials = () => {
   }, [searchQuery, materials]);
 
   const handleAddToProject = (material: Material) => {
-    toast({
-      title: t('materials.materialAdded'),
-      description: `${material.name} ${t('materials.addedToProject')}`,
-    });
+    showSuccessToast(toast, t('materials.materialAdded'), `${material.name} ${t('materials.addedToProject')}`);
   };
 
   return (
@@ -181,6 +181,17 @@ const Materials = () => {
         </Tabs>
       </div>
     </DesignerLayout>
+  );
+};
+
+// Main Materials component wrapped with providers
+const Materials = () => {
+  return (
+    <UiProvider>
+      <TranslationProvider>
+        <MaterialsContent />
+      </TranslationProvider>
+    </UiProvider>
   );
 };
 
