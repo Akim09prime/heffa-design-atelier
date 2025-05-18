@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { AuthProvider } from '../contexts/AuthContext';
 
 // Component with access to auth context
 const LoginContent = () => {
@@ -144,13 +143,9 @@ const LoginContent = () => {
   );
 };
 
-// Main Login component wrapped with AuthProvider
+// Main Login component - no longer needs AuthProvider wrapper since App.tsx provides it
 const Login = () => {
-  return (
-    <AuthProvider>
-      <LoginContent />
-    </AuthProvider>
-  );
+  return <LoginContent />;
 };
 
 export default Login;

@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AuthProvider } from '../contexts/AuthContext';
 
 const IndexContent = () => {
   const { user, appMode, setAppMode } = useAuth();
@@ -129,13 +128,9 @@ const IndexContent = () => {
   );
 };
 
-// Main Index component wrapped with AuthProvider
+// Main Index component is already wrapped with AuthProvider in App.tsx
 const Index = () => {
-  return (
-    <AuthProvider>
-      <IndexContent />
-    </AuthProvider>
-  );
+  return <IndexContent />;
 };
 
 export default Index;
