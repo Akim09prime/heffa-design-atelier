@@ -1,13 +1,20 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
 import { db } from '../../firebase-config';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { toast } from 'sonner';
 
 interface Props {
   className?: string;
   userId?: string;
+}
+
+// Make modules available globally for the ExportSidebar component
+declare global {
+  interface Window {
+    modules?: React.MutableRefObject<THREE.Mesh[]>;
+  }
 }
 
 export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUser' }) => {
@@ -16,6 +23,15 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
   const [showEditor, setShowEditor] = useState(false);
   const modules = useRef<THREE.Mesh[]>([]);
   const selectedModule = useRef<THREE.Mesh | null>(null);
+
+  // Make modules ref available globally for ExportSidebar
+  useEffect(() => {
+    window.modules = modules;
+    
+    return () => {
+      delete window.modules;
+    };
+  }, []);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -37,15 +53,32 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(hemiLight);
 
+    // Add directional light with shadows
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(5, 8, 5);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    scene.add(dirLight);
+
+    // Enable shadow settings in renderer
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshStandardMaterial({ color: '#e2dfd6' })
+      new THREE.MeshStandardMaterial({ 
+        color: '#e2dfd6',
+        roughness: 0.8, 
+        metalness: 0.2
+      })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
     const grid = new THREE.GridHelper(10, 20, '#cccccc', '#cccccc');
+    grid.visible = wireframeMode;
     scene.add(grid);
 
     // Create our own orbit controls without using the imported OrbitControls
@@ -133,7 +166,7 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
       textCanvas.width = 256; 
       textCanvas.height = 64;
       ctx.fillStyle = '#000'; 
-      ctx.font = '24px Arial';
+      ctx.font = '24px "Playfair Display", serif';
       ctx.fillText(`${Math.round(size.x * 1000)}mm`, 10, 50);
       
       const tex = new THREE.CanvasTexture(textCanvas);
@@ -146,16 +179,29 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
 
     async function saveScene() {
       try {
-        const data = modules.current.map((mesh) => ({
-          pos: mesh.position,
-          scale: mesh.scale,
-          color: (mesh.material as THREE.MeshStandardMaterial).color.getHexString()
-        }));
+        const data = modules.current.map((mesh) => {
+          const material = mesh.material as THREE.MeshStandardMaterial;
+          return {
+            pos: {
+              x: mesh.position.x,
+              y: mesh.position.y,
+              z: mesh.position.z
+            },
+            scale: {
+              x: mesh.scale.x,
+              y: mesh.scale.y,
+              z: mesh.scale.z
+            },
+            color: material.color.getHexString(),
+            userData: mesh.userData || {}
+          };
+        });
+        
         await setDoc(doc(db, 'scenes', userId), { data });
-        alert('Scena a fost salvată.');
+        toast.success('Scene saved successfully');
       } catch (error) {
         console.error("Error saving scene:", error);
-        alert('Eroare la salvare.');
+        toast.error('Error saving scene');
       }
     }
 
@@ -164,20 +210,32 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
         const snapshot = await getDoc(doc(db, 'scenes', userId));
         if (!snapshot.exists()) return;
         
-        snapshot.data().data.forEach(({ pos, scale, color }: any) => {
+        // Clear existing modules
+        modules.current.forEach(mesh => scene.remove(mesh));
+        modules.current = [];
+        
+        snapshot.data().data.forEach(({ pos, scale, color, userData }: any) => {
           const geo = new THREE.BoxGeometry(scale.x, scale.y, scale.z);
           const mat = new THREE.MeshStandardMaterial({ 
             color: '#' + color, 
-            wireframe: wireframeMode 
+            wireframe: wireframeMode,
+            roughness: 0.7,
+            metalness: 0.2
           });
           const mesh = new THREE.Mesh(geo, mat);
           mesh.position.set(pos.x, pos.y, pos.z);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          mesh.userData = userData || {};
           scene.add(mesh);
           modules.current.push(mesh);
           if (wireframeMode) addCote(mesh);
         });
+        
+        toast.success('Scene loaded successfully');
       } catch (error) {
         console.error("Error loading scene:", error);
+        toast.error('Error loading scene');
       }
     }
 
@@ -206,18 +264,26 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     }
 
     function handleMessage(e: MessageEvent) {
-      const { type, width, height, depth, color, x = 0, z = 0 } = e.data;
+      const { type, width, height, depth, color, x = 0, z = 0, userData = {} } = e.data;
       if (type === 'addModule') {
         const geo = new THREE.BoxGeometry(width, height, depth);
         const mat = new THREE.MeshStandardMaterial({ 
-          color: color || '#c1a57b', 
-          wireframe: wireframeMode 
+          color: color || '#C1A57B', 
+          wireframe: wireframeMode,
+          roughness: 0.7,
+          metalness: 0.2
         });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(x, height / 2, z);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData = userData;
         scene.add(mesh);
         modules.current.push(mesh);
         if (wireframeMode) addCote(mesh);
+        
+        // Notify that module was added
+        toast.info('Module added to scene');
       }
     }
 
@@ -249,12 +315,18 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     // Set up methods that need to be called from outside this effect
     window.saveScene = saveScene;
     window.toggleWireframeMode = () => {
+      const newMode = !wireframeMode;
+      setWireframeMode(newMode);
+      
+      // Update grid visibility
+      grid.visible = newMode;
+      
       modules.current.forEach((mesh) => {
         if (mesh.material) {
-          (mesh.material as THREE.MeshStandardMaterial).wireframe = !wireframeMode;
+          (mesh.material as THREE.MeshStandardMaterial).wireframe = newMode;
           
           // Add or remove cotes when toggling modes
-          if (!wireframeMode) {
+          if (newMode) {
             addCote(mesh);
           } else {
             // Remove cotes (sprites) when going back to realistic mode
@@ -302,43 +374,56 @@ export const ThreeDRoomCanvas: React.FC<Props> = ({ className, userId = 'demoUse
     if (field === 'depth') mesh.scale.z = val;
   };
 
+  const handleSave = () => {
+    if (window.saveScene) {
+      window.saveScene();
+    }
+  };
+
   return (
     <div className={`flex w-full ${className}`}>
-      <div className="w-4/5 h-[80vh]" ref={mountRef} />
-      <div className="w-1/5 p-4">
-        <button
-          className="bg-amber-600 text-white px-4 py-2 rounded shadow hover:bg-amber-700 transition mb-2"
-          onClick={toggleMode}
-        >
-          {wireframeMode ? 'Mod Realist' : 'Mod Linie + Cote'}
-        </button>
-        <button
-          className="bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-800 transition mb-4 ml-2"
-          onClick={() => window.saveScene?.()}
-        >
-          💾 Salvează
-        </button>
+      <div className="w-full h-[80vh] relative" ref={mountRef}>
+        <div className="absolute top-4 right-4 flex space-x-2">
+          <button
+            className="bg-amber-600 text-white px-4 py-2 rounded shadow hover:bg-amber-700 transition"
+            onClick={toggleMode}
+          >
+            {wireframeMode ? 'Realistic Mode' : 'Wireframe Mode'}
+          </button>
+          <button
+            className="bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-800 transition"
+            onClick={handleSave}
+          >
+            💾 Save Scene
+          </button>
+        </div>
 
         {showEditor && (
-          <div className="bg-white p-3 rounded shadow border">
-            <h2 className="font-bold mb-2">Editare Modul</h2>
-            <label className="block text-sm mb-1">Lățime</label>
+          <div className="absolute bottom-4 right-4 bg-white p-3 rounded shadow border min-w-[250px]">
+            <h2 className="font-bold mb-2 font-playfair text-[#6A4B31]">Edit Module</h2>
+            <label className="block text-sm mb-1">Width (m)</label>
             <input 
               type="number" 
-              className="w-full mb-2 border px-2" 
+              step="0.1"
+              className="w-full mb-2 border px-2 py-1 rounded" 
               onChange={(e) => handleEdit('width', e.target.value)} 
+              defaultValue={selectedModule.current?.scale.x || 0}
             />
-            <label className="block text-sm mb-1">Înălțime</label>
+            <label className="block text-sm mb-1">Height (m)</label>
             <input 
-              type="number" 
-              className="w-full mb-2 border px-2" 
+              type="number"
+              step="0.1" 
+              className="w-full mb-2 border px-2 py-1 rounded" 
               onChange={(e) => handleEdit('height', e.target.value)} 
+              defaultValue={selectedModule.current?.scale.y || 0}
             />
-            <label className="block text-sm mb-1">Adâncime</label>
+            <label className="block text-sm mb-1">Depth (m)</label>
             <input 
-              type="number" 
-              className="w-full mb-2 border px-2" 
+              type="number"
+              step="0.1" 
+              className="w-full mb-2 border px-2 py-1 rounded" 
               onChange={(e) => handleEdit('depth', e.target.value)} 
+              defaultValue={selectedModule.current?.scale.z || 0}
             />
           </div>
         )}

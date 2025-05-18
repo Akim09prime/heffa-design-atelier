@@ -8,8 +8,10 @@ import { ProjectLoadingState } from '@/components/editor/ProjectLoadingState';
 import { ProjectErrorState } from '@/components/editor/ProjectErrorState';
 import { ModuleLibrary } from '@/components/3d/ModuleLibrary';
 import { ModuleProperties } from '@/components/3d/ModuleProperties';
+import { ExportSidebar } from '@/components/3d/ExportSidebar';
 import { ExportOptions } from '@/components/exports/ExportOptions';
 import { useProjectEditor } from '@/hooks/useProjectEditor';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const ProjectEditor3D = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -55,10 +57,25 @@ const ProjectEditor3D = () => {
         <div className="flex-1 flex overflow-hidden">
           {/* Left Sidebar - Module Library */}
           {showLibrary && (
-            <ModuleLibrary
-              onAddModule={handleAddModule}
-              className="border-r"
-            />
+            <div className="w-64 border-r bg-white flex flex-col">
+              <Tabs defaultValue="library" className="flex-1 flex flex-col">
+                <TabsList className="w-full">
+                  <TabsTrigger value="library" className="flex-1">Library</TabsTrigger>
+                  <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
+                </TabsList>
+                <TabsContent value="library" className="flex-1 p-0 m-0 overflow-auto">
+                  <ModuleLibrary
+                    onAddModule={handleAddModule}
+                  />
+                </TabsContent>
+                <TabsContent value="export" className="flex-1 p-0 m-0 overflow-auto">
+                  <ExportSidebar 
+                    modulesRef={window.modules || { current: [] }} 
+                    projectName={project.name}
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
           )}
 
           {/* 3D Scene */}

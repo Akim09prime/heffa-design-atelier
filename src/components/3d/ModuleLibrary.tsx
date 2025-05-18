@@ -79,8 +79,10 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
     const height = template.height * 1000;
     const depth = template.depth * 1000;
     
+    const moduleId = uuidv4();
+    
     const newModule: FurnitureModule = {
-      id: uuidv4(),
+      id: moduleId,
       name: template.name,
       description: template.description,
       type: template.type as ModuleType,
@@ -102,7 +104,12 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
       width: template.width,
       height: template.height,
       depth: template.depth,
-      color: getModuleColor(template.type as ModuleType)
+      color: getModuleColor(template.type as ModuleType),
+      userData: {
+        id: moduleId,
+        type: template.type,
+        name: template.name
+      }
     }, '*');
     
     onAddModule(newModule);
@@ -111,25 +118,25 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
   // Helper function to assign colors based on module type
   const getModuleColor = (type: ModuleType): string => {
     switch(type) {
-      case 'base_cabinet': return '#c1a57b';
+      case 'base_cabinet': return '#C1A57B';
       case 'wall_cabinet': return '#d8c3a5';
       case 'drawer_unit': return '#ad9572';
       case 'tall_cabinet': return '#a68a64';
       case 'corner_cabinet': return '#b6976f';
-      case 'island': return '#d2b48c';
-      default: return '#c1a57b';
+      case 'island': return '#6A4B31';
+      default: return '#C1A57B';
     }
   };
 
   return (
-    <div className={`w-64 border-r bg-white p-4 flex flex-col h-full ${className}`}>
-      <h2 className="text-lg font-medium mb-4">Module Library</h2>
+    <div className={`w-full bg-white p-4 flex flex-col h-full ${className}`}>
+      <h2 className="text-lg font-medium mb-4 font-playfair text-[#6A4B31]">Module Library</h2>
       <Separator className="mb-4" />
       
       <ScrollArea className="flex-1">
         <div className="grid grid-cols-1 gap-4 pr-4">
           {moduleTemplates.map((template, index) => (
-            <Card key={index} className="overflow-hidden shadow-sm">
+            <Card key={index} className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="h-32 bg-gray-100 relative">
                 {template.thumbnailUrl ? (
                   <img 
@@ -144,7 +151,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
                 )}
               </div>
               <CardContent className="p-3">
-                <CardTitle className="text-sm">{template.name}</CardTitle>
+                <CardTitle className="text-sm font-playfair text-[#6A4B31]">{template.name}</CardTitle>
                 <CardDescription className="text-xs mt-1">
                   {template.description}
                 </CardDescription>
@@ -152,7 +159,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
               <CardFooter className="p-2">
                 <Button 
                   onClick={() => createModule(template)} 
-                  className="w-full text-xs h-8"
+                  className="w-full text-xs h-8 bg-[#6A4B31] hover:bg-[#5a3f2a]"
                   variant="default"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />

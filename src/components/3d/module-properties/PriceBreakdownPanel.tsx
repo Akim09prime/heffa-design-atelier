@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PriceBreakdownPanelProps {
   priceBreakdown: {
@@ -22,42 +22,42 @@ export const PriceBreakdownPanel: React.FC<PriceBreakdownPanelProps> = ({
   setShowPriceBreakdown
 }) => {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex items-center gap-1 p-0 h-auto text-sm font-medium"
-          onClick={() => setShowPriceBreakdown(!showPriceBreakdown)}
-        >
-          <DollarSign className="h-4 w-4" />
-          Price Breakdown
-        </Button>
-        <span className="text-sm font-medium">${totalPrice.toFixed(2)}</span>
+        <span className="font-medium">Total Price</span>
+        <div className="flex items-center justify-end">
+          <span className="text-lg font-bold">{totalPrice.toFixed(2)} RON</span>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="ml-1 h-6 w-6 p-0" 
+            onClick={() => setShowPriceBreakdown(!showPriceBreakdown)}
+          >
+            {showPriceBreakdown ? 
+              <ChevronUp className="h-4 w-4" /> : 
+              <ChevronDown className="h-4 w-4" />
+            }
+          </Button>
+        </div>
       </div>
       
-      {/* Price breakdown details */}
       {showPriceBreakdown && (
-        <div className="mt-2 text-xs space-y-1 bg-gray-50 p-2 rounded">
+        <div className="bg-muted rounded-md p-2 text-sm space-y-1">
           <div className="flex justify-between">
-            <span>Materials:</span>
-            <span>${priceBreakdown.materials.toFixed(2)}</span>
+            <span>Materials</span>
+            <span>{priceBreakdown.materials.toFixed(2)} RON</span>
           </div>
           <div className="flex justify-between">
-            <span>Accessories:</span>
-            <span>${priceBreakdown.accessories.toFixed(2)}</span>
+            <span>Accessories</span>
+            <span>{priceBreakdown.accessories.toFixed(2)} RON</span>
           </div>
           <div className="flex justify-between">
-            <span>Processing:</span>
-            <span>${priceBreakdown.processing.toFixed(2)}</span>
+            <span>Processing</span>
+            <span>{priceBreakdown.processing.toFixed(2)} RON</span>
           </div>
           <div className="flex justify-between">
-            <span>Labor:</span>
-            <span>${priceBreakdown.labor.toFixed(2)}</span>
-          </div>
-          <div className="border-t pt-1 flex justify-between font-medium">
-            <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>Labor</span>
+            <span>{priceBreakdown.labor.toFixed(2)} RON</span>
           </div>
         </div>
       )}
