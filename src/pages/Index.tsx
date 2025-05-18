@@ -5,8 +5,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AuthProvider } from '../contexts/AuthContext';
 
-const Index = () => {
+const IndexContent = () => {
   const { user, appMode, setAppMode } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -125,6 +126,15 @@ const Index = () => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
     </div>
+  );
+};
+
+// Main Index component wrapped with AuthProvider
+const Index = () => {
+  return (
+    <AuthProvider>
+      <IndexContent />
+    </AuthProvider>
   );
 };
 
