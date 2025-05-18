@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileUp, Upload, Check, FileText, FileCode, Database } from 'lucide-react';
 import { ProjectService } from '@/services/projectService';
+import { ProjectType } from '@/types';
 
 const ImportProject = () => {
   const [fileType, setFileType] = useState('heffa');
@@ -63,7 +64,7 @@ const ImportProject = () => {
               userId: '1',
               name: selectedFile.name.replace(/\.[^/.]+$/, ""),
               description: `Imported from ${fileType.toUpperCase()} file`,
-              type: 'Free Mode',
+              type: 'Free Mode' as ProjectType,
               roomType: 'other',
               status: 'imported',
               modules: [],
@@ -72,6 +73,12 @@ const ImportProject = () => {
                 length: 3000,
                 height: 2400,
                 walls: []
+              },
+              // Add the missing parameters property
+              parameters: {
+                importSource: fileType,
+                importedFileName: selectedFile.name,
+                importDate: new Date().toISOString()
               }
             };
             
