@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   Search, Filter, Box, ArrowRight, Plus, Printer, 
-  Settings, Check 
+  Settings, Check, Upload 
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -23,6 +23,7 @@ interface ModuleData {
   depth: string;
   height: string;
   description?: string;
+  imageUrl?: string;
 }
 
 // Cache for storing created modules
@@ -45,8 +46,11 @@ const Modules = () => {
     category: 'base',
     width: '600',
     depth: '560',
-    height: '800'
+    height: '800',
+    imageUrl: ''
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const params = useParams();
@@ -54,6 +58,17 @@ const Modules = () => {
 
   const handleNewModule = () => {
     setIsNewModuleDialogOpen(true);
+    // Reset form data when opening dialog
+    setNewModuleData({
+      name: '',
+      category: 'base',
+      width: '600',
+      depth: '560',
+      height: '800',
+      imageUrl: ''
+    });
+    setSelectedImage(null);
+    setImagePreview(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,6 +77,19 @@ const Modules = () => {
       ...prev,
       [id]: value
     }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      // Create a preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleCreateModule = () => {
@@ -84,6 +112,7 @@ const Modules = () => {
       price: 275 + (Math.floor(Math.random() * 10) * 25),
       dimensions: `${newModuleData.width}×${newModuleData.height}×${newModuleData.depth}mm`,
       popularity: Math.floor(Math.random() * 5) + 1,
+      imageUrl: imagePreview || undefined  // Use the image preview URL
     };
     
     // Cache the new module
@@ -149,6 +178,7 @@ const Modules = () => {
                   category === 'drawer' ? '600×800×560mm' :
                   category === 'corner' ? '900×800×560mm' : '1200×800×560mm',
         popularity: Math.floor(Math.random() * 5) + 1,
+        imageUrl: null
       }));
     }
     
@@ -222,9 +252,17 @@ const Modules = () => {
                       onMouseLeave={() => setHoveredModule(null)}
                     >
                       <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Box className="h-16 w-16 text-gray-400" />
-                        </div>
+                        {module.imageUrl ? (
+                          <img 
+                            src={module.imageUrl} 
+                            alt={module.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Box className="h-16 w-16 text-gray-400" />
+                          </div>
+                        )}
                         {module.popularity >= 4 && (
                           <Badge className="absolute top-2 right-2 bg-blue-600">Popular</Badge>
                         )}
@@ -233,7 +271,7 @@ const Modules = () => {
                         <h3 className="font-medium text-lg">{module.name}</h3>
                         <p className="text-sm text-muted-foreground">{module.description}</p>
                         <div className="flex justify-between mt-2">
-                          <p className="text-sm font-medium">€{module.price.toFixed(2)}</p>
+                          <p className="text-sm font-medium">€{module.price?.toFixed(2) || "N/A"}</p>
                           <p className="text-xs text-muted-foreground">{module.dimensions}</p>
                         </div>
                         
@@ -353,6 +391,41 @@ const Modules = () => {
                   value={newModuleData.height}
                   onChange={handleInputChange}
                 />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="moduleImage" className="text-right text-sm font-medium">
+                  Image
+                </label>
+                <div className="col-span-3">
+                  <div className="flex items-center gap-4">
+                    <label htmlFor="moduleImage" className="cursor-pointer flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50">
+                      <Upload size={16} className="mr-2" />
+                      Upload Image
+                      <Input
+                        id="moduleImage"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </label>
+                    {selectedImage && (
+                      <span className="text-sm text-green-600 flex items-center">
+                        <Check size={16} className="mr-1" />
+                        {selectedImage.name}
+                      </span>
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <div className="mt-2 relative w-full h-32 bg-gray-100 rounded-md overflow-hidden">
+                      <img 
+                        src={imagePreview} 
+                        alt="Module preview" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             
