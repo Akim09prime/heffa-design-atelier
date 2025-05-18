@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FurnitureModule } from '@/types';
-import { Plus, Cube } from 'lucide-react';
+import { Plus, Box } from 'lucide-react';
 
 interface ModuleLibraryProps {
   modules: Partial<FurnitureModule>[];
@@ -14,7 +14,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ modules, onSelectM
   if (modules.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-40 text-center">
-        <Cube className="h-12 w-12 text-gray-300 mb-2" />
+        <Box className="h-12 w-12 text-gray-300 mb-2" />
         <p className="text-gray-500">No modules found matching your criteria</p>
       </div>
     );
@@ -32,7 +32,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ modules, onSelectM
                 className="h-full w-full object-contain" 
               />
             ) : (
-              <Cube className="h-12 w-12 text-gray-400" />
+              <Box className="h-12 w-12 text-gray-400" />
             )}
           </div>
           <CardContent className="p-3">

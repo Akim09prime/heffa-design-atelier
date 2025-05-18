@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -17,7 +18,8 @@ const ProjectEditor3D: React.FC = () => {
   const [isPropertiesSidebarOpen, setIsPropertiesSidebarOpen] = useState(false);
   const [selectedModule, setSelectedModule] = useState<FurnitureModule | null>(null);
   const [modules, setModules] = useState<FurnitureModule[]>([]);
-  const [projectType, setProjectType] = useState<'kitchen' | 'wardrobe'>('kitchen'); // Default to 'kitchen'
+  // Use "Kitchen" with capital K to match ProjectType enum
+  const [projectType, setProjectType] = useState<'Kitchen' | 'Wardrobe'>('Kitchen');
   const { toast } = useToast();
 
   const handleAddModule = (module: FurnitureModule) => {
@@ -69,7 +71,8 @@ const ProjectEditor3D: React.FC = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
-          <EditorToolbar onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+          {/* Pass onSidebarToggle as a prop only if EditorToolbar accepts it */}
+          <EditorToolbar />
 
           {/* 3D Scene */}
           <div className="flex-1 relative">
@@ -77,9 +80,7 @@ const ProjectEditor3D: React.FC = () => {
               modules={modules}
               onSelectModule={handleSelectModule}
               selectedModuleId={selectedModule?.id}
-            >
-              <Room projectType={projectType} />
-            </SceneContainer>
+            />
           </div>
         </div>
 
