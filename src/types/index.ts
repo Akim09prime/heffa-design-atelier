@@ -1,4 +1,3 @@
-
 export type UserRole = 'client' | 'designer' | 'admin';
 
 export interface User {
@@ -34,7 +33,7 @@ export interface Material {
 // Project types
 export type ProjectType = 'Kitchen' | 'Living Room' | 'Bedroom' | 'Hallway' | 'Bathroom' | 'Balcony/Terrace' | 'Apartment' | 'House/Villa' | 'Free Mode';
 export type ProjectSubType = 'Straight' | 'L-shape' | 'U-shape' | 'Island' | 'Sliding' | 'Classic' | 'Glass' | 'MDF' | '';
-export type ProjectStatus = 'draft' | 'saved' | 'submitted' | 'approved' | 'in_production' | 'completed';
+export type ProjectStatus = 'draft' | 'saved' | 'completed' | 'approved' | 'rejected' | 'archived' | 'imported';
 
 export interface Project {
   id: string;

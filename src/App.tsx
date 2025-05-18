@@ -31,6 +31,7 @@ import DesignerClients from "./pages/designer/Clients";
 import DesignerExports from "./pages/designer/Exports";
 import ExportProject from "./pages/designer/ExportProject";
 import DesignerSettings from "./pages/designer/Settings";
+import ImportProject from "./pages/designer/ImportProject";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { Toaster } from "./components/ui/toaster";
 import "./App.css";
@@ -68,6 +69,7 @@ function App() {
             <Route path="/designer/dashboard" element={<DesignerDashboard />} />
             <Route path="/designer/projects" element={<DesignerProjects />} />
             <Route path="/designer/projects/new" element={<DesignerNewProject />} />
+            <Route path="/designer/projects/import" element={<ImportProject />} />
             <Route path="/designer/projects/:projectId/3d-editor" element={<ProjectEditor3D />} />
             <Route path="/designer/materials" element={<DesignerMaterials />} />
             <Route path="/designer/accessories" element={<DesignerAccessories />} />

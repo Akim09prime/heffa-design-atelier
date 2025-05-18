@@ -1,4 +1,3 @@
-
 import { Project, ProjectType, ProjectSubType, ProjectStatus, RoomType, Wall, UserRole } from '@/types';
 
 // Sample projects data - making it accessible to the service methods
