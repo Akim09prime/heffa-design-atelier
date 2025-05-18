@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Search, ArrowRight, Plus, Upload, Users, Database, Box, FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ResponsiveBar } from 'recharts';
+import { BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -192,15 +192,16 @@ const Dashboard = () => {
                 <CardDescription>Monthly data overview</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] mt-4">
-                <p className="text-center text-muted-foreground">
-                  Activity visualization will appear here
-                </p>
-                {/* Placeholder for chart - in real implementation, use Recharts */}
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-full h-[220px] bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-gray-200 flex items-center justify-center">
-                    <p className="text-muted-foreground text-sm">Monthly activity chart</p>
-                  </div>
-                </div>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={activityData}>
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="projects" fill="#4f46e5" name="Projects" />
+                    <Bar dataKey="materials" fill="#06b6d4" name="Materials" />
+                    <Bar dataKey="accessories" fill="#8b5cf6" name="Accessories" />
+                  </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
             
