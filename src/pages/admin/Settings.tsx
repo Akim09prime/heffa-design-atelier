@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -32,12 +32,12 @@ const Settings = () => {
     <AdminLayout>
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-medium text-white">{t('settings.title')}</h1>
-          <p className="text-gray-300">{t('settings.description')}</p>
+          <h1 className="text-3xl font-medium">{t('settings.title')}</h1>
+          <p className="text-muted-foreground">{t('settings.description')}</p>
         </div>
         
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="bg-gray-800">
+          <TabsList>
             <TabsTrigger value="general">{t('settings.general')}</TabsTrigger>
             <TabsTrigger value="pricing">{t('settings.pricing')}</TabsTrigger>
             <TabsTrigger value="appearance">{t('settings.appearance')}</TabsTrigger>
@@ -47,10 +47,10 @@ const Settings = () => {
           </TabsList>
           
           <TabsContent value="general">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.general')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.generalDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.general')}</CardTitle>
+                <CardDescription>{t('settings.generalDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -64,10 +64,10 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="pricing">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.pricing')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.pricingDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.pricing')}</CardTitle>
+                <CardDescription>{t('settings.pricingDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 {/* Pricing settings would go here */}
@@ -79,10 +79,10 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="appearance">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.appearance')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.appearanceDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.appearance')}</CardTitle>
+                <CardDescription>{t('settings.appearanceDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 {/* Appearance settings would go here */}
@@ -94,10 +94,10 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="notifications">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.notifications')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.notificationsDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.notifications')}</CardTitle>
+                <CardDescription>{t('settings.notificationsDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 {/* Notification settings would go here */}
@@ -109,10 +109,10 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="backups">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.backups')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.backupsDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.backups')}</CardTitle>
+                <CardDescription>{t('settings.backupsDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 {/* Backup & restore settings would go here */}
@@ -124,10 +124,10 @@ const Settings = () => {
           </TabsContent>
           
           <TabsContent value="languages">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader className="border-b border-gray-700">
-                <CardTitle className="text-white">{t('settings.languages')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('settings.languagesDesc')}</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.languages')}</CardTitle>
+                <CardDescription>{t('settings.languagesDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,10 +137,10 @@ const Settings = () => {
                       value={language}
                       onValueChange={handleLanguageChange}
                     >
-                      <SelectTrigger id="language" className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger id="language">
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600 text-white">
+                      <SelectContent>
                         <SelectItem value="en">English</SelectItem>
                         <SelectItem value="ro">Română</SelectItem>
                       </SelectContent>
