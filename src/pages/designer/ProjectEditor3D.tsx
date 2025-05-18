@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
