@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sidebar, 
@@ -17,14 +16,15 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { AiAssistant } from '@/components/ai/AiAssistant';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { Badge } from '@/components/ui/badge';
 
 interface DesignerLayoutProps {
   children: React.ReactNode;
 }
 
-export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
+// This component uses hooks, so it needs to be within the TranslationProvider
+const DesignerLayoutContent: React.FC<DesignerLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -189,5 +189,31 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
       {/* Add AI Assistant */}
       <AiAssistant />
     </div>
+  );
+};
+
+// This wrapper component checks if we're already in a TranslationProvider context
+export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
+  // Try to use the translation context
+  let hasTranslationContext = false;
+  
+  try {
+    // This will throw an error if no TranslationProvider is present
+    useTranslation();
+    hasTranslationContext = true;
+  } catch (error) {
+    hasTranslationContext = false;
+  }
+
+  // If we're already in a TranslationProvider context, don't add another one
+  if (hasTranslationContext) {
+    return <DesignerLayoutContent>{children}</DesignerLayoutContent>;
+  }
+  
+  // Otherwise, provide a TranslationProvider
+  return (
+    <TranslationProvider>
+      <DesignerLayoutContent>{children}</DesignerLayoutContent>
+    </TranslationProvider>
   );
 };
