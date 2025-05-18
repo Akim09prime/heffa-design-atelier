@@ -187,7 +187,10 @@ const PlaceholderBox: React.FC<{
         receiveShadow
         onClick={(e) => {
           e.stopPropagation();
-          onClick && onClick();
+          if (onClick) {
+            e.stopPropagation();
+            onClick();
+          }
         }}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
@@ -267,7 +270,7 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
           scale={[1, 1, 1]}
           onClick={(e: any) => {
             e.stopPropagation();
-            onClick && onClick();
+            if (onClick) onClick();
           }}
         />
       );

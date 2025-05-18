@@ -63,6 +63,13 @@ const ProjectEditorContent = () => {
       setLoading('save-project', true);
       await handleSave();
       showSuccessToast("Project Saved", "Your project has been saved successfully");
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save project. Please try again.',
+        variant: 'destructive'
+      });
     } finally {
       setLoading('save-project', false); 
     }

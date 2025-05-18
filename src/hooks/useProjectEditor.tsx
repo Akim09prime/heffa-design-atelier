@@ -117,12 +117,17 @@ export const useProjectEditor = (projectId: string | undefined) => {
   useEffect(() => {
     if (project && materials.length > 0 && accessories.length > 0) {
       try {
-        const price = PricingService.calculateProjectPrice(
-          project.modules, 
-          materials, 
-          accessories
-        );
-        setTotalPrice(price);
+        let total = 0;
+        // Calculate individual module prices and sum them up
+        project.modules.forEach(module => {
+          const { total: modulePrice } = PricingService.calculateModulePrice(
+            module,
+            materials,
+            accessories
+          );
+          total += modulePrice;
+        });
+        setTotalPrice(total);
       } catch (error) {
         console.error('Error calculating project price:', error);
       }
@@ -135,11 +140,16 @@ export const useProjectEditor = (projectId: string | undefined) => {
     
     try {
       // Calculate final project price
-      const finalPrice = PricingService.calculateProjectPrice(
-        project.modules,
-        materials,
-        accessories
-      );
+      let finalPrice = 0;
+      // Calculate individual module prices and sum them up
+      project.modules.forEach(module => {
+        const { total: modulePrice } = PricingService.calculateModulePrice(
+          module,
+          materials,
+          accessories
+        );
+        finalPrice += modulePrice;
+      });
       
       // Save the project to the database
       await ProjectService.updateProject(project.id, {

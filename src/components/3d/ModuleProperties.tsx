@@ -10,7 +10,7 @@ import { ModuleMaterialsPanel } from './ModuleMaterialsPanel';
 import { ModuleAccessoriesPanel } from './ModuleAccessoriesPanel';
 import { ModuleTypeSelector } from './ModuleTypeSelector';
 import { ModuleHeader, PropertiesFooter, useModuleProperties } from './module-properties';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the ModulePropertiesProps interface
 interface ModulePropertiesProps {
@@ -40,13 +40,24 @@ export const ModuleProperties: React.FC<ModulePropertiesProps> = ({
     handleSave
   } = useModuleProperties(module, onUpdate);
 
+  const { toast } = useToast();
+
   const handleSaveWithFeedback = () => {
-    handleSave();
-    toast({
-      title: "Module Saved",
-      description: "Module properties have been updated",
-      variant: "default"
-    });
+    try {
+      handleSave();
+      toast({
+        title: "Module Saved",
+        description: "Module properties have been updated",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error saving module:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save module changes. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDeleteWithConfirmation = () => {
