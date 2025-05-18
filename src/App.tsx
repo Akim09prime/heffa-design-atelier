@@ -64,10 +64,10 @@ function App() {
             {/* Designer routes */}
             <Route path="/designer/dashboard" element={<DesignerDashboard />} />
             <Route path="/designer/projects" element={<Projects />} />
-            <Route path="/designer/new-project" element={<NewProject />} />
-            <Route path="/designer/project/:projectId" element={<ProjectEditor3D />} />
-            <Route path="/designer/import-project" element={<ImportProject />} />
-            <Route path="/designer/export-project/:projectId" element={<ExportProject />} />
+            <Route path="/designer/projects/new" element={<NewProject />} />
+            <Route path="/designer/projects/:projectId/3d-editor" element={<ProjectEditor3D />} />
+            <Route path="/designer/projects/import" element={<ImportProject />} />
+            <Route path="/designer/projects/:projectId/export" element={<ExportProject />} />
             <Route path="/designer/materials" element={<Materials />} />
             <Route path="/designer/accessories" element={<Accessories />} />
             <Route path="/designer/modules" element={<Modules />} />
