@@ -9,25 +9,31 @@ import { useTranslation, TranslationProvider } from '@/contexts/TranslationConte
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { UiProvider, useUi } from '@/contexts/UiContext';
 
 // Create a wrapper component that uses the context
 const SettingsContent = () => {
   const { toast } = useToast();
   const { t, language, changeLanguage } = useTranslation();
+  const { showSuccessToast, isLoading, setLoading } = useUi();
   
   const handleLanguageChange = (value: string) => {
     changeLanguage(value as 'en' | 'ro');
-    toast({
-      title: t('settings.languageChanged'),
-      description: value === 'en' ? t('settings.languageSetTo.en') : t('settings.languageSetTo.ro'),
-    });
+    showSuccessToast(
+      t('settings.languageChanged'),
+      value === 'en' ? t('settings.languageSetTo.en') : t('settings.languageSetTo.ro')
+    );
   };
 
-  const handleSaveSettings = () => {
-    toast({
-      title: t('settings.settingsSaved'),
-      description: t('settings.changesSavedSuccess'),
-    });
+  const handleSaveSettings = async () => {
+    try {
+      setLoading('save-settings', true);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      showSuccessToast(t('settings.settingsSaved'), t('settings.changesSavedSuccess'));
+    } finally {
+      setLoading('save-settings', false);
+    }
   };
 
   return (
@@ -58,7 +64,15 @@ const SettingsContent = () => {
                 {/* General settings form fields would go here */}
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
+                <Button 
+                  onClick={handleSaveSettings}
+                  disabled={isLoading('save-settings')}
+                >
+                  {isLoading('save-settings') ? 
+                    <><Loader className="h-4 w-4 mr-2 animate-spin" /> {t('settings.saving')}</> : 
+                    t('settings.saveChanges')
+                  }
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -161,9 +175,11 @@ const Settings = () => {
   return (
     <TranslationProvider>
       <AuthProvider>
-        <AdminLayout>
-          <SettingsContent />
-        </AdminLayout>
+        <UiProvider>
+          <AdminLayout>
+            <SettingsContent />
+          </AdminLayout>
+        </UiProvider>
       </AuthProvider>
     </TranslationProvider>
   );

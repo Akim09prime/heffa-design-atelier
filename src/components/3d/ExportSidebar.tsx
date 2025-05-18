@@ -1,15 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileSpreadsheet, FileText, Check } from 'lucide-react';
+import { FileSpreadsheet, FileText, Check, Loader } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { useToast } from '@/hooks/use-toast';
+import { useUi } from '@/contexts/UiContext';
 
 interface ExportSidebarProps {
   modulesRef: { current: Array<{
@@ -24,9 +25,37 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
   projectName = "HeffaDesign Project"
 }) => {
   const { toast } = useToast();
+  const { isLoading, setLoading, showSuccessToast, showErrorToast } = useUi();
   
-  const handlePDFExport = () => {
+  const saveOfferToFirebase = async (fileType: 'pdf' | 'excel', fileData: Blob) => {
     try {
+      // This would be implemented with Firebase storage and Firestore
+      console.log(`Saving ${fileType} offer to Firebase...`);
+      
+      // Example code for future Firebase integration:
+      // const storageRef = ref(storage, `offers/${projectName}_${new Date().toISOString()}.${fileType === 'pdf' ? 'pdf' : 'xlsx'}`);
+      // await uploadBytes(storageRef, fileData);
+      // const downloadURL = await getDownloadURL(storageRef);
+      
+      // await addDoc(collection(db, "offers"), {
+      //   name: projectName,
+      //   fileType,
+      //   downloadURL,
+      //   moduleCount: modulesRef.current.length,
+      //   createdAt: serverTimestamp()
+      // });
+      
+      return true;
+    } catch (error) {
+      console.error(`Error saving ${fileType} to Firebase:`, error);
+      throw error;
+    }
+  };
+  
+  const handlePDFExport = async () => {
+    try {
+      setLoading('export-pdf', true);
+      
       const doc = new jsPDF();
       
       // Add header with logo
@@ -101,28 +130,29 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
         doc.text(`Page ${i} of ${pageCount}`, 195, (doc as any).internal.pageSize.height - 10);
       }
       
+      // Generate blob for storage
+      const pdfBlob = doc.output('blob');
+      
+      // Save to Firebase
+      await saveOfferToFirebase('pdf', pdfBlob);
+      
       // Save the PDF
       const filename = `${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
       doc.save(filename);
       
-      // Show success toast
-      toast({
-        title: "PDF Export Successful",
-        description: `Exported to ${filename}`,
-        variant: "default"
-      });
+      showSuccessToast("PDF Export Successful", `Exported to ${filename}`);
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast({
-        title: "PDF Export Failed",
-        description: "There was an error exporting your PDF. Please try again.",
-        variant: "destructive"
-      });
+      showErrorToast("PDF Export Failed", "There was an error exporting your PDF. Please try again.");
+    } finally {
+      setLoading('export-pdf', false);
     }
   };
   
-  const handleExcelExport = () => {
+  const handleExcelExport = async () => {
     try {
+      setLoading('export-excel', true);
+      
       const worksheet = XLSX.utils.aoa_to_sheet([
         ['HeffaDesign Project Export'],
         ['Project Name:', projectName],
@@ -188,23 +218,19 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
       const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       
+      // Save to Firebase
+      await saveOfferToFirebase('excel', blob);
+      
       // Save file
       const filename = `${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
       saveAs(blob, filename);
       
-      // Show success toast
-      toast({
-        title: "Excel Export Successful",
-        description: `Exported to ${filename}`,
-        variant: "default"
-      });
+      showSuccessToast("Excel Export Successful", `Exported to ${filename}`);
     } catch (error) {
       console.error('Error exporting Excel:', error);
-      toast({
-        title: "Excel Export Failed",
-        description: "There was an error exporting your Excel file. Please try again.",
-        variant: "destructive"
-      });
+      showErrorToast("Excel Export Failed", "There was an error exporting your Excel file. Please try again.");
+    } finally {
+      setLoading('export-excel', false);
     }
   };
 
@@ -233,18 +259,28 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
                 onClick={handlePDFExport}
                 className="flex justify-start bg-[#6A4B31] hover:bg-[#5a3f2a] text-white"
                 variant="default"
+                disabled={isLoading('export-pdf')}
               >
-                <FileText className="mr-2 h-4 w-4" />
-                Export to PDF
+                {isLoading('export-pdf') ? (
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <FileText className="mr-2 h-4 w-4" />
+                )}
+                {isLoading('export-pdf') ? 'Generating PDF...' : 'Export to PDF'}
               </Button>
               
               <Button 
                 onClick={handleExcelExport} 
                 variant="outline"
                 className="flex justify-start border-[#C1A57B] text-[#6A4B31]"
+                disabled={isLoading('export-excel')}
               >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Export to Excel
+                {isLoading('export-excel') ? (
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                )}
+                {isLoading('export-excel') ? 'Generating Excel...' : 'Export to Excel'}
               </Button>
             </div>
           </div>

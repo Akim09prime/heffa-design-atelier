@@ -14,10 +14,16 @@ import { ExportOptions } from '@/components/exports/ExportOptions';
 import { useProjectEditor } from '@/hooks/useProjectEditor';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
+import { UiProvider, useUi } from '@/contexts/UiContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { Loader } from 'lucide-react';
 
-const ProjectEditor3D = () => {
+// Editor content component that uses contexts
+const ProjectEditorContent = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { toast } = useToast();
+  const { showSuccessToast, isLoading, setLoading } = useUi();
+  
   const {
     project,
     loading,
@@ -43,18 +49,24 @@ const ProjectEditor3D = () => {
         e.preventDefault();
         if (handleSave) {
           handleSave();
-          toast({
-            title: "Project Saved",
-            description: "Project saved with keyboard shortcut (Ctrl+S)",
-            variant: "default"
-          });
+          showSuccessToast("Project Saved", "Project saved with keyboard shortcut (Ctrl+S)");
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSave, toast]);
+  }, [handleSave, showSuccessToast]);
+
+  const handleSaveWithLoading = async () => {
+    try {
+      setLoading('save-project', true);
+      await handleSave();
+      showSuccessToast("Project Saved", "Your project has been saved successfully");
+    } finally {
+      setLoading('save-project', false); 
+    }
+  };
 
   if (loading) {
     return <ProjectLoadingState />;
@@ -65,20 +77,25 @@ const ProjectEditor3D = () => {
   }
 
   return (
-    <DesignerLayout>
+    <>
+      {/* Global loading overlay */}
+      {(isLoading('save-project') || isLoading('export-project')) && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center space-y-3">
+            <Loader className="h-8 w-8 animate-spin text-heffa-600" />
+            <p className="text-sm">
+              {isLoading('save-project') ? 'Saving your project...' : 'Exporting your project...'}
+            </p>
+          </div>
+        </div>
+      )}
+      
       <div className="flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <ProjectHeader
           projectName={project.name}
           onBack={handleBack}
-          onSave={() => {
-            handleSave();
-            toast({
-              title: "Project Saved",
-              description: "Your project has been saved successfully",
-              variant: "default"
-            });
-          }}
+          onSave={handleSaveWithLoading}
           onExport={() => setShowExportDialog(true)}
           showLibrary={showLibrary}
           onToggleLibrary={() => setShowLibrary(!showLibrary)}
@@ -98,11 +115,7 @@ const ProjectEditor3D = () => {
                   <ModuleLibrary
                     onAddModule={(module) => {
                       handleAddModule(module);
-                      toast({
-                        title: "Module Added",
-                        description: `${module.name} has been added to your scene`,
-                        variant: "default"
-                      });
+                      showSuccessToast("Module Added", `${module.name} has been added to your scene`);
                     }}
                   />
                 </TabsContent>
@@ -133,22 +146,8 @@ const ProjectEditor3D = () => {
           {selectedModule && (
             <ModuleProperties
               module={selectedModule}
-              onUpdate={(updatedModule) => {
-                handleUpdateModule(updatedModule);
-                toast({
-                  title: "Module Updated",
-                  description: "Module properties have been updated",
-                  variant: "default"
-                });
-              }}
-              onDelete={(moduleId) => {
-                handleDeleteModule(moduleId);
-                toast({
-                  title: "Module Deleted",
-                  description: "Module has been removed from the scene",
-                  variant: "destructive"
-                });
-              }}
+              onUpdate={handleUpdateModule}
+              onDelete={handleDeleteModule}
               onClose={() => setSelectedModuleId(null)}
             />
           )}
@@ -164,7 +163,20 @@ const ProjectEditor3D = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </DesignerLayout>
+    </>
+  );
+};
+
+// Main component with providers
+const ProjectEditor3D = () => {
+  return (
+    <AuthProvider>
+      <UiProvider>
+        <DesignerLayout>
+          <ProjectEditorContent />
+        </DesignerLayout>
+      </UiProvider>
+    </AuthProvider>
   );
 };
 
