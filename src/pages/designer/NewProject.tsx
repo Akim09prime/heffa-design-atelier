@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -18,6 +19,7 @@ const NewProject = () => {
   const [selectedSubType, setSelectedSubType] = useState<ProjectSubType | null>(null);
   const [projectParameters, setProjectParameters] = useState<Record<string, any>>({});
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [createdProject, setCreatedProject] = useState<Project | null>(null);
 
   // Create project handler
   const handleCreateProject = async (
@@ -82,9 +84,10 @@ const NewProject = () => {
       };
 
       // Call the service to create the project
-      const createdProject = await ProjectService.createProject(newProject);
-      console.log("Creating new project:", createdProject);
-      setProjectId(createdProject.id);
+      const result = await ProjectService.createProject(newProject);
+      console.log("Creating new project:", result);
+      setProjectId(result.id);
+      setCreatedProject(result);
 
       toast({
         title: 'Project Created',
@@ -105,6 +108,10 @@ const NewProject = () => {
   const handleContinueTo3D = () => {
     if (projectId) {
       console.log(`Navigating to 3D editor for project ${projectId}`);
+      // For debugging, add the project to sampleProjects if it doesn't exist there
+      if (createdProject && !ProjectService.getProjectById(projectId)) {
+        ProjectService.sampleProjects.push(createdProject);
+      }
       navigate(`/designer/projects/${projectId}/3d-editor`);
     } else {
       toast({

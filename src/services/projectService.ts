@@ -1,7 +1,7 @@
 
 import { Project, ProjectType, ProjectSubType, ProjectStatus, RoomType, Wall, UserRole } from '@/types';
 
-// Sample projects data
+// Sample projects data - making it accessible to the service methods
 export const sampleProjects: Project[] = [
   {
     id: '1',
@@ -75,6 +75,9 @@ export const sampleProjects: Project[] = [
 
 // Define Project Service
 export const ProjectService = {
+  // Make sampleProjects accessible
+  sampleProjects,
+  
   // Get all projects
   getAllProjects: async (): Promise<Project[]> => {
     // In a real app, this would be an API call
@@ -88,9 +91,20 @@ export const ProjectService = {
   },
 
   // Get project by ID
-  getProjectById: async (id: string): Promise<Project | undefined> => {
+  getProjectById: async (id: string): Promise<Project | null> => {
     // In a real app, this would be an API call with filtering
-    return Promise.resolve(sampleProjects.find(project => project.id === id));
+    console.log(`Looking for project with ID: ${id}`);
+    console.log(`Available projects: ${sampleProjects.map(p => p.id).join(', ')}`);
+    
+    const project = sampleProjects.find(project => project.id === id);
+    
+    if (!project) {
+      console.log(`Project with ID ${id} not found`);
+      return null;
+    }
+    
+    console.log(`Found project: ${project.name}`);
+    return Promise.resolve(project);
   },
 
   // Create new project
@@ -105,6 +119,11 @@ export const ProjectService = {
     
     // Here we'd add the project to the database
     console.log('Creating new project:', newProject);
+    
+    // Add the project to sampleProjects for the demo
+    sampleProjects.push(newProject as Project);
+    console.log(`Project added to database with ID: ${newProject.id}`);
+    console.log(`Available projects now: ${sampleProjects.map(p => p.id).join(', ')}`);
     
     return Promise.resolve(newProject as Project);
   },

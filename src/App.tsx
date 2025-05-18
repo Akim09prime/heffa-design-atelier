@@ -16,14 +16,14 @@ import Settings from "./pages/admin/Settings";
 import ClientDashboard from "./pages/client/Dashboard";
 import ClientProjects from "./pages/client/Projects";
 import ClientNewProject from "./pages/client/NewProject";
-import ClientShowroom from "./pages/client/Showroom"; // New showroom page
+import ClientShowroom from "./pages/client/Showroom";
 import ClientFavorites from "./pages/client/Favorites";
 import ClientCart from "./pages/client/Cart";
 import ClientSettings from "./pages/client/Settings";
 import DesignerDashboard from "./pages/designer/Dashboard";
 import DesignerProjects from "./pages/designer/Projects";
 import DesignerNewProject from "./pages/designer/NewProject";
-import ProjectEditor3D from "./pages/designer/ProjectEditor3D"; // Import the new 3D editor component
+import ProjectEditor3D from "./pages/designer/ProjectEditor3D";
 import DesignerMaterials from "./pages/designer/Materials";
 import DesignerAccessories from "./pages/designer/Accessories";
 import DesignerModules from "./pages/designer/Modules";
@@ -68,12 +68,12 @@ function App() {
             <Route path="/designer/dashboard" element={<DesignerDashboard />} />
             <Route path="/designer/projects" element={<DesignerProjects />} />
             <Route path="/designer/projects/new" element={<DesignerNewProject />} />
-            <Route path="/designer/projects/:projectId/3d-editor" element={<ProjectEditor3D />} /> {/* New route for 3D editor */}
+            <Route path="/designer/projects/:projectId/3d-editor" element={<ProjectEditor3D />} />
             <Route path="/designer/materials" element={<DesignerMaterials />} />
             <Route path="/designer/accessories" element={<DesignerAccessories />} />
             <Route path="/designer/modules" element={<DesignerModules />} />
             <Route path="/designer/modules/:moduleId" element={<DesignerModules />} />
-            <Route path="/designer/modules/:moduleId/3d-setup" element={<DesignerModules />} />
+            <Route path="/designer/modules/:moduleId/3d-setup" element={<ProjectEditor3D />} /> {/* Point to ProjectEditor3D to reuse it */}
             <Route path="/designer/clients" element={<DesignerClients />} />
             <Route path="/designer/exports" element={<DesignerExports />} />
             <Route path="/designer/exports/:projectId" element={<ExportProject />} />

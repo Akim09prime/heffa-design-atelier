@@ -22,9 +22,20 @@ const ProjectEditor3D = () => {
     const fetchProject = async () => {
       try {
         if (projectId) {
+          console.log(`Fetching project with ID: ${projectId}`);
           const fetchedProject = await ProjectService.getProjectById(projectId);
-          setProject(fetchedProject);
-          console.log("Loaded project:", fetchedProject);
+          if (!fetchedProject) {
+            console.error(`Project not found with ID: ${projectId}`);
+            toast({
+              title: 'Error',
+              description: 'Project not found with the given ID',
+              variant: 'destructive',
+            });
+            setProject(null);
+          } else {
+            console.log("Loaded project:", fetchedProject);
+            setProject(fetchedProject);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch project:', error);
