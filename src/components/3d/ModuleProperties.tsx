@@ -10,14 +10,8 @@ import { MaterialService } from '@/services/materialService';
 import { AccessoryService } from '@/services/accessoryService';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
-import { FurnitureModule, ModuleType, Material, AccessoryItem } from '@/types';
-
-interface ModulePropertiesProps {
-  module: FurnitureModule;
-  onUpdate: (module: FurnitureModule) => void;
-  onDelete: (moduleId: string) => void;
-  onClose: () => void;
-}
+import { FurnitureModule, ModuleType, Material, AccessoryItem, MaterialType } from '@/types';
+import { ComboLogicService } from '@/services/comboLogicService';
 
 // Helper to format measurements
 const formatMeasurement = (value: number) => {
