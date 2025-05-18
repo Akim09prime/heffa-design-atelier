@@ -2,22 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
-
-// Firebase configuration - you'll need to set this up in your project
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // Replace with your actual Firebase config
-  authDomain: "your-app.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-app.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { db } from '../../firebase-config';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 interface Props {
   className?: string;
