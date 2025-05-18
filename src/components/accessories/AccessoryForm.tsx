@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { AccessoryItem, AccessoryType } from '@/types';
+import { AccessoryItem, AccessoryType, ModuleType } from '@/types';
 import { AlertCircle } from 'lucide-react';
 
 interface AccessoryFormProps {
@@ -35,7 +35,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
     'other'
   ];
   
-  const compatibilityOptions = [
+  const compatibilityOptions: {value: ModuleType, label: string}[] = [
     { value: 'base_cabinet', label: 'Base Cabinet' },
     { value: 'wall_cabinet', label: 'Wall Cabinet' },
     { value: 'tall_cabinet', label: 'Tall Cabinet' },
@@ -94,7 +94,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
     }
   }, [accessory, onValidationChange]);
 
-  const handleCompatibilityChange = (value: string, checked: boolean) => {
+  const handleCompatibilityChange = (value: ModuleType, checked: boolean) => {
     const currentCompatibility = accessory.compatibility || [];
     
     const newCompatibility = checked
@@ -257,7 +257,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 <Checkbox 
                   id={`compatibility-${option.value}`} 
                   checked={(accessory.compatibility || []).includes(option.value)}
-                  onCheckedChange={(checked) => handleCompatibilityChange(option.value, !!checked)}
+                  onCheckedChange={(checked) => handleCompatibilityChange(option.value, checked === true)}
                 />
                 <Label htmlFor={`compatibility-${option.value}`} className="text-sm font-normal cursor-pointer">
                   {option.label}
@@ -308,8 +308,8 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="property-softClose" 
-                    checked={!!accessory.properties?.softClose}
-                    onCheckedChange={(checked) => handlePropertyChange('softClose', !!checked)}
+                    checked={accessory.properties?.softClose === true}
+                    onCheckedChange={(checked) => handlePropertyChange('softClose', checked === true)}
                   />
                   <Label htmlFor="property-softClose" className="text-xs font-normal">
                     Soft close
@@ -318,8 +318,8 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="property-includesMountPlate" 
-                    checked={!!accessory.properties?.includesMountPlate}
-                    onCheckedChange={(checked) => handlePropertyChange('includesMountPlate', !!checked)}
+                    checked={accessory.properties?.includesMountPlate === true}
+                    onCheckedChange={(checked) => handlePropertyChange('includesMountPlate', checked === true)}
                   />
                   <Label htmlFor="property-includesMountPlate" className="text-xs font-normal">
                     Includes mounting plate
@@ -355,8 +355,8 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="property-softClose" 
-                    checked={!!accessory.properties?.softClose}
-                    onCheckedChange={(checked) => handlePropertyChange('softClose', !!checked)}
+                    checked={accessory.properties?.softClose === true}
+                    onCheckedChange={(checked) => handlePropertyChange('softClose', checked === true)}
                   />
                   <Label htmlFor="property-softClose" className="text-xs font-normal">
                     Soft close
@@ -365,8 +365,8 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="property-fullExtension" 
-                    checked={!!accessory.properties?.fullExtension}
-                    onCheckedChange={(checked) => handlePropertyChange('fullExtension', !!checked)}
+                    checked={accessory.properties?.fullExtension === true}
+                    onCheckedChange={(checked) => handlePropertyChange('fullExtension', checked === true)}
                   />
                   <Label htmlFor="property-fullExtension" className="text-xs font-normal">
                     Full extension
