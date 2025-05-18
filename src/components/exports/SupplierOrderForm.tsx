@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 
 interface SupplierOrderFormProps {
   project: Project;
+  onOrderSubmitted?: () => void;
 }
 
 interface OrderFormValues {
@@ -20,7 +21,7 @@ interface OrderFormValues {
   recipientEmail?: string;
 }
 
-export const SupplierOrderForm: React.FC<SupplierOrderFormProps> = ({ project }) => {
+export const SupplierOrderForm: React.FC<SupplierOrderFormProps> = ({ project, onOrderSubmitted }) => {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [orderData, setOrderData] = useState<Record<string, any> | null>(null);
@@ -50,6 +51,11 @@ export const SupplierOrderForm: React.FC<SupplierOrderFormProps> = ({ project })
           title: "Order sent",
           description: `Order has been sent to ${values.recipientEmail}`,
         });
+      }
+      
+      // Call onOrderSubmitted if provided
+      if (onOrderSubmitted) {
+        onOrderSubmitted();
       }
     } catch (error) {
       console.error('Order generation error:', error);

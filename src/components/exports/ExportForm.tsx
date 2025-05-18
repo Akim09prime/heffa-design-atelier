@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ExportFormProps {
   project: Project;
+  onExportSuccess?: (type: string) => void;
+  onExportError?: (type: string, error: string) => void;
 }
 
 interface ExportFormValues {
@@ -25,7 +26,7 @@ interface ExportFormValues {
   recipientEmail?: string;
 }
 
-export const ExportForm: React.FC<ExportFormProps> = ({ project }) => {
+export const ExportForm: React.FC<ExportFormProps> = ({ project, onExportSuccess, onExportError }) => {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
   const [showEmailField, setShowEmailField] = useState(false);
@@ -101,6 +102,11 @@ export const ExportForm: React.FC<ExportFormProps> = ({ project }) => {
           title: "Export generated successfully",
           description: `Your ${values.format.toUpperCase()} export is ready`,
         });
+        
+        // Call onExportSuccess if provided
+        if (onExportSuccess) {
+          onExportSuccess(values.format);
+        }
       }
     } catch (error) {
       console.error('Export error:', error);
@@ -109,6 +115,11 @@ export const ExportForm: React.FC<ExportFormProps> = ({ project }) => {
         description: "There was an error creating your export",
         variant: "destructive",
       });
+      
+      // Call onExportError if provided
+      if (onExportError && error instanceof Error) {
+        onExportError(values.format, error.message);
+      }
     } finally {
       setIsExporting(false);
     }

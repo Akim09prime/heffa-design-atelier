@@ -73,7 +73,7 @@ const Projects = () => {
                   return;
                 }
                 showToast(`Navigare către proiectul "${projectName}"`, "info");
-                handleViewProject(projectId);
+                handleViewProject(projectId, projectName);
               }}
               onCreateProject={() => {
                 setIsNewProjectDialogOpen(true);

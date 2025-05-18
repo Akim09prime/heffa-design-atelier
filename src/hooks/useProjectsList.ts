@@ -72,10 +72,10 @@ export const useProjectsList = () => {
   };
 
   // Handle viewing project details
-  const handleViewProject = (projectId: string, projectName: string) => {
+  const handleViewProject = (projectId: string, projectName?: string) => {
     toast({
       title: "Opening Project",
-      description: `Loading ${projectName}...`,
+      description: `Loading ${projectName || 'project'}...`,
     });
     navigate(`/designer/projects/${projectId}/3d-editor`);
   };

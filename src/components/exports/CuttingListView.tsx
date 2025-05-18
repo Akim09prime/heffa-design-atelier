@@ -12,9 +12,10 @@ import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CuttingListViewProps {
   project: Project;
+  onExport?: () => void;
 }
 
-export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => {
+export const CuttingListView: React.FC<CuttingListViewProps> = ({ project, onExport }) => {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [cuttingList, setCuttingList] = useState<any>(null);
@@ -48,6 +49,11 @@ export const CuttingListView: React.FC<CuttingListViewProps> = ({ project }) => 
         title: t('common.success'),
         description: t('importExport.exportComplete'),
       });
+      
+      // Call the onExport callback if provided
+      if (onExport) {
+        onExport();
+      }
     } catch (error) {
       toast({
         title: t('common.error'),
