@@ -1,14 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, Plus } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, Filter, Plus, ArrowRight, Calendar } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Projects = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [projectType, setProjectType] = useState("Kitchen");
+
   // Sample projects data
   const projects = [
     { 
@@ -79,6 +89,57 @@ const Projects = () => {
     }
   };
 
+  // Filter projects based on search query
+  const filteredProjects = projects.filter(project => {
+    if (!searchQuery) return true;
+    return (
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.client.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
+  // Handle creating a new project
+  const handleCreateProject = () => {
+    if (!projectName.trim()) {
+      toast({
+        title: "Error",
+        description: "Project name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Project Created",
+      description: `Created new ${projectType} project: ${projectName}`,
+    });
+
+    // Navigate to the new project page
+    navigate('/designer/projects/new');
+    
+    // Reset form and close dialog
+    setProjectName("");
+    setIsNewProjectDialogOpen(false);
+  };
+
+  // Handle viewing project details
+  const handleViewProject = (projectId: string, projectName: string) => {
+    toast({
+      title: "Opening Project",
+      description: `Loading ${projectName}...`,
+    });
+    navigate(`/designer/projects/${projectId}`);
+  };
+
+  // Handle importing a design
+  const handleImportDesign = () => {
+    toast({
+      title: "Import Design",
+      description: "Opening design import wizard...",
+    });
+    navigate('/designer/projects/import');
+  };
+
   return (
     <DesignerLayout>
       <div className="p-6">
@@ -94,13 +155,14 @@ const Projects = () => {
                 type="search"
                 placeholder="Search projects..."
                 className="w-full pl-9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
+            <Button variant="outline" onClick={handleImportDesign}>
+              Import Design
             </Button>
-            <Button>
+            <Button onClick={() => setIsNewProjectDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Project
             </Button>
@@ -126,41 +188,129 @@ const Projects = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {projects.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium">
-                      {project.name}
-                      <div className="text-xs text-muted-foreground">{project.modules} modules</div>
-                    </TableCell>
-                    <TableCell>{project.client}</TableCell>
-                    <TableCell>{project.createdAt}</TableCell>
-                    <TableCell>{project.deadline}</TableCell>
-                    <TableCell>{getStatusBadge(project.status)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="w-full max-w-[100px] h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${
-                              project.progress >= 100 ? 'bg-green-500' :
-                              project.progress > 70 ? 'bg-emerald-500' : 
-                              project.progress > 30 ? 'bg-blue-500' : 'bg-amber-500'
-                            }`}
-                            style={{ width: `${project.progress}%` }}
-                          ></div>
+                {filteredProjects.length > 0 ? (
+                  filteredProjects.map((project) => (
+                    <TableRow key={project.id} className="cursor-pointer hover:bg-gray-50"
+                      onClick={() => handleViewProject(project.id, project.name)}>
+                      <TableCell className="font-medium">
+                        {project.name}
+                        <div className="text-xs text-muted-foreground">{project.modules} modules</div>
+                      </TableCell>
+                      <TableCell>{project.client}</TableCell>
+                      <TableCell>{project.createdAt}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                          {project.deadline}
                         </div>
-                        <span className="text-xs whitespace-nowrap">{project.progress}%</span>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(project.status)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-full max-w-[100px] h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full ${
+                                project.progress >= 100 ? 'bg-green-500' :
+                                project.progress > 70 ? 'bg-emerald-500' : 
+                                project.progress > 30 ? 'bg-blue-500' : 'bg-amber-500'
+                              }`}
+                              style={{ width: `${project.progress}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs whitespace-nowrap">{project.progress}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewProject(project.id, project.name);
+                          }}
+                        >
+                          <ArrowRight className="h-3.5 w-3.5 mr-1" /> View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <div className="flex flex-col items-center justify-center">
+                        <p className="text-muted-foreground mb-2">
+                          {searchQuery ? `No projects found matching "${searchQuery}"` : "No projects have been created yet"}
+                        </p>
+                        <Button onClick={() => setIsNewProjectDialogOpen(true)}>
+                          <Plus className="h-4 w-4 mr-2" /> Create New Project
+                        </Button>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm">View</Button>
-                    </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
+          <CardFooter className="flex justify-between border-t">
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredProjects.length} of {projects.length} projects
+            </div>
+            <div className="space-x-2">
+              <Button variant="outline" size="sm" disabled={!searchQuery} onClick={() => setSearchQuery("")}>
+                Clear filters
+              </Button>
+            </div>
+          </CardFooter>
         </Card>
       </div>
+
+      {/* New Project Dialog */}
+      <Dialog open={isNewProjectDialogOpen} onOpenChange={setIsNewProjectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Project</DialogTitle>
+            <DialogDescription>
+              Fill in the basic details to create a new design project
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="projectName" className="text-right">
+                Name
+              </label>
+              <Input
+                id="projectName"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                placeholder="Enter project name"
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="projectType" className="text-right">
+                Type
+              </label>
+              <select
+                id="projectType"
+                value={projectType}
+                onChange={(e) => setProjectType(e.target.value)}
+                className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="Kitchen">Kitchen</option>
+                <option value="Bathroom">Bathroom</option>
+                <option value="Bedroom">Bedroom</option>
+                <option value="Living Room">Living Room</option>
+                <option value="Office">Office</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNewProjectDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateProject}>Create Project</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DesignerLayout>
   );
 };
