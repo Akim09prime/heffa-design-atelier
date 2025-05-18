@@ -159,13 +159,13 @@ const SettingsContent = () => {
 // Main Settings component that wraps the content with the required providers
 const Settings = () => {
   return (
-    <AuthProvider>
-      <AdminLayout>
-        <TranslationProvider>
+    <TranslationProvider>
+      <AuthProvider>
+        <AdminLayout>
           <SettingsContent />
-        </TranslationProvider>
-      </AdminLayout>
-    </AuthProvider>
+        </AdminLayout>
+      </AuthProvider>
+    </TranslationProvider>
   );
 };
 
