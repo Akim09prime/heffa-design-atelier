@@ -1,18 +1,21 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, X, Send, ArrowUp, CheckCircle, AlertCircle, InfoIcon } from 'lucide-react';
+import { MessageCircle, X, Send, ArrowUp, CheckCircle, AlertCircle, InfoIcon, Loader } from 'lucide-react';
 import { AiAssistantMessage } from '@/types';
+import { useUi } from '@/contexts/UiContext';
 
 interface AiAssistantProps {
   projectId?: string;
 }
 
 export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
+  const { showToast } = useUi();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null);
   const [messages, setMessages] = useState<AiAssistantMessage[]>([
     {
       id: '1',
@@ -24,16 +27,27 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
 
   const handleToggleOpen = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      showToast('Asistent AI deschis', 'info');
+    } else {
+      showToast('Asistent AI închis', 'info');
+    }
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
 
+  const handlePromptSelect = (prompt: string) => {
+    setSelectedPrompt(prompt);
+    setMessage(prompt);
+    showToast(`Prompt selectat: ${prompt.substring(0, 20)}...`, 'info');
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!message.trim()) return;
+    if (!message.trim() || isProcessing) return;
     
     // Add user message to chat
     const userMessage: AiAssistantMessage = {
@@ -45,6 +59,10 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
     
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
+    setSelectedPrompt(null);
+    setIsProcessing(true);
+    
+    showToast('Se generează răspuns...', 'info');
     
     // Simulate AI response after a short delay
     setTimeout(() => {
@@ -57,7 +75,16 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
       };
       
       setMessages(prev => [...prev, aiMessage]);
-    }, 700);
+      setIsProcessing(false);
+      
+      if (responseText.type === 'error') {
+        showToast('Eroare în generarea răspunsului', 'error');
+      } else if (responseText.type === 'warning') {
+        showToast('Răspuns generat cu atenționări', 'warning');
+      } else {
+        showToast('Răspuns generat cu succes', 'success');
+      }
+    }, 1200);
   };
 
   const generateAiResponse = (userMessage: string): { text: string; type: 'suggestion' | 'warning' | 'error' | 'info' } => {
@@ -107,6 +134,12 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
       };
     }
   };
+
+  const predefinedPrompts = [
+    "Cum calculez prețul pentru un modul?",
+    "Ce materiale pot fi vopsite?",
+    "Ce tipuri de cantuit pot folosi pentru PAL?"
+  ];
 
   return (
     <>
@@ -174,6 +207,32 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
                     </div>
                   </div>
                 ))}
+                {isProcessing && (
+                  <div className="flex justify-center my-4">
+                    <div className="flex items-center gap-2 bg-muted p-2 px-4 rounded">
+                      <Loader size={16} className="animate-spin" />
+                      <span className="text-sm">Se generează răspuns...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Predefined prompts */}
+              <div className="p-3 border-t">
+                <p className="text-xs text-muted-foreground mb-2">Întrebări frecvente:</p>
+                <div className="flex flex-wrap gap-1">
+                  {predefinedPrompts.map((prompt, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePromptSelect(prompt)}
+                      className={`text-xs ${selectedPrompt === prompt ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {prompt.length > 20 ? prompt.substring(0, 20) + '...' : prompt}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </CardContent>
             <CardFooter className="p-3 border-t">
@@ -183,9 +242,19 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ projectId }) => {
                   value={message}
                   onChange={handleMessageChange}
                   className="flex-1"
+                  disabled={isProcessing}
                 />
-                <Button type="submit" size="icon" className="shrink-0">
-                  <Send size={18} />
+                <Button 
+                  type="submit" 
+                  size="icon" 
+                  className="shrink-0"
+                  disabled={!message.trim() || isProcessing}
+                >
+                  {isProcessing ? (
+                    <Loader size={18} className="animate-spin" />
+                  ) : (
+                    <Send size={18} />
+                  )}
                 </Button>
               </form>
             </CardFooter>

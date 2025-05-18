@@ -7,7 +7,7 @@ interface UiContextState {
   loadingStates: Record<string, boolean>;
   setLoading: (key: string, isLoading: boolean) => void;
   isLoading: (key: string) => boolean;
-  showToast: (title: string, description?: string, type?: 'default' | 'success' | 'error' | 'warning' | 'info') => void;
+  showToast: (title: string, type?: 'default' | 'success' | 'error' | 'warning' | 'info') => void;
   showSuccessToast: (title: string, description?: string) => void;
   showErrorToast: (title: string, description?: string) => void;
   wrapWithLoading: <T>(key: string, promise: Promise<T>) => Promise<T>;
@@ -30,7 +30,19 @@ export const UiProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     return !!loadingStates[key];
   };
   
-  const showToastFn = (title: string, description?: string, type: 'default' | 'success' | 'error' | 'warning' | 'info' = 'default') => {
+  const showToastFn = (title: string, type: 'default' | 'success' | 'error' | 'warning' | 'info' = 'default') => {
+    let description: string | undefined;
+    
+    // Add standard descriptions for certain toast types
+    if (type === 'success' && !description) {
+      description = 'Operație realizată cu succes';
+    } else if (type === 'error' && !description) {
+      description = 'A apărut o eroare. Vă rugăm încercați din nou.';
+    }
+    
+    // Log toast event (for analytics in production environment)
+    console.log(`Toast: ${type} - ${title}`);
+    
     showToast(toast, { title, description, type });
   };
   

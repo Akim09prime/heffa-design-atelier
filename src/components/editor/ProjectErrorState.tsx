@@ -2,12 +2,29 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
+import { useState } from 'react';
+import { useUi } from '@/contexts/UiContext';
 
 interface ProjectErrorStateProps {
   onBack: () => void;
 }
 
 export const ProjectErrorState = ({ onBack }: ProjectErrorStateProps) => {
+  const { showToast } = useUi();
+  const [isNavigating, setIsNavigating] = useState(false);
+  
+  const handleBack = () => {
+    if (isNavigating) return;
+    
+    setIsNavigating(true);
+    showToast("Înapoi la proiecte...", "info");
+    
+    setTimeout(() => {
+      onBack();
+      setIsNavigating(false);
+    }, 300);
+  };
+  
   return (
     <DesignerLayout>
       <div className="p-6 flex justify-center items-center h-[calc(100vh-100px)]">
@@ -22,7 +39,13 @@ export const ProjectErrorState = ({ onBack }: ProjectErrorStateProps) => {
             </div>
             <h3 className="text-xl font-medium mb-2">Project Not Found</h3>
             <p className="text-gray-500 mb-4">The project you're looking for doesn't exist or you don't have permission to view it.</p>
-            <Button onClick={onBack}>Return to Projects</Button>
+            <Button 
+              onClick={handleBack} 
+              disabled={isNavigating}
+              className={isNavigating ? "opacity-50" : ""}
+            >
+              {isNavigating ? 'Navigating...' : 'Return to Projects'}
+            </Button>
           </CardContent>
         </Card>
       </div>

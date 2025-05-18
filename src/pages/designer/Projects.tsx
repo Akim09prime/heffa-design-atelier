@@ -8,6 +8,7 @@ import { ProjectTable } from '@/components/projects/ProjectTable';
 import { NewProjectDialog } from '@/components/projects/NewProjectDialog';
 import { ImportDesignDialog } from '@/components/projects/ImportDesignDialog';
 import { useProjectsList } from '@/hooks/useProjectsList';
+import { useUi } from '@/contexts/UiContext';
 
 const Projects = () => {
   const {
@@ -30,6 +31,15 @@ const Projects = () => {
     handleImportDesign,
     processImportedDesign
   } = useProjectsList();
+  
+  const { showToast } = useUi();
+
+  const handleClearSearch = () => {
+    if (searchQuery) {
+      setSearchQuery("");
+      showToast("Căutare resetată", "info");
+    }
+  };
 
   return (
     <DesignerLayout>
@@ -37,8 +47,14 @@ const Projects = () => {
         <ProjectsHeader 
           searchQuery={searchQuery}
           onSearchChange={(e) => setSearchQuery(e.target.value)}
-          onImportDesign={handleImportDesign}
-          onNewProject={() => setIsNewProjectDialogOpen(true)}
+          onImportDesign={() => {
+            handleImportDesign();
+            showToast("Formular import design deschis", "info");
+          }}
+          onNewProject={() => {
+            setIsNewProjectDialogOpen(true);
+            showToast("Formular proiect nou deschis", "info");
+          }}
         />
 
         <Card>
@@ -51,8 +67,18 @@ const Projects = () => {
               projects={projects}
               loading={loading}
               searchQuery={searchQuery}
-              onViewProject={handleViewProject}
-              onCreateProject={() => setIsNewProjectDialogOpen(true)}
+              onViewProject={(projectId, projectName) => {
+                if (!projectId) {
+                  showToast("ID proiect invalid", "error");
+                  return;
+                }
+                showToast(`Navigare către proiectul "${projectName}"`, "info");
+                handleViewProject(projectId);
+              }}
+              onCreateProject={() => {
+                setIsNewProjectDialogOpen(true);
+                showToast("Formular proiect nou deschis", "info");
+              }}
             />
           </CardContent>
           <CardFooter className="flex justify-between border-t">
@@ -66,7 +92,12 @@ const Projects = () => {
               }).length} of {projects.length} projects
             </div>
             <div className="space-x-2">
-              <Button variant="outline" size="sm" disabled={!searchQuery} onClick={() => setSearchQuery("")}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                disabled={!searchQuery} 
+                onClick={handleClearSearch}
+              >
                 Clear filters
               </Button>
             </div>
@@ -82,7 +113,14 @@ const Projects = () => {
         projectType={projectType}
         onProjectNameChange={(e) => setProjectName(e.target.value)}
         onProjectTypeChange={(e) => setProjectType(e.target.value)}
-        onCreateProject={handleCreateProject}
+        onCreateProject={() => {
+          if (!projectName.trim()) {
+            showToast("Numele proiectului este obligatoriu", "error");
+            return;
+          }
+          handleCreateProject();
+          showToast(`Proiect "${projectName}" creat cu succes`, "success");
+        }}
       />
 
       <ImportDesignDialog 
@@ -90,7 +128,14 @@ const Projects = () => {
         onOpenChange={setIsImportDialogOpen}
         importUrl={importUrl}
         onImportUrlChange={(e) => setImportUrl(e.target.value)}
-        onImportDesign={processImportedDesign}
+        onImportDesign={() => {
+          if (!importUrl.trim()) {
+            showToast("URL-ul de import este obligatoriu", "error");
+            return;
+          }
+          showToast("Import design în curs...", "info");
+          processImportedDesign();
+        }}
       />
     </DesignerLayout>
   );

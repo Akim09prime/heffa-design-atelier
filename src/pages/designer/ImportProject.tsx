@@ -6,11 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ProjectService } from '@/services/projectService';
+import { useUi } from '@/contexts/UiContext';
+import { db } from '@/firebase-config';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 const ImportProject = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { showToast, setLoading, isLoading } = useUi();
   const [importUrl, setImportUrl] = useState<string>('');
   const [importing, setImporting] = useState<boolean>(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -19,13 +23,37 @@ const ImportProject = () => {
     // Get the import URL from location state if available
     if (location.state?.importUrl) {
       setImportUrl(location.state.importUrl);
-      handleImport(location.state.importUrl);
+      validateAndHandleImport(location.state.importUrl);
     }
   }, [location]);
 
+  const validateAndHandleImport = (url: string) => {
+    // Basic URL validation
+    if (!url.trim()) {
+      setImportError("URL-ul de import este gol");
+      showToast("URL-ul de import este obligatoriu", "error");
+      return false;
+    }
+    
+    try {
+      // Very basic URL validation - in a real app you'd want more sophisticated validation
+      new URL(url);
+      handleImport(url);
+      return true;
+    } catch (e) {
+      setImportError("URL-ul de import nu este valid");
+      showToast("URL-ul de import nu este valid", "error");
+      return false;
+    }
+  };
+
   const handleImport = async (url: string) => {
+    if (importing) return;
+    
     setImporting(true);
+    setLoading('importProject', true);
     setImportError(null);
+    showToast("Import în curs...", "info");
 
     try {
       // Here we'd normally process the import URL
@@ -51,11 +79,22 @@ const ImportProject = () => {
           walls: []
         }
       });
+      
+      // Log import to Firebase
+      try {
+        await setDoc(doc(db, "imports", `import_${Date.now()}`), {
+          url: url,
+          timestamp: serverTimestamp(),
+          status: 'success',
+          projectId: newProject.id,
+          userId: '1' // This would be the current user's ID
+        });
+      } catch (firebaseError) {
+        console.error("Firebase log error:", firebaseError);
+        // We don't want to fail the import if just the logging fails
+      }
 
-      toast({
-        title: "Import Successful",
-        description: `Project has been successfully imported`,
-      });
+      showToast("Import finalizat cu succes", "success");
 
       // Navigate to the new project
       navigate(`/designer/projects/${newProject.id}/3d-editor`);
@@ -63,14 +102,29 @@ const ImportProject = () => {
       console.error("Error importing project:", error);
       setImportError("Failed to import the project. Please check the URL and try again.");
       
-      toast({
-        title: "Import Failed",
-        description: "There was an error importing the project. Please try again.",
-        variant: "destructive",
-      });
+      showToast("Eroare la importul proiectului", "error");
+      
+      // Log error to Firebase
+      try {
+        await setDoc(doc(db, "imports", `import_error_${Date.now()}`), {
+          url: url,
+          timestamp: serverTimestamp(),
+          status: 'error',
+          error: (error as Error).message,
+          userId: '1' // This would be the current user's ID
+        });
+      } catch (firebaseError) {
+        console.error("Firebase log error:", firebaseError);
+      }
     } finally {
       setImporting(false);
+      setLoading('importProject', false);
     }
+  };
+  
+  const handleBackToProjects = () => {
+    showToast("Înapoi la proiecte", "info");
+    navigate('/designer/projects');
   };
 
   return (
@@ -98,10 +152,13 @@ const ImportProject = () => {
                 <p className="text-red-600 font-medium">Import Failed</p>
                 <p className="text-sm text-center max-w-md">{importError}</p>
                 <div className="flex gap-2 mt-4">
-                  <Button variant="outline" onClick={() => navigate('/designer/projects')}>
+                  <Button variant="outline" onClick={handleBackToProjects}>
                     Back to Projects
                   </Button>
-                  <Button onClick={() => handleImport(importUrl)}>
+                  <Button 
+                    onClick={() => validateAndHandleImport(importUrl)}
+                    disabled={isLoading('importProject')}
+                  >
                     Try Again
                   </Button>
                 </div>
@@ -114,7 +171,7 @@ const ImportProject = () => {
                 <p className="text-green-600 font-medium">Import Completed</p>
                 <p className="text-sm text-center">Your design has been successfully imported.</p>
                 <div className="flex gap-2 mt-4">
-                  <Button onClick={() => navigate('/designer/projects')}>
+                  <Button onClick={handleBackToProjects}>
                     Go to Projects
                   </Button>
                 </div>
