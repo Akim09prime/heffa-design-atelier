@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +11,11 @@ import { MaterialType, Material } from '@/types';
 import { MaterialService } from '@/services/materialService';
 import { MaterialCard } from '@/components/materials/MaterialCard';
 import { MaterialForm } from '@/components/materials/MaterialForm';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
-const Materials = () => {
+// Create a wrapper component that uses the contexts
+const MaterialsContent = () => {
   const { t, language } = useTranslation();
   const { toast } = useToast();
   const [materialType, setMaterialType] = useState<MaterialType>('PAL');
@@ -310,6 +311,17 @@ const Materials = () => {
         </DialogContent>
       </Dialog>
     </AdminLayout>
+  );
+};
+
+// Main Materials component wrapped with providers
+const Materials = () => {
+  return (
+    <TranslationProvider>
+      <AuthProvider>
+        <MaterialsContent />
+      </AuthProvider>
+    </TranslationProvider>
   );
 };
 
