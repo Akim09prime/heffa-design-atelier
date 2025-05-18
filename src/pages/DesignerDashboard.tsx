@@ -7,26 +7,38 @@ import { SceneContainer } from '../components/3d/SceneContainer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Users, Package, Clock, ArrowRight, Plus, ArrowUpRight,
-  CheckCircle, AlertCircle, Printer, Folder, FolderPlus, Search
+  CheckCircle, AlertCircle, Printer, Folder, FolderPlus, Search,
+  Mail, Phone, UserPlus
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 const DesignerDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
+  const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectType, setProjectType] = useState("Kitchen");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [clientData, setClientData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: ""
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
 
   // Sample data
   const clients = [
-    { id: '1', name: 'John Smith', projects: 3, lastActive: '2 days ago' },
-    { id: '2', name: 'Emma Johnson', projects: 1, lastActive: 'Just now' },
-    { id: '3', name: 'Michael Brown', projects: 5, lastActive: '1 week ago' },
+    { id: '1', name: 'John Smith', email: 'john.smith@example.com', phone: '0722 123 456', projects: 3, lastActive: '2 days ago', status: 'active' },
+    { id: '2', name: 'Emma Johnson', email: 'emma.j@example.com', phone: '0733 456 789', projects: 1, lastActive: 'Just now', status: 'active' },
+    { id: '3', name: 'Michael Brown', email: 'michael.b@example.com', phone: '0744 789 123', projects: 5, lastActive: '1 week ago', status: 'inactive' },
+    { id: '4', name: 'Sarah Wilson', email: 'sarah.w@example.com', phone: '0755 321 654', projects: 0, lastActive: '3 weeks ago', status: 'pending' },
   ];
   
   const activeProjects = [
@@ -103,8 +115,74 @@ const DesignerDashboard = () => {
     navigate('/designer/projects/new');
   };
   
+  const handleCreateClient = () => {
+    setIsNewClientDialogOpen(false);
+    
+    if (!clientData.name || !clientData.email) {
+      toast({
+        title: "Error",
+        description: "Name and email are required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: "Client added",
+      description: `Successfully added ${clientData.name} to your clients`,
+    });
+    
+    // Reset the form
+    setClientData({
+      name: "",
+      email: "",
+      phone: "",
+      address: ""
+    });
+    
+    // If on clients tab, this would refresh the client list
+    if (activeTab === "clients") {
+      // In a real app, this would fetch the updated client list
+      console.log("Client added, refreshing client list");
+    }
+  };
+  
   const handleNavigation = (path: string) => {
     navigate(path);
+  };
+
+  const handleClientAction = (action: string, clientId: string, clientName: string) => {
+    switch(action) {
+      case 'edit':
+        toast({
+          title: "Edit client",
+          description: `Opening editor for ${clientName}`
+        });
+        navigate(`/designer/clients/${clientId}`);
+        break;
+      case 'view-projects':
+        toast({
+          title: "View client projects",
+          description: `Loading projects for ${clientName}`
+        });
+        navigate(`/designer/clients/${clientId}/projects`);
+        break;
+      case 'message':
+        toast({
+          title: "Message client",
+          description: `Opening messaging interface for ${clientName}`
+        });
+        navigate(`/designer/messages?client=${clientId}`);
+        break;
+      case 'delete':
+        toast({
+          title: "Confirm deletion",
+          description: `Please confirm you want to delete client: ${clientName}`,
+          variant: "destructive"
+        });
+        // Would show confirmation dialog in a real implementation
+        break;
+    }
   };
 
   const handleEditDesign = () => {
@@ -136,6 +214,16 @@ const DesignerDashboard = () => {
       description: "Resolving all compatibility issues...",
     });
   };
+
+  // Filter clients based on search query
+  const filteredClients = clients.filter(client => {
+    if (!searchQuery) return true;
+    return (
+      client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.phone.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   return (
     <DesignerLayout>
@@ -494,63 +582,122 @@ const DesignerDashboard = () => {
           </TabsContent>
           
           <TabsContent value="clients" className="mt-6">
-            <div className="flex justify-between mb-6">
-              <div className="relative w-64">
+            <div className="mb-6">
+              <h2 className="text-2xl font-semibold mb-2">Client Management</h2>
+              <p className="text-muted-foreground">View and manage your clients</p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search clients..." className="pl-9" />
+                <Input 
+                  placeholder="Search clients..." 
+                  className="pl-9"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <Button 
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={() => handleNavigation('/designer/clients/new')}
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+                onClick={() => setIsNewClientDialogOpen(true)}
               >
-                <Plus size={16} className="mr-2" />
-                New Client
+                <UserPlus size={16} className="mr-2" />
+                Add New Client
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {clients.map((client) => (
-                <Card key={client.id} className="bg-white shadow-md border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  onClick={() => handleNavigation(`/designer/clients/${client.id}`)}>
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <div className="bg-blue-100 text-blue-800 h-12 w-12 rounded-full flex items-center justify-center text-lg font-semibold">
-                        {client.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <CardTitle>{client.name}</CardTitle>
-                        <CardDescription>{client.projects} projects</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-muted-foreground">Status:</span>
-                        <span className={client.lastActive === 'Just now' ? 'text-green-600' : 'text-gray-600'}>
-                          {client.lastActive === 'Just now' ? 'Online' : 'Offline'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-muted-foreground">Last active:</span>
-                        <span>{client.lastActive}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="border-t border-gray-100 flex justify-between">
-                    <Button variant="ghost" size="sm" className="text-blue-600">Details</Button>
-                    <Button variant="outline" size="sm">Message</Button>
-                  </CardFooter>
-                </Card>
-              ))}
-              
-              <Card className="bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center h-[230px] hover:bg-gray-100 transition-colors cursor-pointer"
-                onClick={() => handleNavigation('/designer/clients/new')}>
-                <Users className="h-16 w-16 text-gray-400 mb-4" />
-                <p className="text-lg font-medium text-gray-600">Add New Client</p>
-                <p className="text-sm text-gray-500 mt-1">Create a new client profile</p>
-              </Card>
-            </div>
+            <Card className="bg-white shadow-md border border-gray-200">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Projects</TableHead>
+                      <TableHead>Last Active</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredClients.length > 0 ? (
+                      filteredClients.map((client) => (
+                        <TableRow key={client.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium">{client.name}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <div className="flex items-center text-sm">
+                                <Mail className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                                <span>{client.email}</span>
+                              </div>
+                              <div className="flex items-center text-sm mt-1">
+                                <Phone className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+                                <span>{client.phone}</span>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8"
+                              onClick={() => handleClientAction('view-projects', client.id, client.name)}
+                            >
+                              <Folder className="h-3.5 w-3.5 mr-1" />
+                              {client.projects} projects
+                            </Button>
+                          </TableCell>
+                          <TableCell>{client.lastActive}</TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={
+                                client.status === 'active' ? 'default' :
+                                client.status === 'inactive' ? 'secondary' : 'outline'
+                              }
+                            >
+                              {client.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => handleClientAction('edit', client.id, client.name)}
+                              >
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-6">
+                          {searchQuery ? (
+                            <p className="text-muted-foreground">No clients found matching "{searchQuery}"</p>
+                          ) : (
+                            <p className="text-muted-foreground">No clients added yet</p>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter className="flex justify-between items-center border-t border-gray-200 px-6 py-3">
+                <div className="text-sm text-muted-foreground">
+                  Showing {filteredClients.length} of {clients.length} clients
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/designer/clients')}
+                >
+                  View All Clients
+                </Button>
+              </CardFooter>
+            </Card>
           </TabsContent>
         </Tabs>
         
@@ -603,6 +750,79 @@ const DesignerDashboard = () => {
               </DialogClose>
               <Button onClick={handleCreateProject} className="bg-blue-600 hover:bg-blue-700">
                 Continue
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        {/* New Client Dialog */}
+        <Dialog open={isNewClientDialogOpen} onOpenChange={setIsNewClientDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Add New Client</DialogTitle>
+              <DialogDescription>
+                Enter client details to create a new client profile.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="clientName" className="text-right text-sm font-medium">
+                  Name*
+                </label>
+                <Input
+                  id="clientName"
+                  value={clientData.name}
+                  onChange={(e) => setClientData({...clientData, name: e.target.value})}
+                  className="col-span-3"
+                  placeholder="Enter client name"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="clientEmail" className="text-right text-sm font-medium">
+                  Email*
+                </label>
+                <Input
+                  id="clientEmail"
+                  type="email"
+                  value={clientData.email}
+                  onChange={(e) => setClientData({...clientData, email: e.target.value})}
+                  className="col-span-3"
+                  placeholder="Enter client email"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="clientPhone" className="text-right text-sm font-medium">
+                  Phone
+                </label>
+                <Input
+                  id="clientPhone"
+                  value={clientData.phone}
+                  onChange={(e) => setClientData({...clientData, phone: e.target.value})}
+                  className="col-span-3"
+                  placeholder="Enter client phone"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="clientAddress" className="text-right text-sm font-medium">
+                  Address
+                </label>
+                <Input
+                  id="clientAddress"
+                  value={clientData.address}
+                  onChange={(e) => setClientData({...clientData, address: e.target.value})}
+                  className="col-span-3"
+                  placeholder="Enter client address"
+                />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button onClick={handleCreateClient} className="bg-blue-600 hover:bg-blue-700">
+                Add Client
               </Button>
             </DialogFooter>
           </DialogContent>
