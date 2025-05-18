@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, forwardRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, PerspectiveCamera, 
@@ -75,7 +75,7 @@ const ModuleTransformControls: React.FC<{
   );
 };
 
-export const SceneContainer = forwardRef<HTMLDivElement, SceneContainerProps>(({
+export const SceneContainer: React.FC<SceneContainerProps> = ({
   modules = [],
   roomWidth = 4,
   roomLength = 4,
@@ -87,7 +87,7 @@ export const SceneContainer = forwardRef<HTMLDivElement, SceneContainerProps>(({
   editorMode = 'move',
   viewMode = 'perspective',
   onModuleUpdate,
-}, ref) => {
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const objectRefs = useRef<{ [key: string]: THREE.Object3D | null }>({});
   const isMobile = useIsMobile();
@@ -138,7 +138,7 @@ export const SceneContainer = forwardRef<HTMLDivElement, SceneContainerProps>(({
 
   return (
     <div ref={containerRef} className="scene-container w-full h-full bg-gray-100 rounded-lg shadow-inner">
-      <Canvas shadows ref={ref}>
+      <Canvas shadows>
         <PerspectiveCamera makeDefault position={[3, 2, 3]} fov={50} />
         <CameraController viewMode={viewMode} />
         
@@ -204,6 +204,4 @@ export const SceneContainer = forwardRef<HTMLDivElement, SceneContainerProps>(({
       </Canvas>
     </div>
   );
-});
-
-SceneContainer.displayName = 'SceneContainer';
+};
