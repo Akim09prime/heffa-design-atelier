@@ -5,8 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Material, FurnitureModule, MaterialType } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
-<lov-add-dependency>uuid@11.1.0</lov-add-dependency>
-
 interface ModuleMaterialsPanelProps {
   module: FurnitureModule;
   materials: Material[];
