@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileUp, Upload, Check, FileText, FileCode, Database } from 'lucide-react';
 import { ProjectService } from '@/services/projectService';
-import { ProjectType, ProjectStatus } from '@/types';
+import { ProjectType, ProjectStatus, RoomType } from '@/types';
 
 const ImportProject = () => {
   const [fileType, setFileType] = useState('heffa');
@@ -64,7 +65,7 @@ const ImportProject = () => {
               name: selectedFile.name.replace(/\.[^/.]+$/, ""),
               description: `Imported from ${fileType.toUpperCase()} file`,
               type: 'Free Mode' as ProjectType,
-              roomType: 'other',
+              roomType: 'other' as RoomType, // Fixed: Explicitly cast to RoomType
               status: 'imported' as ProjectStatus,
               modules: [],
               dimensions: {
