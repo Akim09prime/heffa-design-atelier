@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -243,7 +242,3 @@ export const EditorSidebar: React.FC<EditorSidebarProps> = ({
     </div>
   );
 };
-
-// Add uuid package
-<lov-add-dependency>uuid@latest</lov-add-dependency>
-<lov-add-dependency>@types/uuid@latest</lov-add-dependency>
