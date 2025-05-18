@@ -1,371 +1,440 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { X, FileText, Table, Download } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Download, FileText, Table, FileCode, Package, Send } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Project } from '@/types';
+import { useToast } from '@/hooks/use-toast';
 import { ExportService } from '@/services/exportService';
 
 interface ExportOptionsProps {
-  project: Project;
-  onClose?: () => void;
+  project: Project | null;
+  onClose: () => void;
 }
 
 export const ExportOptions: React.FC<ExportOptionsProps> = ({ project, onClose }) => {
-  const [exportType, setExportType] = useState<'pdf' | 'excel' | 'dxf' | 'svg' | 'all'>('pdf');
-  const [isExporting, setIsExporting] = useState(false);
-  const [recipientEmail, setRecipientEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [includeOptions, setIncludeOptions] = useState({
-    details: true,
-    images: true,
-    accessories: true,
-    cutting: true
-  });
+  const [exportType, setExportType] = useState<'pdf' | 'excel' | 'dxf'>('pdf');
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Handle export
-  const handleExport = async () => {
-    setIsExporting(true);
-    
-    try {
-      let exportResult;
-      
-      switch (exportType) {
-        case 'pdf':
-          exportResult = await ExportService.generatePdfOffer(project, {
-            includeDetails: includeOptions.details,
-            includeImages: includeOptions.images,
-            includeAccessories: includeOptions.accessories
-          });
-          toast({
-            title: 'PDF Generated',
-            description: 'Your project has been exported as PDF'
-          });
-          // Trigger download
-          window.open(exportResult, '_blank');
-          break;
-          
-        case 'excel':
-          exportResult = await ExportService.generateExcelCuttingSheet(project, {
-            includeCutting: includeOptions.cutting
-          });
-          toast({
-            title: 'Excel Generated',
-            description: 'Cutting sheet has been exported as Excel'
-          });
-          window.open(exportResult, '_blank');
-          break;
-          
-        case 'dxf':
-          exportResult = await ExportService.generateDxfFiles(project);
-          toast({
-            title: 'DXF Files Generated',
-            description: `${exportResult.length} DXF files have been generated`
-          });
-          exportResult.forEach((url, index) => {
-            setTimeout(() => window.open(url, '_blank'), index * 100);
-          });
-          break;
-          
-        case 'all':
-          const zipBundle = await ExportService.generateZipBundle(project);
-          toast({
-            title: 'Export Bundle Generated',
-            description: 'All export files have been bundled into a ZIP archive'
-          });
-          window.open(zipBundle, '_blank');
-          break;
-          
-        default:
-          toast({
-            title: 'Export Error',
-            description: 'Invalid export type selected',
-            variant: 'destructive'
-          });
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast({
-        title: 'Export Failed',
-        description: 'Failed to generate export files',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsExporting(false);
+  // PDF export options
+  const [includeRenderingsPdf, setIncludeRenderingsPdf] = useState(true);
+  const [includeMaterialsPdf, setIncludeMaterialsPdf] = useState(true);
+  const [includeAssemblyPdf, setIncludeAssemblyPdf] = useState(true);
+  const [includePricesPdf, setIncludePricesPdf] = useState(true);
+  const [pdfFormat, setPdfFormat] = useState('A4');
+  const [pdfOrientation, setPdfOrientation] = useState('portrait');
+
+  // Excel export options
+  const [includeMaterialsExcel, setIncludeMaterialsExcel] = useState(true);
+  const [includeAccessoriesExcel, setIncludeAccessoriesExcel] = useState(true);
+  const [includeProcessingExcel, setIncludeProcessingExcel] = useState(true);
+  const [includePricesExcel, setIncludePricesExcel] = useState(true);
+  const [excelFormat, setExcelFormat] = useState('detailed');
+
+  // DXF export options
+  const [dxfScale, setDxfScale] = useState('1:1');
+  const [dxfLayers, setDxfLayers] = useState('separate');
+  const [dxfParts, setDxfParts] = useState<string[]>(['top', 'sides', 'bottom', 'shelves', 'doors', 'drawers']);
+
+  // Handle checkbox change for DXF parts
+  const handleDxfPartChange = (part: string) => {
+    if (dxfParts.includes(part)) {
+      setDxfParts(dxfParts.filter(p => p !== part));
+    } else {
+      setDxfParts([...dxfParts, part]);
     }
   };
 
-  // Handle email export
-  const handleEmailExport = async () => {
-    if (!recipientEmail) {
+  // Generate export filename
+  const getExportFilename = () => {
+    const date = new Date().toISOString().split('T')[0];
+    const projectName = project?.name || 'project';
+    const sanitizedName = projectName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    
+    return `${sanitizedName}_${date}`;
+  };
+
+  // Handle export
+  const handleExport = async () => {
+    if (!project) {
       toast({
-        title: 'Email Required',
-        description: 'Please enter a recipient email address',
-        variant: 'destructive'
+        title: "Error",
+        description: "No project data available for export",
+        variant: "destructive",
       });
       return;
     }
-    
-    setIsExporting(true);
-    
+
     try {
-      const exportTypes = [exportType === 'all' ? 'pdf' : exportType] as ('pdf' | 'excel' | 'dxf' | 'svg' | 'json')[];
-      
-      const result = await ExportService.emailExports(project, recipientEmail, exportTypes, message);
-      
-      if (result) {
-        toast({
-          title: 'Email Sent',
-          description: `Export files have been sent to ${recipientEmail}`
-        });
-        setRecipientEmail('');
-        setMessage('');
-      } else {
-        toast({
-          title: 'Email Failed',
-          description: 'Failed to send export files',
-          variant: 'destructive'
-        });
+      setLoading(true);
+
+      // Create export options based on selected export type
+      const options = {
+        filename: getExportFilename(),
+        format: exportType,
+        project,
+        settings: {} as any,
+      };
+
+      // Add settings based on export type
+      switch (exportType) {
+        case 'pdf':
+          options.settings = {
+            includeRenderings: includeRenderingsPdf,
+            includeMaterials: includeMaterialsPdf,
+            includeAssembly: includeAssemblyPdf,
+            includePrices: includePricesPdf,
+            format: pdfFormat,
+            orientation: pdfOrientation,
+          };
+          break;
+
+        case 'excel':
+          options.settings = {
+            includeMaterials: includeMaterialsExcel,
+            includeAccessories: includeAccessoriesExcel,
+            includeProcessing: includeProcessingExcel,
+            includePrices: includePricesExcel,
+            format: excelFormat,
+          };
+          break;
+
+        case 'dxf':
+          options.settings = {
+            scale: dxfScale,
+            layers: dxfLayers,
+            parts: dxfParts,
+          };
+          break;
       }
-    } catch (error) {
-      console.error('Email error:', error);
+
+      // Call export service
+      const result = await ExportService.exportProject(options);
+
       toast({
-        title: 'Email Failed',
-        description: 'Failed to send export files',
-        variant: 'destructive'
+        title: "Export Completed",
+        description: `${exportType.toUpperCase()} export has been generated and downloaded`,
+      });
+
+      // Optional: trigger download programmatically
+      if (result?.downloadUrl) {
+        const link = document.createElement('a');
+        link.href = result.downloadUrl;
+        link.download = `${options.filename}.${exportType}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      onClose();
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast({
+        title: "Export Failed",
+        description: "An error occurred while generating the export",
+        variant: "destructive",
       });
     } finally {
-      setIsExporting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Export Project</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Export Project</CardTitle>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
         <CardDescription>
-          Export your project in various formats for manufacturing and sharing
+          Export your project in various formats for manufacturing and presentation
         </CardDescription>
       </CardHeader>
-      
       <CardContent>
-        <Tabs defaultValue="download" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="download">Download</TabsTrigger>
-            <TabsTrigger value="email">Email</TabsTrigger>
+        <Tabs 
+          defaultValue="pdf" 
+          onValueChange={(value) => setExportType(value as 'pdf' | 'excel' | 'dxf')}
+        >
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="pdf" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              PDF Document
+            </TabsTrigger>
+            <TabsTrigger value="excel" className="flex items-center gap-2">
+              <Table className="h-4 w-4" />
+              Excel Spreadsheet
+            </TabsTrigger>
+            <TabsTrigger value="dxf" className="flex items-center gap-2">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 3v4a1 1 0 001 1h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M17 21h-10a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" stroke="currentColor" strokeWidth="2"/>
+                <path d="M9 17l3-3m0 0l3 3m-3-3v-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              DXF Drawing
+            </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="download">
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button
-                  variant={exportType === 'pdf' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-24 gap-2"
-                  onClick={() => setExportType('pdf')}
-                >
-                  <FileText className="h-8 w-8" />
-                  <span>PDF Offer</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'excel' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-24 gap-2"
-                  onClick={() => setExportType('excel')}
-                >
-                  <Table className="h-8 w-8" />
-                  <span>Excel Cutting List</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'dxf' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-24 gap-2"
-                  onClick={() => setExportType('dxf')}
-                >
-                  <FileCode className="h-8 w-8" />
-                  <span>DXF Files</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'all' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-24 gap-2"
-                  onClick={() => setExportType('all')}
-                >
-                  <Package className="h-8 w-8" />
-                  <span>All Formats (ZIP)</span>
-                </Button>
+          <TabsContent value="pdf" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-base font-medium">Content Options</Label>
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="renderings-pdf" 
+                      checked={includeRenderingsPdf}
+                      onCheckedChange={() => setIncludeRenderingsPdf(!includeRenderingsPdf)}
+                    />
+                    <Label htmlFor="renderings-pdf">Include 3D Renderings</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="materials-pdf" 
+                      checked={includeMaterialsPdf}
+                      onCheckedChange={() => setIncludeMaterialsPdf(!includeMaterialsPdf)}
+                    />
+                    <Label htmlFor="materials-pdf">Include Materials List</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="assembly-pdf" 
+                      checked={includeAssemblyPdf}
+                      onCheckedChange={() => setIncludeAssemblyPdf(!includeAssemblyPdf)}
+                    />
+                    <Label htmlFor="assembly-pdf">Include Assembly Instructions</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="prices-pdf" 
+                      checked={includePricesPdf}
+                      onCheckedChange={() => setIncludePricesPdf(!includePricesPdf)}
+                    />
+                    <Label htmlFor="prices-pdf">Include Price Breakdown</Label>
+                  </div>
+                </div>
               </div>
               
-              <div className="border rounded-md p-4 space-y-3">
-                <h3 className="text-sm font-medium">Include in export:</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="include-details" 
-                      checked={includeOptions.details}
-                      onCheckedChange={(checked) => 
-                        setIncludeOptions({...includeOptions, details: checked === true})
-                      }
-                    />
-                    <Label htmlFor="include-details">Project Details</Label>
+              <div>
+                <Label className="text-base font-medium">Format Options</Label>
+                <div className="mt-2 space-y-4">
+                  <div>
+                    <Label htmlFor="pdf-format" className="text-sm">Paper Size</Label>
+                    <Select value={pdfFormat} onValueChange={setPdfFormat}>
+                      <SelectTrigger id="pdf-format" className="mt-1">
+                        <SelectValue placeholder="Select paper size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A4">A4</SelectItem>
+                        <SelectItem value="A3">A3</SelectItem>
+                        <SelectItem value="Letter">Letter</SelectItem>
+                        <SelectItem value="Legal">Legal</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="include-images" 
-                      checked={includeOptions.images}
-                      onCheckedChange={(checked) => 
-                        setIncludeOptions({...includeOptions, images: checked === true})
-                      }
-                    />
-                    <Label htmlFor="include-images">Images & Renders</Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="include-accessories" 
-                      checked={includeOptions.accessories}
-                      onCheckedChange={(checked) => 
-                        setIncludeOptions({...includeOptions, accessories: checked === true})
-                      }
-                    />
-                    <Label htmlFor="include-accessories">Accessories List</Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="include-cutting" 
-                      checked={includeOptions.cutting}
-                      onCheckedChange={(checked) => 
-                        setIncludeOptions({...includeOptions, cutting: checked === true})
-                      }
-                    />
-                    <Label htmlFor="include-cutting">Cutting Details</Label>
+                  <div>
+                    <Label className="text-sm">Orientation</Label>
+                    <RadioGroup 
+                      value={pdfOrientation} 
+                      onValueChange={setPdfOrientation}
+                      className="flex gap-4 mt-1"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="portrait" id="portrait" />
+                        <Label htmlFor="portrait">Portrait</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="landscape" id="landscape" />
+                        <Label htmlFor="landscape">Landscape</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
                 </div>
               </div>
             </div>
           </TabsContent>
           
-          <TabsContent value="email">
-            <div className="space-y-4">
+          <TabsContent value="excel" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="email">Recipient Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="client@example.com" 
-                  value={recipientEmail}
-                  onChange={(e) => setRecipientEmail(e.target.value)}
-                />
+                <Label className="text-base font-medium">Content Options</Label>
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="materials-excel" 
+                      checked={includeMaterialsExcel}
+                      onCheckedChange={() => setIncludeMaterialsExcel(!includeMaterialsExcel)}
+                    />
+                    <Label htmlFor="materials-excel">Include Materials</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="accessories-excel" 
+                      checked={includeAccessoriesExcel}
+                      onCheckedChange={() => setIncludeAccessoriesExcel(!includeAccessoriesExcel)}
+                    />
+                    <Label htmlFor="accessories-excel">Include Accessories</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="processing-excel" 
+                      checked={includeProcessingExcel}
+                      onCheckedChange={() => setIncludeProcessingExcel(!includeProcessingExcel)}
+                    />
+                    <Label htmlFor="processing-excel">Include Processing Steps</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="prices-excel" 
+                      checked={includePricesExcel}
+                      onCheckedChange={() => setIncludePricesExcel(!includePricesExcel)}
+                    />
+                    <Label htmlFor="prices-excel">Include Price Information</Label>
+                  </div>
+                </div>
               </div>
               
               <div>
-                <Label htmlFor="message">Message (Optional)</Label>
-                <Textarea 
-                  id="message" 
-                  placeholder="Here's the project export you requested..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
+                <Label className="text-base font-medium">Format Options</Label>
+                <div className="mt-2 space-y-4">
+                  <div>
+                    <Label htmlFor="excel-format" className="text-sm">Sheet Format</Label>
+                    <Select value={excelFormat} onValueChange={setExcelFormat}>
+                      <SelectTrigger id="excel-format" className="mt-1">
+                        <SelectValue placeholder="Select format" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="detailed">Detailed</SelectItem>
+                        <SelectItem value="simplified">Simplified</SelectItem>
+                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="client">Client-Friendly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="dxf" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-base font-medium">Drawing Parts</Label>
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="top-dxf" 
+                      checked={dxfParts.includes('top')}
+                      onCheckedChange={() => handleDxfPartChange('top')}
+                    />
+                    <Label htmlFor="top-dxf">Top Panel</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="sides-dxf" 
+                      checked={dxfParts.includes('sides')}
+                      onCheckedChange={() => handleDxfPartChange('sides')}
+                    />
+                    <Label htmlFor="sides-dxf">Side Panels</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="bottom-dxf" 
+                      checked={dxfParts.includes('bottom')}
+                      onCheckedChange={() => handleDxfPartChange('bottom')}
+                    />
+                    <Label htmlFor="bottom-dxf">Bottom Panel</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="shelves-dxf" 
+                      checked={dxfParts.includes('shelves')}
+                      onCheckedChange={() => handleDxfPartChange('shelves')}
+                    />
+                    <Label htmlFor="shelves-dxf">Shelves</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="doors-dxf" 
+                      checked={dxfParts.includes('doors')}
+                      onCheckedChange={() => handleDxfPartChange('doors')}
+                    />
+                    <Label htmlFor="doors-dxf">Doors</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="drawers-dxf" 
+                      checked={dxfParts.includes('drawers')}
+                      onCheckedChange={() => handleDxfPartChange('drawers')}
+                    />
+                    <Label htmlFor="drawers-dxf">Drawers</Label>
+                  </div>
+                </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button
-                  variant={exportType === 'pdf' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-16 gap-1"
-                  onClick={() => setExportType('pdf')}
-                >
-                  <FileText className="h-4 w-4" />
-                  <span className="text-xs">PDF Offer</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'excel' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-16 gap-1"
-                  onClick={() => setExportType('excel')}
-                >
-                  <Table className="h-4 w-4" />
-                  <span className="text-xs">Excel Cutting List</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'dxf' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-16 gap-1"
-                  onClick={() => setExportType('dxf')}
-                >
-                  <FileCode className="h-4 w-4" />
-                  <span className="text-xs">DXF Files</span>
-                </Button>
-                
-                <Button
-                  variant={exportType === 'all' ? 'default' : 'outline'}
-                  className="flex flex-col items-center justify-center h-16 gap-1"
-                  onClick={() => setExportType('all')}
-                >
-                  <Package className="h-4 w-4" />
-                  <span className="text-xs">All Formats</span>
-                </Button>
+              <div>
+                <Label className="text-base font-medium">Drawing Options</Label>
+                <div className="mt-2 space-y-4">
+                  <div>
+                    <Label htmlFor="dxf-scale" className="text-sm">Scale</Label>
+                    <Select value={dxfScale} onValueChange={setDxfScale}>
+                      <SelectTrigger id="dxf-scale" className="mt-1">
+                        <SelectValue placeholder="Select scale" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1:1">1:1 (Full Scale)</SelectItem>
+                        <SelectItem value="1:2">1:2</SelectItem>
+                        <SelectItem value="1:5">1:5</SelectItem>
+                        <SelectItem value="1:10">1:10</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="dxf-layers" className="text-sm">Layer Organization</Label>
+                    <Select value={dxfLayers} onValueChange={setDxfLayers}>
+                      <SelectTrigger id="dxf-layers" className="mt-1">
+                        <SelectValue placeholder="Select layer organization" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="separate">Separate Layers by Part Type</SelectItem>
+                        <SelectItem value="material">Separate Layers by Material</SelectItem>
+                        <SelectItem value="module">Separate Layers by Module</SelectItem>
+                        <SelectItem value="combined">Combined (Single Layer)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             </div>
           </TabsContent>
         </Tabs>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between">
-        {onClose && (
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-        )}
         
-        <Tabs.Current>
-          {(currentTab) => (
-            currentTab === "download" ? (
-              <Button 
-                onClick={handleExport} 
-                disabled={isExporting}
-              >
-                {isExporting ? (
-                  <span className="flex items-center gap-2">
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                    Processing...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    Export {exportType.toUpperCase()}
-                  </span>
-                )}
-              </Button>
-            ) : (
-              <Button 
-                onClick={handleEmailExport} 
-                disabled={isExporting || !recipientEmail}
-              >
-                {isExporting ? (
-                  <span className="flex items-center gap-2">
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                    Sending...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Send className="h-4 w-4" />
-                    Send Email
-                  </span>
-                )}
-              </Button>
-            )
-          )}
-        </Tabs.Current>
-      </CardFooter>
+        <div className="flex justify-end mt-6 space-x-2">
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            onClick={handleExport} 
+            disabled={loading}
+            className="flex items-center gap-2"
+          >
+            {loading ? 'Processing...' : (
+              <>
+                <Download className="h-4 w-4" />
+                Export {exportType.toUpperCase()}
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
     </Card>
   );
 };

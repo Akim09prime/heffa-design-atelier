@@ -41,11 +41,22 @@ const PlaceholderBox: React.FC<{
   const [bodyTexture, setBodyTexture] = useState<THREE.Texture | null>(null);
   const [frontTexture, setFrontTexture] = useState<THREE.Texture | null>(null);
   
-  // Function to load a texture from URL
+  // Function to load a texture from URL with fallbacks
   const loadTexture = (url: string): Promise<THREE.Texture> => {
     return new Promise((resolve, reject) => {
+      if (!url) {
+        reject(new Error('No texture URL provided'));
+        return;
+      }
+
+      // Use a fallback texture if URL contains placeholder.com which is causing errors
+      const isPlaceholder = url.includes('placeholder.com');
+      const textureUrl = isPlaceholder ? 
+        '/placeholder.svg' : // Use local placeholder image instead
+        url;
+      
       new THREE.TextureLoader().load(
-        url,
+        textureUrl,
         (texture) => {
           texture.wrapS = THREE.RepeatWrapping;
           texture.wrapT = THREE.RepeatWrapping;
@@ -53,7 +64,20 @@ const PlaceholderBox: React.FC<{
           resolve(texture);
         },
         undefined,
-        reject
+        (error) => {
+          console.error('Error loading texture:', error);
+          // Create a default texture with a color based on material type
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = isSelected ? '#E7DFD1' : '#D5C7B2';
+            ctx.fillRect(0, 0, 64, 64);
+          }
+          const defaultTexture = new THREE.CanvasTexture(canvas);
+          resolve(defaultTexture);
+        }
       );
     });
   };
@@ -63,15 +87,37 @@ const PlaceholderBox: React.FC<{
     if (bodyTextureUrl) {
       loadTexture(bodyTextureUrl)
         .then(setBodyTexture)
-        .catch(err => console.error('Error loading body texture:', err));
+        .catch(() => {
+          // Create a fallback texture
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = isSelected ? '#E7DFD1' : '#D5C7B2';
+            ctx.fillRect(0, 0, 64, 64);
+          }
+          setBodyTexture(new THREE.CanvasTexture(canvas));
+        });
     }
     
     if (frontTextureUrl) {
       loadTexture(frontTextureUrl)
         .then(setFrontTexture)
-        .catch(err => console.error('Error loading front texture:', err));
+        .catch(() => {
+          // Create a fallback texture
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = isSelected ? '#B29978' : '#BEAC94';
+            ctx.fillRect(0, 0, 64, 64);
+          }
+          setFrontTexture(new THREE.CanvasTexture(canvas));
+        });
     }
-  }, [bodyTextureUrl, frontTextureUrl]);
+  }, [bodyTextureUrl, frontTextureUrl, isSelected]);
 
   // Selection animation
   useFrame(() => {
@@ -183,12 +229,22 @@ export const FurnitureModule: React.FC<FurnitureModuleProps> = ({
         // Set texture URLs based on material IDs
         if (bodyMaterial) {
           const materialData = allMaterials.find(m => m.id === bodyMaterial.materialId);
-          setBodyTextureUrl(materialData?.textureUrl);
+          // Use a fallback for placeholder images
+          if (materialData?.textureUrl?.includes('placeholder.com')) {
+            setBodyTextureUrl('/placeholder.svg');
+          } else {
+            setBodyTextureUrl(materialData?.textureUrl);
+          }
         }
         
         if (frontMaterial) {
           const materialData = allMaterials.find(m => m.id === frontMaterial.materialId);
-          setFrontTextureUrl(materialData?.textureUrl);
+          // Use a fallback for placeholder images
+          if (materialData?.textureUrl?.includes('placeholder.com')) {
+            setFrontTextureUrl('/placeholder.svg');
+          } else {
+            setFrontTextureUrl(materialData?.textureUrl);
+          }
         }
       } catch (error) {
         console.error("Failed to load materials:", error);

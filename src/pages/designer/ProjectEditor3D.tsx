@@ -7,7 +7,7 @@ import { SceneContainer } from '@/components/3d/SceneContainer';
 import { Project, FurnitureModule } from '@/types';
 import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Share, Download, Layers, Export } from 'lucide-react';
+import { ChevronLeft, Save, Share, Download, Layers, File } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ModuleLibrary } from '@/components/3d/ModuleLibrary';
 import { ModuleProperties } from '@/components/3d/ModuleProperties';
@@ -266,7 +266,7 @@ const ProjectEditor3D = () => {
                 Save
               </Button>
               <Button onClick={handleOpenExport}>
-                <Export size={16} className="mr-2" />
+                <File size={16} className="mr-2" />
                 Export
               </Button>
             </div>
