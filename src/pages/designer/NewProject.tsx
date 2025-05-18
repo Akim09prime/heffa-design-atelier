@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -57,7 +56,7 @@ const NewProject = () => {
 
       // Create a new project
       const newProject: Omit<Project, 'id' | 'createdAt' | 'updatedAt'> = {
-        userId: user.id,
+        userId: user?.id || 'guest',
         name: `New ${type} Project`,
         description: `${type}${subType ? ` (${subType})` : ''} project`,
         type,
@@ -84,6 +83,7 @@ const NewProject = () => {
 
       // Call the service to create the project
       const createdProject = await ProjectService.createProject(newProject);
+      console.log("Creating new project:", createdProject);
       setProjectId(createdProject.id);
 
       toast({

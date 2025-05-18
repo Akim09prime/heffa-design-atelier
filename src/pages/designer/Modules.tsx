@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -28,6 +27,8 @@ const Modules = () => {
   });
   const navigate = useNavigate();
   const { toast } = useToast();
+  const params = useParams();
+  const { moduleId } = params;
 
   const handleNewModule = () => {
     setIsNewModuleDialogOpen(true);
@@ -42,7 +43,6 @@ const Modules = () => {
   };
 
   const handleCreateModule = () => {
-    // Validate form
     if (!newModuleData.name.trim()) {
       toast({
         title: "Validation Error",
@@ -60,7 +60,6 @@ const Modules = () => {
       description: "Your new module has been created successfully",
     });
     
-    // Navigate to the new module
     navigate(`/designer/modules/${moduleId}`);
   };
 
@@ -70,8 +69,8 @@ const Modules = () => {
       title: "Opening 3D Setup",
       description: "Preparing 3D environment for module configuration",
     });
-    // Make sure this route exists in your App.tsx
-    navigate(`/designer/modules/${moduleId}/3d-setup`);
+    const projectId = `module-${moduleId}`;
+    navigate(`/designer/projects/${projectId}/3d-editor`);
   };
 
   const handleModuleClick = (moduleId: number) => {
@@ -87,7 +86,6 @@ const Modules = () => {
     );
   };
 
-  // Sample module data
   const getModulesForCategory = (category: string) => {
     return Array.from({ length: 8 }).map((_, i) => ({
       id: i + 100,
