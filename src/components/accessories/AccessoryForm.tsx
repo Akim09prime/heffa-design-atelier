@@ -154,7 +154,7 @@ export const AccessoryForm: React.FC<AccessoryFormProps> = ({
         <div className="col-span-3 space-y-1">
           <Select 
             value={accessory.type || ''} 
-            onValueChange={(value) => onChange('type', value)}
+            onValueChange={(value) => onChange('type', value as AccessoryType)}
           >
             <SelectTrigger id="type" className={errors.type ? "border-red-500" : ""}>
               <SelectValue placeholder="Select accessory type" />
