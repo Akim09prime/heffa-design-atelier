@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,21 +11,11 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { AccessoryType, ModuleType } from '@/types';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
-interface Accessory {
-  id: string;
-  code: string;
-  name: string;
-  type: AccessoryType;
-  manufacturer: string;
-  price: number;
-  stockQty: number;
-  imageUrl?: string;
-  compatibility: ModuleType[];
-}
-
-const Accessories = () => {
+// Create a wrapper component that uses the contexts
+const AccessoriesContent = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<AccessoryType>('hinge');
@@ -362,6 +351,18 @@ const Accessories = () => {
   );
 };
 
+interface Accessory {
+  id: string;
+  code: string;
+  name: string;
+  type: AccessoryType;
+  manufacturer: string;
+  price: number;
+  stockQty: number;
+  imageUrl?: string;
+  compatibility: ModuleType[];
+}
+
 interface AccessoryFormProps {
   accessory?: Accessory;
   accessoryType: AccessoryType;
@@ -610,6 +611,17 @@ const AccessoryForm: React.FC<AccessoryFormProps> = ({
         </Button>
       </DialogFooter>
     </div>
+  );
+};
+
+// Main Accessories component wrapped with providers
+const Accessories = () => {
+  return (
+    <TranslationProvider>
+      <AuthProvider>
+        <AccessoriesContent />
+      </AuthProvider>
+    </TranslationProvider>
   );
 };
 
