@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,79 +10,65 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { ProjectService } from '@/services/projectService';
 
 const Projects = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectType, setProjectType] = useState("Kitchen");
+  const [importUrl, setImportUrl] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample projects data
-  const projects = [
-    { 
-      id: '1',
-      name: 'Modern Kitchen Remodel',
-      client: 'John Smith',
-      createdAt: '2023-05-10',
-      deadline: '2023-06-30',
-      status: 'in_progress',
-      modules: 8,
-      progress: 65
-    },
-    { 
-      id: '2',
-      name: 'Office Renovation',
-      client: 'Emma Johnson',
-      createdAt: '2023-05-05',
-      deadline: '2023-07-15',
-      status: 'client_review',
-      modules: 5,
-      progress: 40
-    },
-    { 
-      id: '3',
-      name: 'Master Bedroom Wardrobe',
-      client: 'Robert Davis',
-      createdAt: '2023-04-20',
-      deadline: '2023-06-10',
-      status: 'approved',
-      modules: 6,
-      progress: 100
-    },
-    { 
-      id: '4',
-      name: 'Bathroom Cabinet Set',
-      client: 'Michael Brown',
-      createdAt: '2023-05-15',
-      deadline: '2023-06-10',
-      status: 'pending_approval',
-      modules: 3,
-      progress: 90
-    },
-    { 
-      id: '5',
-      name: 'Living Room Entertainment Center',
-      client: 'Sarah Wilson',
-      createdAt: '2023-04-25',
-      deadline: '2023-07-05',
-      status: 'in_progress',
-      modules: 4,
-      progress: 30
-    },
-  ];
+  // Fetch projects on component mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const projectsData = await ProjectService.getAllProjects();
+        // Format the projects to match the expected format
+        const formattedProjects = projectsData.map(project => ({
+          id: project.id,
+          name: project.name,
+          client: project.userId, // This should be replaced with actual client name in a real app
+          createdAt: project.createdAt.toISOString().split('T')[0],
+          deadline: new Date(project.createdAt.getTime() + 30*24*60*60*1000).toISOString().split('T')[0], // Example deadline
+          status: project.status,
+          modules: project.modules?.length || 0,
+          progress: project.status === 'completed' ? 100 : Math.floor(Math.random() * 100) // Random progress for example
+        }));
+        setProjects(formattedProjects);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load projects",
+          variant: "destructive",
+        });
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [toast]);
 
   // Status badge helper
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'in_progress':
+      case 'draft':
         return <Badge className="bg-blue-500 hover:bg-blue-600">In Progress</Badge>;
       case 'client_review':
         return <Badge className="bg-amber-500 hover:bg-amber-600">Client Review</Badge>;
       case 'approved':
+      case 'completed':
         return <Badge className="bg-green-500 hover:bg-green-600">Approved</Badge>;
       case 'pending_approval':
+      case 'saved':
         return <Badge className="bg-purple-500 hover:bg-purple-600">Pending Approval</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
@@ -128,16 +114,36 @@ const Projects = () => {
       title: "Opening Project",
       description: `Loading ${projectName}...`,
     });
-    navigate(`/designer/projects/${projectId}`);
+    navigate(`/designer/projects/${projectId}/3d-editor`);
   };
 
   // Handle importing a design
   const handleImportDesign = () => {
+    setIsImportDialogOpen(true);
+  };
+
+  // Process the imported design
+  const processImportedDesign = () => {
+    if (!importUrl.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid import URL or file path",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
-      title: "Import Design",
-      description: "Opening design import wizard...",
+      title: "Design Imported",
+      description: "Processing your imported design...",
     });
-    navigate('/designer/projects/import');
+
+    // Navigate to the import handler page
+    navigate('/designer/projects/import', { state: { importUrl } });
+    
+    // Reset form and close dialog
+    setImportUrl("");
+    setIsImportDialogOpen(false);
   };
 
   return (
@@ -188,7 +194,15 @@ const Projects = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProjects.length > 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8">
+                      <div className="flex flex-col items-center justify-center">
+                        <p className="text-muted-foreground mb-2">Loading projects...</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : filteredProjects.length > 0 ? (
                   filteredProjects.map((project) => (
                     <TableRow key={project.id} className="cursor-pointer hover:bg-gray-50"
                       onClick={() => handleViewProject(project.id, project.name)}>
@@ -308,6 +322,36 @@ const Projects = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsNewProjectDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleCreateProject}>Create Project</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Design Dialog */}
+      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import Design</DialogTitle>
+            <DialogDescription>
+              Enter the URL or file path of the design you want to import
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="importUrl" className="text-right">
+                URL / File
+              </label>
+              <Input
+                id="importUrl"
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                placeholder="Enter import URL or file path"
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>Cancel</Button>
+            <Button onClick={processImportedDesign}>Import Design</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
