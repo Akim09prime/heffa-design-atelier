@@ -17,7 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { AiAssistant } from '@/components/ai/AiAssistant';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { Badge } from '@/components/ui/badge';
 import { UiProvider } from '@/contexts/UiContext';
 
@@ -25,7 +25,8 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+// Create the internal component that uses hooks
+const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -202,5 +203,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <AiAssistant />
       </div>
     </UiProvider>
+  );
+};
+
+// Export the wrapper component that provides the translation context
+export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+  return (
+    <TranslationProvider>
+      <AdminLayoutContent>
+        {children}
+      </AdminLayoutContent>
+    </TranslationProvider>
   );
 };
