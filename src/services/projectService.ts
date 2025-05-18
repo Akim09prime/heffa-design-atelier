@@ -1,3 +1,4 @@
+
 import { Project, ProjectType, ProjectSubType, ProjectStatus, RoomType, Wall, UserRole } from '@/types';
 
 // Sample projects data - making it accessible to the service methods
@@ -100,26 +101,45 @@ export const ProjectService = {
       const moduleId = id.replace('module-', '');
       console.log(`Creating temporary project for module preview with ID: ${moduleId}`);
       
-      // Create a temporary project for module preview
+      return Promise.resolve(ProjectService.createModulePreviewProject(moduleId));
+    }
+    
+    // If the ID looks like a custom format (not numeric), check if it's a valid ID or create a temporary one
+    if (id.length > 3 && isNaN(Number(id))) {
+      // Check if it's from a URL and might have been shared from another system
+      console.log(`Project ID ${id} appears to be a custom ID, checking if it exists`);
+      
+      // First check if it actually exists
+      const project = sampleProjects.find(project => project.id === id);
+      
+      if (project) {
+        return Promise.resolve(project);
+      }
+      
+      // For demo purposes, create a temporary project with this ID
+      console.log(`Creating temporary project for unknown ID: ${id}`);
       const tempProject: Project = {
         id: id,
-        userId: 'designer',
-        name: `Module Preview ${moduleId}`,
-        description: 'Temporary project for module preview',
+        userId: 'guest',
+        name: `Demo Project ${id.substring(0, 6)}`,
+        description: 'Temporary demo project for preview',
         type: 'Free Mode',
         parameters: {},
-        status: 'draft',
+        status: 'draft' as ProjectStatus,
         createdAt: new Date(),
         updatedAt: new Date(),
-        roomType: 'other',
+        roomType: 'other' as RoomType,
         modules: [],
         dimensions: {
-          width: 3000,
+          width: 3500,
           length: 3000,
           height: 2400,
           walls: ProjectService.generateDefaultWalls('Free Mode')
         }
       };
+      
+      // Add this temporary project to our sampleProjects so it persists during the session
+      sampleProjects.push(tempProject);
       
       return Promise.resolve(tempProject);
     }
@@ -346,10 +366,10 @@ export const ProjectService = {
       description: 'Temporary project for module preview',
       type: 'Free Mode',
       parameters: {},
-      status: 'draft',
+      status: 'draft' as ProjectStatus,
       createdAt: new Date(),
       updatedAt: new Date(),
-      roomType: 'other',
+      roomType: 'other' as RoomType,
       modules: [],
       dimensions: {
         width: 3000,
