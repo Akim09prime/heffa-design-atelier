@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Box, Sofa, BedDouble, Chair } from 'lucide-react';
+import { Plus, Search, Box, Sofa, BedDouble, Car } from 'lucide-react';
 import { ModuleType, FurnitureModule } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 

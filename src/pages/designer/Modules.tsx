@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   Search, Filter, Box, ArrowRight, Plus, Printer, 
-  Settings, Check, Upload, Sofa, BedDouble, Chair, TriangleAlert
+  Settings, Check, Upload, Sofa, BedDouble, Car, TriangleAlert
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -197,7 +197,7 @@ const Modules = () => {
                 Vizualizare 3D
               </TabsTrigger>
               <TabsTrigger value="builder" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-                <Chair className="h-4 w-4 mr-2" />
+                <Car className="h-4 w-4 mr-2" />
                 Constructor
               </TabsTrigger>
             </TabsList>
