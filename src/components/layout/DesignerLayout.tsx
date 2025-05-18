@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { AiAssistant } from '@/components/ai/AiAssistant';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { Badge } from '@/components/ui/badge';
 
 interface DesignerLayoutProps {
   children: React.ReactNode;
@@ -57,22 +58,25 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-gray-50">
+    <div className="min-h-screen flex w-full designer-area">
       <SidebarProvider>
-        <Sidebar className="bg-white border-r border-gray-200">
+        <Sidebar className="bg-white border-r border-gray-200 shadow-lg">
           <SidebarHeader>
-            <div className="flex items-center px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white mr-2">
-                <span className="font-display text-lg">H</span>
+            <div className="flex items-center px-4 py-3 border-b border-gray-100">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white mr-3 shadow-lg shadow-blue-300/30">
+                <span className="font-display text-lg font-bold">H</span>
               </div>
-              <span className="font-display text-lg font-semibold">HeffaDesign</span>
+              <span className="font-display text-lg font-semibold gradient-text">HeffaDesign</span>
             </div>
           </SidebarHeader>
           <SidebarContent>
+            <div className="px-3 py-2">
+              <Badge className="bg-blue-100 text-blue-800 border border-blue-200 mb-3">Designer Platform</Badge>
+            </div>
             <nav className="space-y-1 px-2">
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/dashboard", t('common.dashboard'))}
               >
                 <Home size={18} />
@@ -80,7 +84,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/projects", "Projects")}
               >
                 <Folder size={18} />
@@ -88,7 +92,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/projects/new", "New Project")}
               >
                 <FolderPlus size={18} />
@@ -96,7 +100,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/materials", t('common.materials'))}
               >
                 <Palette size={18} />
@@ -104,7 +108,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/accessories", t('common.accessories'))}
               >
                 <Box size={18} />
@@ -112,7 +116,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/modules", "Modules")}
               >
                 <FileSpreadsheet size={18} />
@@ -120,7 +124,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/clients", "Clients")}
               >
                 <Users size={18} />
@@ -128,7 +132,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/exports", "Exports")}
               >
                 <Download size={18} />
@@ -136,7 +140,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={() => handleNavigation("/designer/settings", t('common.settings'))}
               >
                 <Settings size={18} />
@@ -144,7 +148,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-2 hover:bg-blue-50 hover:text-blue-600"
                 onClick={handleLanguageToggle}
               >
                 <Globe size={18} />
@@ -153,11 +157,11 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
             </nav>
           </SidebarContent>
           <SidebarFooter>
-            <div className="px-4 py-2">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
+            <div className="px-4 py-3 border-t border-gray-100">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 border-2 border-blue-100">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-violet-500 text-white">
                     <User size={16} />
                   </AvatarFallback>
                 </Avatar>
@@ -165,7 +169,12 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
                   <p className="text-sm font-medium">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleLogout}
+                  className="hover:bg-red-50 hover:text-red-600 rounded-full"
+                >
                   <LogOut size={18} />
                 </Button>
               </div>

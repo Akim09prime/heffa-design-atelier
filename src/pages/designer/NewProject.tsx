@@ -2,17 +2,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import ProjectTypeSelector from '@/components/projects/ProjectTypeSelector';
 import { Project, ProjectType, ProjectSubType } from '@/types';
 import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Printer3d, ChevronRight, Save } from 'lucide-react';
 
 const NewProject = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const [selectedType, setSelectedType] = useState<ProjectType | null>(null);
+  const [selectedSubType, setSelectedSubType] = useState<ProjectSubType | null>(null);
+  const [projectParameters, setProjectParameters] = useState<Record<string, any>>({});
+  const [projectId, setProjectId] = useState<string | null>(null);
 
   // Create project handler
   const handleCreateProject = async (
@@ -30,6 +36,11 @@ const NewProject = () => {
     }
 
     try {
+      // Save selected values
+      setSelectedType(type);
+      setSelectedSubType(subType || null);
+      setProjectParameters(parameters);
+
       // Validate project type configuration
       const validation = ProjectService.validateProjectTypeConfig(type, subType);
       if (!validation.valid) {
@@ -73,15 +84,14 @@ const NewProject = () => {
 
       // Call the service to create the project
       const createdProject = await ProjectService.createProject(newProject);
+      setProjectId(createdProject.id);
 
       toast({
         title: 'Project Created',
         description: `${type} project has been created successfully`,
       });
 
-      // Navigate to the project editor
-      navigate(`/designer/projects/${createdProject.id}`);
-
+      // Don't navigate immediately - let user choose next step
     } catch (error) {
       toast({
         title: 'Error',
@@ -92,17 +102,64 @@ const NewProject = () => {
     }
   };
 
+  const handleContinueTo3D = () => {
+    if (projectId) {
+      navigate(`/designer/projects/${projectId}/3d-editor`);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Project not created yet',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleEditProject = () => {
+    if (projectId) {
+      navigate(`/designer/projects/${projectId}`);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Project not created yet',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <DesignerLayout>
-      <div className="p-6">
-        <h1 className="text-3xl font-medium mb-6">Create New Project</h1>
-        <Card>
+      <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100">
+        <h1 className="text-3xl font-medium mb-6 gradient-text">Create New Project</h1>
+        <Card className="shadow-lg border-gray-200 overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <CardTitle>Select Project Type</CardTitle>
+          </CardHeader>
           <CardContent className="p-6">
             <ProjectTypeSelector 
               onSelectType={handleCreateProject}
               userRole="designer"
             />
           </CardContent>
+          {projectId && (
+            <CardFooter className="bg-gray-50 border-t border-gray-200 flex justify-end gap-4 p-4">
+              <Button 
+                variant="outline" 
+                onClick={handleEditProject}
+                className="fancy-btn"
+              >
+                <Save size={16} className="mr-2" />
+                Edit Project
+              </Button>
+              <Button 
+                onClick={handleContinueTo3D}
+                className="bg-blue-600 hover:bg-blue-700 shadow hover:shadow-lg transition-all btn-glow"
+              >
+                Continue to 3D Setup
+                <Printer3d size={16} className="ml-2" />
+                <ChevronRight size={14} className="ml-1" />
+              </Button>
+            </CardFooter>
+          )}
         </Card>
       </div>
     </DesignerLayout>

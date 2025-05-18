@@ -4,6 +4,9 @@ import { AdminLayout } from '../components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/contexts/TranslationContext';
 import {
   Database, FileText, Settings, Upload, Download,
   BarChart3, PieChart, Users, Package, AlertCircle,
@@ -13,19 +16,45 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  
+  const handleNavigation = (path: string, title: string) => {
+    navigate(path);
+    toast({
+      title: `Navigating to ${title}`,
+      description: "Loading content...",
+    });
+  };
+
+  const handleAction = (action: string) => {
+    toast({
+      title: `${action} initiated`,
+      description: "Processing your request...",
+    });
+  };
+
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-6 bg-gradient-to-br from-admin-900 to-admin-950">
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">Admin Dashboard</h1>
             <p className="text-gray-400">Manage materials, accessories, and system settings</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all hover:scale-105"
+              onClick={() => handleNavigation("/admin/import-data", "Import Data")}
+            >
               <Upload size={16} className="mr-2" /> Import Data
             </Button>
-            <Button variant="outline">
+            <Button 
+              variant="outline" 
+              className="border-blue-400/30 text-blue-400 hover:bg-blue-800/30 transition-all hover:scale-105"
+              onClick={() => handleAction("Export")}
+            >
               <Download size={16} className="mr-2" /> Export
             </Button>
           </div>
@@ -33,7 +62,7 @@ const AdminDashboard = () => {
         
         {/* Stats overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-admin-800 border-admin-700">
+          <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-sm font-medium text-gray-400">Total Materials</CardTitle>
@@ -48,7 +77,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-admin-800 border-admin-700">
+          <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-sm font-medium text-gray-400">Accessories</CardTitle>
@@ -63,7 +92,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-admin-800 border-admin-700">
+          <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-sm font-medium text-gray-400">Users</CardTitle>
@@ -78,7 +107,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-admin-800 border-admin-700">
+          <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 hover:scale-[1.02] transition-all">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-sm font-medium text-gray-400">System Alerts</CardTitle>
@@ -97,7 +126,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main content - left side */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="bg-admin-800 border-admin-700">
+            <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl">
               <CardHeader>
                 <CardTitle className="text-white">Material Database Management</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -106,27 +135,31 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="materials" className="w-full">
-                  <TabsList className="grid grid-cols-3 mb-4">
-                    <TabsTrigger value="materials">Materials</TabsTrigger>
-                    <TabsTrigger value="accessories">Accessories</TabsTrigger>
-                    <TabsTrigger value="processing">Processing</TabsTrigger>
+                  <TabsList className="grid grid-cols-3 mb-4 bg-admin-700/50">
+                    <TabsTrigger value="materials" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Materials</TabsTrigger>
+                    <TabsTrigger value="accessories" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Accessories</TabsTrigger>
+                    <TabsTrigger value="processing" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Processing</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="materials" className="space-y-4">
                     <div className="flex justify-between items-center">
                       <div className="space-x-2">
-                        <Badge className="bg-blue-600 hover:bg-blue-700">All</Badge>
-                        <Badge variant="outline" className="text-gray-300 border-gray-700">PAL</Badge>
-                        <Badge variant="outline" className="text-gray-300 border-gray-700">MDF</Badge>
-                        <Badge variant="outline" className="text-gray-300 border-gray-700">GLASS</Badge>
-                        <Badge variant="outline" className="text-gray-300 border-gray-700">Other</Badge>
+                        <Badge className="bg-blue-600 hover:bg-blue-700 cursor-pointer">All</Badge>
+                        <Badge variant="outline" className="text-gray-300 border-gray-700 hover:border-blue-400 cursor-pointer">PAL</Badge>
+                        <Badge variant="outline" className="text-gray-300 border-gray-700 hover:border-blue-400 cursor-pointer">MDF</Badge>
+                        <Badge variant="outline" className="text-gray-300 border-gray-700 hover:border-blue-400 cursor-pointer">GLASS</Badge>
+                        <Badge variant="outline" className="text-gray-300 border-gray-700 hover:border-blue-400 cursor-pointer">Other</Badge>
                       </div>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      <Button 
+                        size="sm" 
+                        className="bg-blue-600 hover:bg-blue-700 transition-all hover:scale-105"
+                        onClick={() => handleNavigation("/admin/materials-database/new", "Add Material")}
+                      >
                         <Plus size={14} className="mr-1" /> Add Material
                       </Button>
                     </div>
                     
-                    <div className="rounded-md border border-admin-700 overflow-hidden">
+                    <div className="rounded-md border border-admin-700 overflow-hidden shadow-inner shadow-admin-700/30">
                       <table className="min-w-full divide-y divide-admin-700">
                         <thead className="bg-admin-900">
                           <tr>
@@ -140,7 +173,7 @@ const AdminDashboard = () => {
                         </thead>
                         <tbody className="bg-admin-800 divide-y divide-admin-700">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <tr key={i} className="hover:bg-admin-700">
+                            <tr key={i} className="hover:bg-admin-700 cursor-pointer" onClick={() => handleNavigation(`/admin/materials-database/${1000 + i}`, `Material EG${1000 + i}`)}>
                               <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">EG{1000 + i}</td>
                               <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
                                 {["White Oak", "Dark Walnut", "Matte Black", "Brushed Gray", "Natural Maple"][i]}
@@ -152,12 +185,20 @@ const AdminDashboard = () => {
                                 ${(15 + i * 8).toFixed(2)}/m²
                               </td>
                               <td className="px-4 py-2 whitespace-nowrap">
-                                <Badge className={i % 3 === 0 ? "bg-red-900/50 text-red-300" : "bg-green-900/50 text-green-300"}>
+                                <Badge className={i % 3 === 0 ? "bg-red-900/50 text-red-300 border border-red-500/20" : "bg-green-900/50 text-green-300 border border-green-500/20"}>
                                   {i % 3 === 0 ? "Low Stock" : "In Stock"}
                                 </Badge>
                               </td>
                               <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
-                                <Button variant="ghost" size="icon">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleNavigation(`/admin/materials-database/${1000 + i}/edit`, `Edit Material EG${1000 + i}`);
+                                  }}
+                                  className="hover:bg-blue-800/30 hover:text-blue-400"
+                                >
                                   <Settings size={16} />
                                 </Button>
                               </td>
@@ -169,25 +210,79 @@ const AdminDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="accessories">
-                    <p className="text-gray-400">Accessories management would go here</p>
+                    <div className="flex justify-end mb-4">
+                      <Button 
+                        size="sm" 
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => handleNavigation("/admin/accessories/new", "Add Accessory")}
+                      >
+                        <Plus size={14} className="mr-1" /> Add Accessory
+                      </Button>
+                    </div>
+                    <div className="p-8 bg-admin-700/20 rounded-lg border border-admin-700/50 text-center">
+                      <p className="text-gray-400">Select an accessory category to manage</p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                        {["Hinges", "Handles", "Slides", "Lift Systems", "Connectors", "Lighting"].map((category, i) => (
+                          <Button
+                            key={i}
+                            variant="outline"
+                            className="border-admin-700 text-gray-300 hover:bg-blue-800/30 hover:text-blue-400"
+                            onClick={() => handleNavigation(`/admin/accessories/${category.toLowerCase().replace(' ', '-')}`, category)}
+                          >
+                            {category}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   </TabsContent>
                   
                   <TabsContent value="processing">
-                    <p className="text-gray-400">Processing options management would go here</p>
+                    <div className="flex justify-end mb-4">
+                      <Button 
+                        size="sm" 
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => handleNavigation("/admin/processing/new", "Add Processing Rule")}
+                      >
+                        <Plus size={14} className="mr-1" /> Add Processing Rule
+                      </Button>
+                    </div>
+                    <div className="p-8 bg-admin-700/20 rounded-lg border border-admin-700/50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {["Edge Banding", "CNC Operations", "Drilling", "Assembly Rules", "Compatibility Matrix"].map((category, i) => (
+                          <Card key={i} className="bg-admin-800 border-admin-700 hover:bg-admin-700 cursor-pointer transition-all" 
+                            onClick={() => handleNavigation(`/admin/processing/${category.toLowerCase().replace(' ', '-')}`, category)}>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-white text-lg">{category}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-sm text-gray-400">
+                                {[
+                                  "Configure edge banding types and relationships",
+                                  "Set up CNC operations for different materials",
+                                  "Define drilling parameters and positions",
+                                  "Configure component assembly rules",
+                                  "Define material compatibility settings"
+                                ][i]}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
               <CardFooter className="flex justify-between border-t border-admin-700 py-3">
                 <p className="text-xs text-gray-400">Showing 5 of 1,283 entries</p>
                 <div className="space-x-2">
-                  <Button size="sm" variant="outline" className="text-gray-300 border-gray-700">Previous</Button>
-                  <Button size="sm" variant="outline" className="text-gray-300 border-gray-700">Next</Button>
+                  <Button size="sm" variant="outline" className="text-gray-300 border-gray-700 hover:bg-admin-700">Previous</Button>
+                  <Button size="sm" variant="outline" className="text-gray-300 border-gray-700 hover:bg-admin-700">Next</Button>
                 </div>
               </CardFooter>
             </Card>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-admin-800 border-admin-700">
+              <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 transition-all">
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-white">System Usage</CardTitle>
@@ -199,19 +294,26 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent className="pb-0">
                   <div className="flex justify-center">
-                    <div className="w-full h-52 bg-admin-700/50 rounded-md flex items-center justify-center">
-                      <p className="text-sm text-gray-400">Analytics chart would go here</p>
+                    <div className="w-full h-52 bg-admin-700/20 rounded-md flex flex-col items-center justify-center border border-admin-700/50 overflow-hidden relative">
+                      <div className="absolute inset-0 bg-[conic-gradient(at_bottom_left,var(--tw-gradient-stops))] from-indigo-900 via-purple-900 to-blue-900 opacity-20"></div>
+                      <div className="relative z-10 flex flex-col items-center">
+                        <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-2">
+                          <span className="text-xl font-bold text-white">78%</span>
+                        </div>
+                        <p className="text-sm text-gray-400">Monthly active users</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="link" className="text-blue-400 ml-auto">
+                  <Button variant="link" className="text-blue-400 ml-auto" 
+                    onClick={() => handleNavigation("/admin/analytics", "Analytics")}>
                     View full report <ArrowUpRightFromCircle size={14} className="ml-1" />
                   </Button>
                 </CardFooter>
               </Card>
               
-              <Card className="bg-admin-800 border-admin-700">
+              <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 transition-all">
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-white">Material Usage</CardTitle>
@@ -223,13 +325,34 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent className="pb-0">
                   <div className="flex justify-center">
-                    <div className="w-full h-52 bg-admin-700/50 rounded-md flex items-center justify-center">
-                      <p className="text-sm text-gray-400">Analytics chart would go here</p>
+                    <div className="w-full h-52 bg-admin-700/20 rounded-md flex items-center justify-center border border-admin-700/50 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-purple-900 to-indigo-500 opacity-10"></div>
+                      <div className="absolute bottom-0 left-0 w-full px-4 pb-2">
+                        {["White Oak", "Matte Black", "Natural Maple"].map((material, i) => (
+                          <div key={i} className="mb-2">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-gray-300">{material}</span>
+                              <span className="text-gray-400">{65 - i * 20}%</span>
+                            </div>
+                            <div className="h-2 bg-admin-700 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full ${
+                                  i === 0 ? "bg-gradient-to-r from-blue-500 to-purple-500" : 
+                                  i === 1 ? "bg-gradient-to-r from-purple-500 to-pink-500" : 
+                                  "bg-gradient-to-r from-pink-500 to-red-500"
+                                }`}
+                                style={{ width: `${65 - i * 20}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="link" className="text-blue-400 ml-auto">
+                  <Button variant="link" className="text-blue-400 ml-auto"
+                    onClick={() => handleNavigation("/admin/reports", "Material Reports")}>
                     View full report <ArrowUpRightFromCircle size={14} className="ml-1" />
                   </Button>
                 </CardFooter>
@@ -239,38 +362,42 @@ const AdminDashboard = () => {
           
           {/* Right sidebar */}
           <div className="space-y-6">
-            <Card className="bg-admin-800 border-admin-700">
+            <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 transition-all">
               <CardHeader>
                 <CardTitle className="text-white">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3 shadow-lg shadow-blue-500/10 hover:scale-[1.02] transition-all"
+                  onClick={() => handleNavigation("/admin/import-data", "Import Material Catalog")}>
                   <Upload size={16} /> Import Material Catalog
                 </Button>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3 shadow-lg shadow-blue-500/10 hover:scale-[1.02] transition-all"
+                  onClick={() => handleAction("Update Price Lists")}>
                   <Database size={16} /> Update Price Lists
                 </Button>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3 shadow-lg shadow-blue-500/10 hover:scale-[1.02] transition-all"
+                  onClick={() => handleNavigation("/admin/reports", "Generate Reports")}>
                   <FileText size={16} /> Generate Reports
                 </Button>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 justify-start gap-3 shadow-lg shadow-blue-500/10 hover:scale-[1.02] transition-all"
+                  onClick={() => handleNavigation("/admin/settings", "System Settings")}>
                   <Settings size={16} /> System Settings
                 </Button>
               </CardContent>
             </Card>
             
-            <Card className="bg-admin-800 border-admin-700">
+            <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 transition-all">
               <CardHeader>
                 <CardTitle className="text-white">System Alerts</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
                   {[
-                    { title: "Low stock on 12 materials", severity: "high" },
-                    { title: "Price updates needed for Egger catalog", severity: "medium" },
-                    { title: "3 user accounts pending approval", severity: "low" },
+                    { title: "Low stock on 12 materials", severity: "high", action: "Restock Inventory" },
+                    { title: "Price updates needed for Egger catalog", severity: "medium", action: "Update Prices" },
+                    { title: "3 user accounts pending approval", severity: "low", action: "Review Users" },
                   ].map((alert, i) => (
-                    <li key={i} className="flex gap-3 items-start p-2 rounded-md bg-admin-700/50">
+                    <li key={i} className="flex gap-3 items-start p-3 rounded-md bg-admin-700/30 border border-admin-700/50 hover:bg-admin-700/50 transition-all">
                       <div className={`h-2 w-2 rounded-full mt-1.5 ${
                         alert.severity === "high" ? "bg-red-500" :
                         alert.severity === "medium" ? "bg-amber-500" : "bg-blue-500"
@@ -283,7 +410,12 @@ const AdminDashboard = () => {
                            alert.severity === "medium" ? "Warning" : "Info"} • {i + 1}h ago
                         </p>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="hover:bg-blue-800/30 hover:text-blue-400"
+                        onClick={() => handleAction(alert.action)}
+                      >
                         View
                       </Button>
                     </li>
@@ -291,11 +423,17 @@ const AdminDashboard = () => {
                 </ul>
               </CardContent>
               <CardFooter className="border-t border-admin-700">
-                <Button variant="link" className="text-blue-400">View all alerts</Button>
+                <Button 
+                  variant="link" 
+                  className="text-blue-400"
+                  onClick={() => handleNavigation("/admin/alerts", "All Alerts")}
+                >
+                  View all alerts
+                </Button>
               </CardFooter>
             </Card>
             
-            <Card className="bg-admin-800 border-admin-700">
+            <Card className="bg-gradient-to-br from-admin-800 to-admin-900 border-admin-700 backdrop-blur-sm shadow-xl hover:shadow-admin-700/20 transition-all">
               <CardHeader>
                 <CardTitle className="text-white">System Status</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -306,10 +444,10 @@ const AdminDashboard = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-300">Database</p>
-                    <Badge className="bg-green-900/50 text-green-300">Online</Badge>
+                    <Badge className="bg-green-900/50 text-green-300 border border-green-500/20">Online</Badge>
                   </div>
                   <div className="w-full h-1.5 bg-admin-700 rounded-full overflow-hidden">
-                    <div className="bg-green-500 h-full" style={{ width: "65%" }}></div>
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-full" style={{ width: "65%" }}></div>
                   </div>
                   <p className="text-xs text-gray-400">65% capacity • 13.2 GB free</p>
                 </div>
@@ -319,10 +457,10 @@ const AdminDashboard = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-300">File Storage</p>
-                    <Badge className="bg-green-900/50 text-green-300">Online</Badge>
+                    <Badge className="bg-green-900/50 text-green-300 border border-green-500/20">Online</Badge>
                   </div>
                   <div className="w-full h-1.5 bg-admin-700 rounded-full overflow-hidden">
-                    <div className="bg-blue-500 h-full" style={{ width: "32%" }}></div>
+                    <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full" style={{ width: "32%" }}></div>
                   </div>
                   <p className="text-xs text-gray-400">32% capacity • 68 GB free</p>
                 </div>
@@ -332,10 +470,10 @@ const AdminDashboard = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-300">API Services</p>
-                    <Badge className="bg-green-900/50 text-green-300">Online</Badge>
+                    <Badge className="bg-green-900/50 text-green-300 border border-green-500/20">Online</Badge>
                   </div>
                   <div className="w-full h-1.5 bg-admin-700 rounded-full overflow-hidden">
-                    <div className="bg-purple-500 h-full" style={{ width: "18%" }}></div>
+                    <div className="bg-gradient-to-r from-purple-500 to-violet-400 h-full" style={{ width: "18%" }}></div>
                   </div>
                   <p className="text-xs text-gray-400">163 requests/min • 18% load</p>
                 </div>

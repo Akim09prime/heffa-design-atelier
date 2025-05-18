@@ -92,14 +92,14 @@
 
 /* Updated admin theme colors */
 .admin-theme {
-  --admin-bg: #1a1f2c;
+  --admin-bg: #171923;
   --admin-text: #ffffff;
-  --admin-card: #2a2f3c;
-  --admin-card-hover: #323846;
-  --admin-sidebar: #181c28;
-  --admin-accent: #6e59a5;
-  --admin-accent-hover: #7e69ab;
-  --admin-border: #3a3f4c;
+  --admin-card: #1e2130;
+  --admin-card-hover: #272d3d;
+  --admin-sidebar: #131620;
+  --admin-accent: #4c6ef5;
+  --admin-accent-hover: #5a7af5;
+  --admin-border: #2d3748;
   --admin-muted: #8e9196;
 }
 
@@ -127,6 +127,69 @@
 
 .admin-theme button[variant="ghost"]:hover {
   background-color: var(--admin-accent-hover);
+}
+
+/* Animated button hover effect inspired by uiverse.io */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-glow::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-glow:hover::after {
+  opacity: 1;
+}
+
+/* Animated card styling */
+.card-animate {
+  transition: all 0.3s ease;
+}
+
+.card-animate:hover {
+  transform: translateY(-5px);
+}
+
+/* Animated box shadow effect */
+.shadow-pulse {
+  animation: shadowPulse 2s infinite;
+}
+
+@keyframes shadowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 110, 245, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 110, 245, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 110, 245, 0);
+  }
+}
+
+/* Glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Fix dropdown styling */
@@ -245,4 +308,222 @@ input[type="file"] {
 /* Make sure placeholder text is visible */
 ::placeholder {
   @apply text-gray-400;
+}
+
+/* New UI inspired styles from uiverse.io */
+.fancy-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.fancy-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: translateX(-100%);
+  transition: all 0.6s ease;
+}
+
+.fancy-btn:hover::before {
+  transform: translateX(100%);
+}
+
+/* Custom animated checkbox */
+.animated-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--admin-accent);
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.animated-checkbox:checked {
+  background-color: var(--admin-accent);
+}
+
+.animated-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Ripple effect on click */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+}
+
+/* Floating labels */
+.floating-label-group {
+  position: relative;
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+
+.floating-label-input {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 16px;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.floating-label-input:focus,
+.floating-label-input:not(:placeholder-shown) {
+  border-bottom-color: var(--admin-accent);
+}
+
+.floating-label-input:focus + .floating-label,
+.floating-label-input:not(:placeholder-shown) + .floating-label {
+  transform: translateY(-25px) scale(0.8);
+  color: var(--admin-accent);
+}
+
+/* Animated progress bar */
+.progress-bar {
+  height: 6px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--admin-accent);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+  transition: width 1s ease;
+}
+
+.progress-bar-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Modern badge */
+.modern-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Designer area styles */
+.designer-area {
+  --designer-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --designer-card: #ffffff;
+  --designer-accent: #4c6ef5;
+  --designer-text: #333333;
+  --designer-muted: #6e7a8a;
+}
+
+.designer-canvas {
+  background: repeating-linear-gradient(
+    45deg,
+    #f0f0f0,
+    #f0f0f0 10px,
+    #f7f7f7 10px,
+    #f7f7f7 20px
+  );
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+}
+
+/* Grid-like background (blueprint style) */
+.blueprint-bg {
+  background-image: linear-gradient(#f0f8ff 1px, transparent 1px),
+    linear-gradient(90deg, #f0f8ff 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center center;
+}
+
+/* 3D effect cards */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card-3d-inner {
+  transition: transform 0.6s;
+  transform: rotateY(0deg);
+}
+
+.card-3d:hover .card-3d-inner {
+  transform: rotateY(5deg) translateZ(10px);
+  box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2);
 }
