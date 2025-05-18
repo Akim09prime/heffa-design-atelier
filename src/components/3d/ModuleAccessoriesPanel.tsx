@@ -10,31 +10,22 @@ import { AccessoryService } from '@/services/accessoryService';
 
 interface ModuleAccessoriesPanelProps {
   module: FurnitureModule;
+  accessories: AccessoryItem[];  // Added this prop
   onUpdate: (module: FurnitureModule) => void;
 }
 
 export const ModuleAccessoriesPanel: React.FC<ModuleAccessoriesPanelProps> = ({
   module,
+  accessories,
   onUpdate
 }) => {
-  const [accessories, setAccessories] = useState<AccessoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<AccessoryType>('hinge');
   
   useEffect(() => {
-    const fetchAccessories = async () => {
-      try {
-        const data = await AccessoryService.getAllAccessories();
-        setAccessories(data);
-      } catch (error) {
-        console.error('Error fetching accessories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchAccessories();
-  }, []);
+    // Set loading to false since accessories are now passed as props
+    setLoading(false);
+  }, [accessories]);
 
   // Add accessory handler
   const handleAddAccessory = (accessoryItemId: string) => {
