@@ -1,28 +1,67 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SceneContainer } from '@/components/3d/SceneContainer';
-import { Project } from '@/types';
+import { Project, FurnitureModule } from '@/types';
 import { ProjectService } from '@/services/projectService';
+import { EditorSidebar } from '@/components/3d/EditorSidebar';
+import { ModulePropertiesSidebar } from '@/components/3d/ModulePropertiesSidebar';
+import { EditorToolbar } from '@/components/3d/EditorToolbar';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronLeft, Save, Share, Download } from 'lucide-react';
+import { 
+  ChevronLeft, Save, Share, Download, Undo, Redo, 
+  Grid3X3, Layers, ZoomIn, ZoomOut, RotateRight, Move 
+} from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const ProjectEditor3D = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<Project | null>(null);
+  const [selectedModule, setSelectedModule] = useState<FurnitureModule | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [editorMode, setEditorMode] = useState<'move' | 'rotate' | 'scale'>('move');
+  const [viewMode, setViewMode] = useState<'perspective' | 'top' | 'front' | 'side'>('perspective');
+  const [undoStack, setUndoStack] = useState<Project[]>([]);
+  const [redoStack, setRedoStack] = useState<Project[]>([]);
+  
   const navigate = useNavigate();
   const { toast } = useToast();
+  const editorRef = useRef(null);
+
+  // Track history for undo/redo
+  const addToHistory = (updatedProject: Project) => {
+    setUndoStack(prev => [...prev, project as Project]);
+    setRedoStack([]);
+  };
+
+  const handleUndo = () => {
+    if (undoStack.length > 0) {
+      const previousState = undoStack[undoStack.length - 1];
+      setRedoStack(prev => [...prev, project as Project]);
+      setProject(previousState);
+      setUndoStack(prev => prev.slice(0, -1));
+    }
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length > 0) {
+      const nextState = redoStack[redoStack.length - 1];
+      setUndoStack(prev => [...prev, project as Project]);
+      setProject(nextState);
+      setRedoStack(prev => prev.slice(0, -1));
+    }
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         if (projectId) {
           console.log(`Fetching project with ID: ${projectId}`);
-          console.log(`Available projects: ${ProjectService.sampleProjects.map(p => p.id).join(', ')}`);
           
           // For module IDs that start with "module-", create a temporary project
           if (projectId.startsWith('module-')) {
@@ -84,11 +123,97 @@ const ProjectEditor3D = () => {
     fetchProject();
   }, [projectId, toast]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!project) return;
+    
+    try {
+      // In a real implementation, this would save to the backend
+      await ProjectService.updateProject(project.id, project);
+      
+      toast({
+        title: 'Project Saved',
+        description: 'Your project has been saved successfully',
+      });
+    } catch (error) {
+      console.error('Failed to save project:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save project',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleModuleAdd = (newModule: FurnitureModule) => {
+    if (!project) return;
+    
+    const updatedProject = {
+      ...project,
+      modules: [...project.modules, newModule]
+    };
+    
+    // Add current state to history for undo
+    addToHistory(project);
+    
+    setProject(updatedProject);
+    setSelectedModule(newModule);
+    
     toast({
-      title: 'Project Saved',
-      description: 'Your project has been saved successfully',
+      title: 'Module Added',
+      description: `Added ${newModule.name} to project`,
     });
+  };
+
+  const handleModuleUpdate = (updatedModule: FurnitureModule) => {
+    if (!project) return;
+    
+    const updatedModules = project.modules.map(module => 
+      module.id === updatedModule.id ? updatedModule : module
+    );
+    
+    // Add current state to history for undo
+    addToHistory(project);
+    
+    setProject({
+      ...project,
+      modules: updatedModules
+    });
+    
+    setSelectedModule(updatedModule);
+    
+    toast({
+      title: 'Module Updated',
+      description: `Updated ${updatedModule.name}`,
+    });
+  };
+
+  const handleModuleDelete = (moduleId: string) => {
+    if (!project) return;
+    
+    // Add current state to history for undo
+    addToHistory(project);
+    
+    const updatedModules = project.modules.filter(module => module.id !== moduleId);
+    
+    setProject({
+      ...project,
+      modules: updatedModules
+    });
+    
+    setSelectedModule(null);
+    
+    toast({
+      title: 'Module Deleted',
+      description: 'Module has been removed from the project',
+    });
+  };
+
+  const handleModuleSelect = (module: FurnitureModule | null) => {
+    setSelectedModule(module);
+  };
+
+  const handleExport = (exportType: 'json' | 'excel' | 'pdf' | 'dxf') => {
+    navigate(`/designer/exports/${projectId}?type=${exportType}`);
   };
 
   const handleBack = () => {
@@ -137,108 +262,64 @@ const ProjectEditor3D = () => {
 
   return (
     <DesignerLayout>
-      <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={handleBack}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-2xl font-medium gradient-text">
-              {project?.name || 'Project'} - 3D Editor
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleSave} className="fancy-btn">
-              <Save size={16} className="mr-2" />
-              Save
-            </Button>
-            <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
-              <Share size={16} className="mr-2" />
-              Share
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-3">
-            <Card className="shadow-lg border-gray-200 h-[600px]">
-              <CardContent className="p-0 h-full">
-                <SceneContainer
-                  modules={project?.modules || []}
-                  roomWidth={(project?.dimensions?.width || 4000) / 1000} // Convert to meters
-                  roomLength={(project?.dimensions?.length || 3000) / 1000} // Convert to meters
-                  roomHeight={(project?.dimensions?.height || 2400) / 1000} // Convert to meters
-                  showGrid={true}
-                  enableOrbitControls={true}
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-6">
-            <Card className="shadow-lg border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Project Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <span className="text-sm text-muted-foreground">Type</span>
-                  <p className="font-medium">{project?.type} {project?.subType ? `(${project.subType})` : ''}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-muted-foreground">Room</span>
-                  <p className="font-medium capitalize">{project?.roomType}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-muted-foreground">Dimensions</span>
-                  <p>{project?.dimensions?.width || 0}mm × {project?.dimensions?.length || 0}mm × {project?.dimensions?.height || 0}mm</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-lg border-gray-200">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Tools</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="modules">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="modules">Modules</TabsTrigger>
-                    <TabsTrigger value="materials">Materials</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="modules" className="pt-4">
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-3">Add furniture modules to your project</p>
-                      <Button 
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => navigate('/designer/modules')}
-                      >
-                        Browse Modules
-                      </Button>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="materials" className="pt-4">
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-3">Choose materials for your furniture</p>
-                      <Button 
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => navigate('/designer/materials')}
-                      >
-                        Browse Materials
-                      </Button>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-              <CardFooter className="flex justify-center border-t pt-4">
-                <Button variant="outline" className="w-full" onClick={() => navigate(`/designer/exports/${projectId}`)}>
-                  <Download size={16} className="mr-2" />
-                  Export Project
-                </Button>
-              </CardFooter>
-            </Card>
+      <div className="flex h-screen overflow-hidden">
+        {/* Left Sidebar - Module Library */}
+        {isLeftSidebarOpen && (
+          <EditorSidebar 
+            onClose={() => setIsLeftSidebarOpen(false)}
+            onAddModule={handleModuleAdd}
+            projectType={project.type}
+          />
+        )}
+        
+        {/* Main Editor Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Toolbar */}
+          <EditorToolbar 
+            editorMode={editorMode}
+            setEditorMode={setEditorMode}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={undoStack.length > 0}
+            canRedo={redoStack.length > 0}
+            onSave={handleSave}
+            onExport={handleExport}
+            onToggleLeftSidebar={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
+            onToggleRightSidebar={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+            onBack={handleBack}
+            projectName={project.name}
+          />
+          
+          {/* 3D Editor Canvas */}
+          <div className="flex-1 bg-gray-100 relative">
+            <SceneContainer
+              ref={editorRef}
+              modules={project.modules}
+              roomWidth={(project.dimensions?.width || 4000) / 1000} // Convert to meters
+              roomLength={(project.dimensions?.length || 3000) / 1000} // Convert to meters
+              roomHeight={(project.dimensions?.height || 2400) / 1000} // Convert to meters
+              showGrid={true}
+              enableOrbitControls={true}
+              selectedModuleId={selectedModule?.id}
+              onSelectModule={handleModuleSelect}
+              editorMode={editorMode}
+              viewMode={viewMode}
+              onModuleUpdate={handleModuleUpdate}
+            />
           </div>
         </div>
+        
+        {/* Right Sidebar - Properties Panel */}
+        {isRightSidebarOpen && selectedModule && (
+          <ModulePropertiesSidebar
+            module={selectedModule}
+            onUpdate={handleModuleUpdate}
+            onDelete={handleModuleDelete}
+            onClose={() => setIsRightSidebarOpen(false)}
+          />
+        )}
       </div>
     </DesignerLayout>
   );
