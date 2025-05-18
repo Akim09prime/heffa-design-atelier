@@ -1,16 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
-import { DesignerLayout } from '../../components/layout/DesignerLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ClientLayout } from '@/components/layout/ClientLayout';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Filter, Download } from 'lucide-react';
+import { Search, Plus, Filter, Heart, ShoppingCart } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AccessoryType, AccessoryItem } from '@/types';
 import { AccessoryService } from '@/services/accessoryService';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 const Accessories = () => {
@@ -23,28 +23,29 @@ const Accessories = () => {
   const [filterManufacturer, setFilterManufacturer] = useState<string>('all');
   const [selectedAccessory, setSelectedAccessory] = useState<AccessoryItem | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-
-  // This effect will run when the component mounts and whenever it's needed
-  const fetchAccessories = async () => {
-    try {
-      setLoading(true);
-      const data = await AccessoryService.getAllAccessories();
-      setAccessories(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching accessories:', err);
-      setError('Failed to fetch accessories. Please try again later.');
-      toast({
-        title: "Error",
-        description: "Failed to load accessories data. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [favoriteAccessories, setFavoriteAccessories] = useState<string[]>([]);
+  const [cartItems, setCartItems] = useState<string[]>([]);
 
   useEffect(() => {
+    const fetchAccessories = async () => {
+      try {
+        setLoading(true);
+        const data = await AccessoryService.getAllAccessories();
+        setAccessories(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching accessories:', err);
+        setError('Failed to fetch accessories. Please try again later.');
+        toast({
+          title: "Error",
+          description: "Failed to load accessories data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAccessories();
   }, [toast]);
 
@@ -78,39 +79,39 @@ const Accessories = () => {
     setIsDetailsDialogOpen(true);
   };
 
-  const handleExportAccessories = () => {
-    toast({
-      title: "Export Started",
-      description: "Exporting accessories catalog to Excel...",
-    });
-    
-    // In a real app, this would trigger a download
-    setTimeout(() => {
+  const toggleFavorite = (accessoryId: string) => {
+    if (favoriteAccessories.includes(accessoryId)) {
+      setFavoriteAccessories(favoriteAccessories.filter(id => id !== accessoryId));
       toast({
-        title: "Export Complete",
-        description: "Accessories catalog has been exported successfully.",
+        title: "Removed from favorites",
+        description: "The accessory has been removed from your favorites",
       });
-    }, 1500);
+    } else {
+      setFavoriteAccessories([...favoriteAccessories, accessoryId]);
+      toast({
+        title: "Added to favorites",
+        description: "The accessory has been added to your favorites",
+      });
+    }
   };
 
-  const handleAddToProject = (accessory: AccessoryItem) => {
-    toast({
-      title: "Accessory Added",
-      description: `${accessory.name} has been added to your project.`,
-    });
-    setIsDetailsDialogOpen(false);
-  };
-  
-  const handleRefreshCatalog = () => {
-    toast({
-      title: "Refreshing Catalog",
-      description: "Fetching the latest accessory data...",
-    });
-    fetchAccessories();
+  const addToCart = (accessoryId: string) => {
+    if (!cartItems.includes(accessoryId)) {
+      setCartItems([...cartItems, accessoryId]);
+      toast({
+        title: "Added to cart",
+        description: "The accessory has been added to your cart",
+      });
+    } else {
+      toast({
+        title: "Already in cart",
+        description: "This accessory is already in your cart",
+      });
+    }
   };
 
   return (
-    <DesignerLayout>
+    <ClientLayout>
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
@@ -140,12 +141,9 @@ const Accessories = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="outline" onClick={handleRefreshCatalog}>
-              Refresh Catalog
-            </Button>
-            <Button variant="outline" onClick={handleExportAccessories}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
+            <Button variant="outline" onClick={() => toast({ title: "Cart", description: `${cartItems.length} items in your cart` })}>
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Cart ({cartItems.length})
             </Button>
           </div>
         </div>
@@ -193,8 +191,11 @@ const Accessories = () => {
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {filteredAccessories.map((accessory) => (
-                          <Card key={accessory.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleShowDetails(accessory)}>
-                            <div className="aspect-square bg-gray-100 flex items-center justify-center text-gray-500">
+                          <Card key={accessory.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                            <div 
+                              className="aspect-square bg-gray-100 flex items-center justify-center text-gray-500 cursor-pointer"
+                              onClick={() => handleShowDetails(accessory)}
+                            >
                               {accessory.imageUrl ? (
                                 <img 
                                   src={accessory.imageUrl} 
@@ -224,6 +225,24 @@ const Accessories = () => {
                                 </Badge>
                               </div>
                             </CardContent>
+                            <CardFooter className="px-4 py-3 border-t border-gray-100 flex justify-between">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className={favoriteAccessories.includes(accessory.id) ? "text-red-500" : ""}
+                                onClick={() => toggleFavorite(accessory.id)}
+                              >
+                                <Heart className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                onClick={() => addToCart(accessory.id)}
+                                disabled={cartItems.includes(accessory.id)}
+                              >
+                                <ShoppingCart className="h-4 w-4 mr-1" />
+                                {cartItems.includes(accessory.id) ? 'Added' : 'Add to Cart'}
+                              </Button>
+                            </CardFooter>
                           </Card>
                         ))}
                       </div>
@@ -312,10 +331,14 @@ const Accessories = () => {
                       </Button>
                     )}
                     <Button 
-                      onClick={() => handleAddToProject(selectedAccessory)}
+                      onClick={() => {
+                        addToCart(selectedAccessory.id);
+                        setIsDetailsDialogOpen(false);
+                      }}
+                      disabled={cartItems.includes(selectedAccessory.id)}
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add to Project
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      {cartItems.includes(selectedAccessory.id) ? 'Already in Cart' : 'Add to Cart'}
                     </Button>
                   </div>
                 </div>
@@ -324,7 +347,7 @@ const Accessories = () => {
           )}
         </DialogContent>
       </Dialog>
-    </DesignerLayout>
+    </ClientLayout>
   );
 };
 

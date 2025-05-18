@@ -1,8 +1,8 @@
 
 import { AccessoryItem, AccessoryType } from '@/types';
 
-// Sample accessories data with expanded properties matching PAS 4 requirements
-export const sampleAccessories: AccessoryItem[] = [
+// Initial sample accessories data
+const initialAccessories: AccessoryItem[] = [
   // Hinges (Balamale)
   {
     id: '1',
@@ -165,37 +165,39 @@ export const sampleAccessories: AccessoryItem[] = [
   },
 ];
 
+// Create a mutable copy of the initial data that will be modified by the service
+let accessoriesData: AccessoryItem[] = [...initialAccessories];
+
 // Define Accessory Service
 export const AccessoryService = {
   // Get all accessories
   getAllAccessories: async (): Promise<AccessoryItem[]> => {
-    // In a real app, this would be an API call
-    return Promise.resolve(sampleAccessories);
+    // Return the current state of accessories
+    return Promise.resolve([...accessoriesData]);
   },
 
   // Get accessories by type
   getAccessoriesByType: async (type: AccessoryType): Promise<AccessoryItem[]> => {
-    // In a real app, this would be an API call with filtering
-    return Promise.resolve(sampleAccessories.filter(acc => acc.type === type));
+    return Promise.resolve(accessoriesData.filter(acc => acc.type === type));
   },
   
   // Get accessories by compatibility
   getAccessoriesByCompatibility: async (moduleType: string): Promise<AccessoryItem[]> => {
-    // In a real app, this would be an API call with filtering
-    return Promise.resolve(sampleAccessories.filter(
+    return Promise.resolve(accessoriesData.filter(
       acc => acc.compatibility.includes(moduleType as any)
     ));
   },
 
   // Add new accessory
   addAccessory: async (accessory: Omit<AccessoryItem, 'id'>): Promise<AccessoryItem> => {
-    // In a real app, this would be an API call
     const newAccessory = {
       ...accessory,
       id: Math.random().toString(36).substring(2, 9),
     };
     
-    // Here we'd add the accessory to the database
+    // Add the new accessory to our data array
+    accessoriesData.push(newAccessory);
+    
     console.log('Adding new accessory:', newAccessory);
     
     return Promise.resolve(newAccessory);
@@ -203,11 +205,10 @@ export const AccessoryService = {
 
   // Update accessory
   updateAccessory: async (id: string, accessory: Partial<AccessoryItem>): Promise<AccessoryItem> => {
-    // In a real app, this would be an API call
     console.log(`Updating accessory ${id}:`, accessory);
     
     // Find the accessory to update
-    const existingAccessoryIndex = sampleAccessories.findIndex(a => a.id === id);
+    const existingAccessoryIndex = accessoriesData.findIndex(a => a.id === id);
     
     if (existingAccessoryIndex === -1) {
       throw new Error(`Accessory with ID ${id} not found`);
@@ -215,22 +216,32 @@ export const AccessoryService = {
     
     // Create updated accessory
     const updatedAccessory = {
-      ...sampleAccessories[existingAccessoryIndex],
+      ...accessoriesData[existingAccessoryIndex],
       ...accessory,
     };
     
-    // Here we'd update the accessory in the database
+    // Update the accessory in our data array
+    accessoriesData[existingAccessoryIndex] = updatedAccessory;
     
     return Promise.resolve(updatedAccessory);
   },
 
   // Delete accessory
   deleteAccessory: async (id: string): Promise<void> => {
-    // In a real app, this would be an API call
     console.log(`Deleting accessory ${id}`);
     
-    // Here we'd delete the accessory from the database
+    // Remove the accessory from our data array
+    accessoriesData = accessoriesData.filter(acc => acc.id !== id);
     
+    return Promise.resolve();
+  },
+  
+  // Reset to initial data (useful for testing)
+  resetToInitial: async (): Promise<void> => {
+    accessoriesData = [...initialAccessories];
     return Promise.resolve();
   }
 };
+
+// For backward compatibility
+export const sampleAccessories = initialAccessories;
