@@ -1,202 +1,171 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import { 
-  ChevronLeft, Save, Download, Undo, Redo, 
-  Grid3X3, Layers, ZoomIn, ZoomOut, RotateRight, Move, 
-  ArrowsOut, ArrowsIn, PanelLeft, PanelRight, Share
+  Save, Move, RotateCw, Maximize, 
+  LayoutGrid, Eye, EyeOff, Settings, 
+  Download, Share2, Undo, Redo 
 } from 'lucide-react';
 
 interface EditorToolbarProps {
-  editorMode: 'move' | 'rotate' | 'scale';
-  setEditorMode: (mode: 'move' | 'rotate' | 'scale') => void;
-  viewMode: 'perspective' | 'top' | 'front' | 'side';
-  setViewMode: (mode: 'perspective' | 'top' | 'front' | 'side') => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
-  onSave: () => void;
-  onExport: (type: 'json' | 'excel' | 'pdf' | 'dxf') => void;
-  onToggleLeftSidebar: () => void;
-  onToggleRightSidebar: () => void;
-  onBack: () => void;
-  projectName: string;
+  onModeChange?: (mode: 'move' | 'rotate' | 'scale') => void;
+  onViewChange?: (view: 'perspective' | 'top' | 'front' | 'side') => void;
+  currentMode?: 'move' | 'rotate' | 'scale';
+  currentView?: 'perspective' | 'top' | 'front' | 'side';
+  onSave?: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
-  editorMode,
-  setEditorMode,
-  viewMode,
-  setViewMode,
+  onModeChange,
+  onViewChange,
+  currentMode = 'move',
+  currentView = 'perspective',
+  onSave,
   onUndo,
   onRedo,
-  canUndo,
-  canRedo,
-  onSave,
-  onExport,
-  onToggleLeftSidebar,
-  onToggleRightSidebar,
-  onBack,
-  projectName
+  canUndo = false,
+  canRedo = false,
 }) => {
+  const [showGrid, setShowGrid] = useState(true);
+  const [showHelpers, setShowHelpers] = useState(true);
+  
   return (
-    <div className="bg-white border-b px-4 py-2 flex items-center justify-between shadow-sm">
+    <div className="border-b p-2 flex justify-between items-center bg-white">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onBack} className="h-8 w-8">
-          <ChevronLeft className="h-4 w-4" />
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-xs"
+          onClick={onUndo}
+          disabled={!canUndo}
+        >
+          <Undo className="h-3.5 w-3.5 mr-1" /> Undo
         </Button>
-        <h1 className="font-medium text-lg truncate max-w-[200px]">{projectName}</h1>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="text-xs"
+          onClick={onRedo}
+          disabled={!canRedo}
+        >
+          <Redo className="h-3.5 w-3.5 mr-1" /> Redo
+        </Button>
+        
+        <Separator orientation="vertical" className="h-6" />
+        
+        <div className="flex items-center border rounded-md overflow-hidden">
+          <Button 
+            variant={currentMode === 'move' ? 'secondary' : 'ghost'} 
+            size="sm"
+            onClick={() => onModeChange && onModeChange('move')}
+            className="rounded-none border-0 h-8"
+          >
+            <Move className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant={currentMode === 'rotate' ? 'secondary' : 'ghost'} 
+            size="sm"
+            onClick={() => onModeChange && onModeChange('rotate')}
+            className="rounded-none border-0 border-l border-r h-8"
+          >
+            <RotateCw className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant={currentMode === 'scale' ? 'secondary' : 'ghost'} 
+            size="sm"
+            onClick={() => onModeChange && onModeChange('scale')}
+            className="rounded-none border-0 h-8"
+          >
+            <Maximize className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-
-      <div className="flex items-center gap-1">
+      
+      <div className="flex items-center gap-2">
+        <Tabs 
+          value={currentView} 
+          onValueChange={(value) => onViewChange && onViewChange(value as any)}
+          className="h-8"
+        >
+          <TabsList className="h-8">
+            <TabsTrigger value="perspective" className="px-2 py-0 h-7 text-xs">3D</TabsTrigger>
+            <TabsTrigger value="top" className="px-2 py-0 h-7 text-xs">Top</TabsTrigger>
+            <TabsTrigger value="front" className="px-2 py-0 h-7 text-xs">Front</TabsTrigger>
+            <TabsTrigger value="side" className="px-2 py-0 h-7 text-xs">Side</TabsTrigger>
+          </TabsList>
+        </Tabs>
+        
         <TooltipProvider>
-          {/* Sidebar toggles */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={onToggleLeftSidebar} className="h-8 w-8">
-                <PanelLeft className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Toggle Module Library</TooltipContent>
-          </Tooltip>
-
-          {/* Editor Mode Controls */}
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
-                variant={editorMode === 'move' ? 'default' : 'ghost'} 
-                size="icon" 
-                onClick={() => setEditorMode('move')} 
-                className="h-8 w-8"
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowGrid(!showGrid)}
               >
-                <Move className="h-4 w-4" />
+                <LayoutGrid className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Move Tool</TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant={editorMode === 'rotate' ? 'default' : 'ghost'} 
-                size="icon" 
-                onClick={() => setEditorMode('rotate')} 
-                className="h-8 w-8"
-              >
-                <RotateRight className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Rotate Tool</TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant={editorMode === 'scale' ? 'default' : 'ghost'} 
-                size="icon" 
-                onClick={() => setEditorMode('scale')} 
-                className="h-8 w-8"
-              >
-                <ArrowsOut className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Scale Tool</TooltipContent>
-          </Tooltip>
-
-          {/* View Controls */}
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant={viewMode === 'perspective' ? 'default' : 'ghost'} 
-                size="icon" 
-                onClick={() => setViewMode('perspective')} 
-                className="h-8 w-8"
-              >
-                <Layers className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Perspective View</TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant={viewMode === 'top' ? 'default' : 'ghost'} 
-                size="icon" 
-                onClick={() => setViewMode('top')} 
-                className="h-8 w-8"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Top View</TooltipContent>
-          </Tooltip>
-
-          {/* History Controls */}
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={onUndo} 
-                disabled={!canUndo}
-                className="h-8 w-8"
-              >
-                <Undo className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Undo</TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={onRedo} 
-                disabled={!canRedo}
-                className="h-8 w-8"
-              >
-                <Redo className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Redo</TooltipContent>
-          </Tooltip>
-
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={onToggleRightSidebar} className="h-8 w-8">
-                <PanelRight className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Toggle Properties Panel</TooltipContent>
+            <TooltipContent>
+              <p>Toggle Grid</p>
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowHelpers(!showHelpers)}
+              >
+                {showHelpers ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Toggle Helpers</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <Separator orientation="vertical" className="h-6" />
       </div>
-
+      
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => onExport('excel')}>
-          <Download className="h-4 w-4 mr-1" />
-          Export
+        <Button 
+          variant="outline" 
+          size="sm"
+        >
+          <Settings className="h-4 w-4 mr-1" /> Settings
         </Button>
-        <Button variant="outline" size="sm" onClick={() => onExport('json')}>
-          <Share className="h-4 w-4 mr-1" />
-          Share
+        <Button 
+          variant="outline" 
+          size="sm"
+        >
+          <Share2 className="h-4 w-4 mr-1" /> Share
         </Button>
-        <Button size="sm" onClick={onSave} className="bg-blue-600 hover:bg-blue-700">
-          <Save className="h-4 w-4 mr-1" />
-          Save
+        <Button 
+          variant="outline" 
+          size="sm"
+        >
+          <Download className="h-4 w-4 mr-1" /> Export
+        </Button>
+        <Button 
+          variant="default" 
+          size="sm"
+          onClick={onSave}
+        >
+          <Save className="h-4 w-4 mr-1" /> Save
         </Button>
       </div>
     </div>
