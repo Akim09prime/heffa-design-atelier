@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../components/layout/DesignerLayout';
@@ -8,7 +7,7 @@ import { SceneContainer } from '../components/3d/SceneContainer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Users, Package, Clock, ArrowRight, Plus, ArrowUpRight,
-  CheckCircle, AlertCircle, Printer3d, Folder, FolderPlus, Search
+  CheckCircle, AlertCircle, Printer, Folder, FolderPlus, Search
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -479,7 +478,7 @@ const DesignerDashboard = () => {
                   <CardFooter className="border-t border-gray-100 flex justify-between">
                     <Button variant="ghost" size="sm" className="text-blue-600">Details</Button>
                     <Button variant="outline" size="sm">
-                      <Printer3d size={14} className="mr-1" /> 3D View
+                      <Printer size={14} className="mr-1" /> 3D View
                     </Button>
                   </CardFooter>
                 </Card>

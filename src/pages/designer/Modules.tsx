@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
-  Search, Filter, Box, ArrowRight, Plus, Printer3d, 
+  Search, Filter, Box, ArrowRight, Plus, Printer, 
   Settings, Tag, Check 
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -168,7 +167,7 @@ const Modules = () => {
                             onClick={() => handleContinueTo3D(module.id)}
                           >
                             3D Setup
-                            <Printer3d size={12} className="ml-1" />
+                            <Printer size={12} className="ml-1" />
                           </Button>
                         </div>
                       </CardContent>

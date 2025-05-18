@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -9,7 +8,7 @@ import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Printer3d, ChevronRight, Save } from 'lucide-react';
+import { Printer, ChevronRight, Save } from 'lucide-react';
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -155,7 +154,7 @@ const NewProject = () => {
                 className="bg-blue-600 hover:bg-blue-700 shadow hover:shadow-lg transition-all btn-glow"
               >
                 Continue to 3D Setup
-                <Printer3d size={16} className="ml-2" />
+                <Printer size={16} className="ml-2" />
                 <ChevronRight size={14} className="ml-1" />
               </Button>
             </CardFooter>
