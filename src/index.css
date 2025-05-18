@@ -4,3 +4,128 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Base colors */
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  
+  /* Default theme */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
+}
+
+/* Admin dark theme */
+.admin-theme {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+  --card: 223 47% 14%;
+  --card-foreground: 210 40% 98%;
+  --popover: 223 47% 14%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 249 83% 80%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 223 47% 20%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 223 47% 20%;
+  --muted-foreground: 215 16% 70%;
+  --accent: 249 83% 70%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 223 47% 20%;
+  --input: 223 47% 20%;
+  --ring: 249 83% 70%;
+}
+
+/* Client theme */
+.client-theme {
+  --primary: 152 76% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 152 76% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 187 75% 64%;
+  --accent-foreground: 222 47% 11%;
+  --ring: 152 76% 60%;
+}
+
+/* Designer theme */
+.designer-theme {
+  --primary: 238 83% 67%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 238 83% 97%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 262 83% 58%;
+  --accent-foreground: 210 40% 98%;
+  --ring: 238 83% 67%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60;
+  }
+
+  /* Modern button styles */
+  .button-modern {
+    @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:transition-all before:duration-300;
+  }
+
+  .button-modern::before {
+    content: '';
+    @apply -left-full -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+  }
+
+  .button-modern:hover::before {
+    @apply left-[150%] transition-all duration-1000;
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Input focus animation */
+  .input-focus-effect {
+    @apply transition-all duration-300 border-b-2 border-transparent focus:border-primary;
+  }
+
+  /* Button ripple effect */
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}

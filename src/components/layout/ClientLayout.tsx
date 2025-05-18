@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sidebar, 
@@ -13,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Home, Layers, FolderPlus, Settings, LogOut, User, MessageCircle, ShoppingCart, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -42,22 +42,25 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-heffa-50">
+    <div className="min-h-screen flex w-full bg-gray-50 client-theme">
       <SidebarProvider>
-        <Sidebar>
+        <Sidebar className="bg-white border-r border-gray-100 shadow-lg">
           <SidebarHeader>
-            <div className="flex items-center px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-heffa-600 flex items-center justify-center text-white mr-2">
-                <span className="font-display text-lg">H</span>
+            <div className="flex items-center px-4 py-4 border-b border-gray-100">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center text-white mr-3 shadow-lg shadow-green-300/30">
+                <span className="font-playfair text-lg font-bold">H</span>
               </div>
-              <span className="font-display text-lg font-semibold text-heffa-800">HeffaDesign</span>
+              <span className="font-playfair text-xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-green-500">HeffaDesign</span>
             </div>
           </SidebarHeader>
           <SidebarContent>
+            <div className="px-3 py-3">
+              <Badge className="bg-emerald-100 text-emerald-700 border border-emerald-200 mb-3 px-3 py-1 uppercase text-xs font-medium tracking-wider">Client Platform</Badge>
+            </div>
             <nav className="space-y-1 px-2">
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/dashboard", "Dashboard")}
               >
                 <Home size={18} />
@@ -65,7 +68,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/projects", "My Projects")}
               >
                 <Layers size={18} />
@@ -73,7 +76,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/new-project", "New Project")}
               >
                 <FolderPlus size={18} />
@@ -81,7 +84,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/favorites", "Favorites")}
               >
                 <Heart size={18} />
@@ -89,7 +92,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/cart", "Cart")}
               >
                 <ShoppingCart size={18} />
@@ -97,7 +100,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/ai-assistant", "AI Assistant")}
               >
                 <MessageCircle size={18} />
@@ -105,7 +108,7 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
               </Button>
               <Button 
                 variant="ghost" 
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 hover:bg-emerald-50 hover:text-emerald-600"
                 onClick={() => handleNavigation("/client/settings", "Settings")}
               >
                 <Settings size={18} />
@@ -114,11 +117,11 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
             </nav>
           </SidebarContent>
           <SidebarFooter>
-            <div className="px-4 py-2">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
+            <div className="px-4 py-4 border-t border-gray-100">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 border-2 border-emerald-100">
                   <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-green-600 text-white">
                     <User size={16} />
                   </AvatarFallback>
                 </Avatar>
@@ -126,14 +129,19 @@ export const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                   <p className="text-sm font-medium">{user?.name}</p>
                   <p className="text-xs text-muted-foreground">{user?.email}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleLogout}
+                  className="hover:bg-red-50 hover:text-red-600 rounded-full"
+                >
                   <LogOut size={18} />
                 </Button>
               </div>
             </div>
           </SidebarFooter>
         </Sidebar>
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
           {children}
         </main>
       </SidebarProvider>
