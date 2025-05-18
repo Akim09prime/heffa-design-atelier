@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +5,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Box, Sofa, BedDouble, Car } from 'lucide-react';
+import { Plus, Search, Box, Sofa, BedDouble, Car, Loader } from 'lucide-react';
 import { ModuleType, FurnitureModule } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { useUi } from '@/contexts/UiContext';
 
 // Enhanced module templates with more details and better organized
 const moduleTemplates = [
@@ -120,48 +120,70 @@ interface ModuleLibraryProps {
 export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, className }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [processingModules, setProcessingModules] = useState<Record<string, boolean>>({});
+  const { showSuccessToast, showToast } = useUi();
   
   // Function to create a new module based on template
   const createModule = (template: typeof moduleTemplates[0]) => {
-    // Convert dimensions from meters to mm for internal processing
-    const width = template.width * 1000;
-    const height = template.height * 1000;
-    const depth = template.depth * 1000;
+    // Prevent multiple clicks
+    if (processingModules[template.type]) {
+      return;
+    }
     
-    const moduleId = uuidv4();
-    
-    const newModule: FurnitureModule = {
-      id: moduleId,
-      name: template.name,
-      description: template.description,
-      type: template.type as ModuleType,
-      width,
-      height,
-      depth,
-      position: [0, height / 2000, 0], // Position with y at half height (in meters)
-      rotation: [0, 0, 0],
-      materials: [],
-      accessories: [],
-      processingOptions: [],
-      price: template.price || 0,
-      thumbnailUrl: template.thumbnailUrl
-    };
-    
-    // Send message to 3D Canvas
-    window.postMessage({ 
-      type: 'addModule',
-      width: template.width,
-      height: template.height,
-      depth: template.depth,
-      color: getModuleColor(template.type as ModuleType),
-      userData: {
+    try {
+      // Set processing state
+      setProcessingModules(prev => ({ ...prev, [template.type]: true }));
+      showToast("Se adaugă modulul în scenă...", "info");
+      
+      // Convert dimensions from meters to mm for internal processing
+      const width = template.width * 1000;
+      const height = template.height * 1000;
+      const depth = template.depth * 1000;
+      
+      const moduleId = uuidv4();
+      
+      const newModule: FurnitureModule = {
         id: moduleId,
-        type: template.type,
-        name: template.name
-      }
-    }, '*');
-    
-    onAddModule(newModule);
+        name: template.name,
+        description: template.description,
+        type: template.type as ModuleType,
+        width,
+        height,
+        depth,
+        position: [0, height / 2000, 0], // Position with y at half height (in meters)
+        rotation: [0, 0, 0],
+        materials: [],
+        accessories: [],
+        processingOptions: [],
+        price: template.price || 0,
+        thumbnailUrl: template.thumbnailUrl
+      };
+      
+      // Send message to 3D Canvas
+      window.postMessage({ 
+        type: 'addModule',
+        width: template.width,
+        height: template.height,
+        depth: template.depth,
+        color: getModuleColor(template.type as ModuleType),
+        userData: {
+          id: moduleId,
+          type: template.type,
+          name: template.name
+        }
+      }, '*');
+      
+      onAddModule(newModule);
+      showSuccessToast(`Modul adăugat`, `${template.name} a fost adăugat în scenă`);
+    } catch (error) {
+      console.error("Error adding module:", error);
+      showToast(`Eroare la adăugarea modulului: ${(error as Error).message}`, "error");
+    } finally {
+      // Reset processing state after a short delay to prevent accidental double-clicks
+      setTimeout(() => {
+        setProcessingModules(prev => ({ ...prev, [template.type]: false }));
+      }, 500);
+    }
   };
 
   // Filter modules based on search term and selected category
@@ -179,6 +201,18 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
   // Get unique categories for filter buttons
   const categories = Array.from(new Set(moduleTemplates.map(m => m.type)));
   
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    if (e.target.value === '' && searchTerm !== '') {
+      showToast("Căutare resetată", "info");
+    }
+  };
+  
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
+    showToast(category ? `Categoria ${category} selectată` : "Toate categoriile", "info");
+  };
+  
   return (
     <div className={`w-full bg-white p-4 flex flex-col h-full ${className}`}>
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
@@ -190,7 +224,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
             placeholder="Caută module..." 
             className="pl-9 w-full md:w-64"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
@@ -199,7 +233,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
         <Button
           variant={selectedCategory === null ? "default" : "outline"}
           size="sm"
-          onClick={() => setSelectedCategory(null)}
+          onClick={() => handleCategorySelect(null)}
           className={selectedCategory === null ? "bg-[#6A4B31] hover:bg-[#5a3f2a]" : ""}
         >
           Toate
@@ -210,7 +244,7 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
             key={category}
             variant={selectedCategory === category ? "default" : "outline"}
             size="sm"
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => handleCategorySelect(category)}
             className={selectedCategory === category ? "bg-[#6A4B31] hover:bg-[#5a3f2a]" : ""}
           >
             {getModuleIcon(category as ModuleType)}
@@ -287,9 +321,19 @@ export const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ onAddModule, class
                 <Button 
                   onClick={() => createModule(template)} 
                   className="w-full bg-[#6A4B31] hover:bg-[#5a3f2a] transition-colors"
+                  disabled={processingModules[template.type]}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adaugă în scenă
+                  {processingModules[template.type] ? (
+                    <>
+                      <Loader className="h-4 w-4 mr-2 animate-spin" />
+                      Se adaugă...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Adaugă în scenă
+                    </>
+                  )}
                 </Button>
               </CardFooter>
             </Card>
