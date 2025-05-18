@@ -35,6 +35,23 @@ export const PricingService = {
     };
   },
   
+  // Calculate the total price for an entire project (across all modules)
+  calculateProjectPrice: (
+    modules: FurnitureModule[],
+    materials: Material[],
+    accessories: AccessoryItem[]
+  ): number => {
+    let totalPrice = 0;
+    
+    // Sum up the price of each module in the project
+    modules.forEach(module => {
+      const modulePrice = PricingService.calculateModulePrice(module, materials, accessories);
+      totalPrice += modulePrice.total;
+    });
+    
+    return totalPrice;
+  },
+  
   // Calculate materials cost
   calculateMaterialsCost: (module: FurnitureModule, materials: Material[]): number => {
     let cost = 0;
