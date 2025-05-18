@@ -22,8 +22,96 @@ const defaultConfig: ExportConfig = {
   includeCutting: true
 };
 
+// Export options interface for the new export method
+export interface ExportOptions {
+  filename: string;
+  format: ExportFormat;
+  project: Project;
+  settings: Record<string, any>;
+}
+
+// Export result interface
+export interface ExportResult {
+  success: boolean;
+  downloadUrl?: string;
+  message?: string;
+}
+
 // Export Service
 export const ExportService = {
+  // New unified export method
+  exportProject: async (options: ExportOptions): Promise<ExportResult> => {
+    const { format, project, settings } = options;
+    
+    console.log(`Exporting project ${project.id} in ${format} format with settings:`, settings);
+    
+    // Call the appropriate export method based on format
+    try {
+      let result: string | string[] = '';
+      
+      switch (format) {
+        case 'pdf':
+          result = await ExportService.generatePdfOffer(project, {
+            includeDetails: settings.includeMaterials || settings.includeRenderings,
+            includeImages: settings.includeRenderings,
+            includeAccessories: settings.includeAccessories || true,
+            includeCutting: settings.includeAssembly || true
+          });
+          return { 
+            success: true, 
+            downloadUrl: result,
+            message: 'PDF export completed successfully'
+          };
+          
+        case 'excel':
+          result = await ExportService.generateExcelCuttingSheet(project, {
+            includeDetails: settings.includeMaterials,
+            includeAccessories: settings.includeAccessories,
+            includeCutting: settings.includeProcessing
+          });
+          return { 
+            success: true, 
+            downloadUrl: result,
+            message: 'Excel export completed successfully'
+          };
+          
+        case 'dxf':
+          const dxfResults = await ExportService.generateDxfFiles(project, {
+            includeDetails: false
+          });
+          // For DXF, we may have multiple files, one per part
+          // Here we return the first one for simplicity or create a zip in a real app
+          return { 
+            success: true, 
+            downloadUrl: dxfResults[0] || '',
+            message: `${dxfResults.length} DXF file(s) generated successfully`
+          };
+          
+        case 'json':
+          result = await ExportService.exportAsJson(project);
+          const jsonBlob = new Blob([result], { type: 'application/json' });
+          const jsonUrl = URL.createObjectURL(jsonBlob);
+          return {
+            success: true,
+            downloadUrl: jsonUrl,
+            message: 'JSON export completed successfully'
+          };
+          
+        default:
+          return {
+            success: false,
+            message: `Unsupported export format: ${format}`
+          };
+      }
+    } catch (error) {
+      console.error(`Export failed for format ${format}:`, error);
+      return {
+        success: false,
+        message: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
+  },
+  
   // Generate PDF offer
   generatePdfOffer: async (project: Project, config: Partial<ExportConfig> = {}): Promise<string> => {
     const exportConfig = { ...defaultConfig, ...config, format: 'pdf' };
