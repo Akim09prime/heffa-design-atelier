@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { AuthProvider } from '../contexts/AuthContext';
 
-const Login = () => {
+// Component with access to auth context
+const LoginContent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +141,15 @@ const Login = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Main Login component wrapped with AuthProvider
+const Login = () => {
+  return (
+    <AuthProvider>
+      <LoginContent />
+    </AuthProvider>
   );
 };
 
