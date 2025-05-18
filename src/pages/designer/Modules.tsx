@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { ModuleLibrary } from '@/components/3d/ModuleLibrary';
 import { SceneContainer } from '@/components/3d/SceneContainer';
 import { TranslationProvider } from '@/contexts/TranslationContext';
+import { ModuleCreationPanel } from '@/components/3d/ModuleCreationPanel';
 
 // Define a ModuleData interface to better track module state
 interface ModuleData {
@@ -62,87 +63,6 @@ const Modules = () => {
 
   const handleNewModule = () => {
     setIsNewModuleDialogOpen(true);
-    // Reset form data when opening dialog
-    setNewModuleData({
-      name: '',
-      category: 'base',
-      width: '600',
-      depth: '560',
-      height: '800',
-      imageUrl: ''
-    });
-    setSelectedImage(null);
-    setImagePreview(null);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { id, value } = e.target;
-    setNewModuleData(prev => ({
-      ...prev,
-      [id]: value
-    }));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedImage(file);
-      // Create a preview URL
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCreateModule = () => {
-    if (!newModuleData.name.trim()) {
-      toast({
-        title: "Eroare de validare",
-        description: "Numele modulului este obligatoriu",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const moduleId = Math.floor(Math.random() * 1000) + 100;
-    
-    // Create new module with additional data
-    const createdModule = {
-      ...newModuleData,
-      id: moduleId,
-      description: `${newModuleData.name} - ${newModuleData.width}×${newModuleData.height}×${newModuleData.depth}mm`,
-      price: 275 + (Math.floor(Math.random() * 10) * 25),
-      dimensions: `${newModuleData.width}×${newModuleData.height}×${newModuleData.depth}mm`,
-      popularity: Math.floor(Math.random() * 5) + 1,
-      imageUrl: imagePreview || undefined  // Use the image preview URL
-    };
-    
-    // Cache the new module
-    moduleCache[newModuleData.category] = [
-      ...moduleCache[newModuleData.category], 
-      createdModule
-    ];
-    
-    setIsNewModuleDialogOpen(false);
-    
-    toast({
-      title: "Modul creat",
-      description: "Noul tău modul a fost creat cu succes",
-    });
-    
-    // Navigate to the module details
-    navigate(`/designer/modules/${moduleId}`);
-  };
-
-  const handleContinueTo3D = (moduleId: number) => {
-    toast({
-      title: "Se deschide configurarea 3D",
-      description: "Se pregătește mediul 3D pentru configurarea modulului",
-    });
-    const projectId = `module-${moduleId}`;
-    navigate(`/designer/projects/${projectId}/3d-editor`);
   };
 
   const handleAddModule = (module: any) => {
@@ -156,6 +76,15 @@ const Modules = () => {
 
   const handleSelectModule = (moduleId: string | null) => {
     setSelectedModuleId(moduleId);
+  };
+
+  const handleContinueTo3D = (moduleId: number) => {
+    toast({
+      title: "Se deschide configurarea 3D",
+      description: "Se pregătește mediul 3D pentru configurarea modulului",
+    });
+    const projectId = `module-${moduleId}`;
+    navigate(`/designer/projects/${projectId}/3d-editor`);
   };
 
   return (
@@ -257,20 +186,8 @@ const Modules = () => {
             
             <TabsContent value="builder" className="flex-1 flex flex-col">
               <Card className="flex-1 flex flex-col">
-                <CardContent className="flex-1 flex items-center justify-center p-10">
-                  <div className="text-center">
-                    <TriangleAlert className="h-16 w-16 text-amber-500 mx-auto mb-4" />
-                    <h3 className="text-xl font-medium mb-2">Constructorul de module nu este încă disponibil</h3>
-                    <p className="text-muted-foreground mb-4">
-                      Această funcționalitate va fi disponibilă în curând. Te rugăm să revii mai târziu.
-                    </p>
-                    <Button 
-                      onClick={() => setActiveTab('gallery')}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Înapoi la galeria de module
-                    </Button>
-                  </div>
+                <CardContent className="p-6">
+                  <ModuleCreationPanel onAddModule={handleAddModule} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -278,130 +195,23 @@ const Modules = () => {
 
           {/* New Module Dialog */}
           <Dialog open={isNewModuleDialogOpen} onOpenChange={setIsNewModuleDialogOpen}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="max-w-4xl">
               <DialogHeader>
-                <DialogTitle>Creează modul nou</DialogTitle>
+                <DialogTitle>Create New Module</DialogTitle>
                 <DialogDescription>
-                  Definește proprietățile de bază pentru noul tău modul de mobilier.
+                  Define the properties for your new furniture module.
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="name" className="text-right text-sm font-medium">
-                    Nume
-                  </label>
-                  <Input
-                    id="name"
-                    className="col-span-3"
-                    placeholder="Introdu numele modulului"
-                    value={newModuleData.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="category" className="text-right text-sm font-medium">
-                    Categorie
-                  </label>
-                  <select
-                    id="category"
-                    className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={newModuleData.category}
-                    onChange={handleInputChange}
-                  >
-                    <option value="base">Corp bază</option>
-                    <option value="wall">Corp suspendat</option>
-                    <option value="tall">Corp înalt</option>
-                    <option value="drawer">Unitate sertare</option>
-                    <option value="corner">Corp colț</option>
-                    <option value="island">Insulă</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="width" className="text-right text-sm font-medium">
-                    Lățime (mm)
-                  </label>
-                  <Input
-                    id="width"
-                    type="number"
-                    className="col-span-3"
-                    placeholder="600"
-                    value={newModuleData.width}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="depth" className="text-right text-sm font-medium">
-                    Adâncime (mm)
-                  </label>
-                  <Input
-                    id="depth"
-                    type="number"
-                    className="col-span-3"
-                    placeholder="560"
-                    value={newModuleData.depth}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="height" className="text-right text-sm font-medium">
-                    Înălțime (mm)
-                  </label>
-                  <Input
-                    id="height"
-                    type="number"
-                    className="col-span-3"
-                    placeholder="800"
-                    value={newModuleData.height}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="moduleImage" className="text-right text-sm font-medium">
-                    Imagine
-                  </label>
-                  <div className="col-span-3">
-                    <div className="flex items-center gap-4">
-                      <label htmlFor="moduleImage" className="cursor-pointer flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50">
-                        <Upload size={16} className="mr-2" />
-                        Încarcă imagine
-                        <Input
-                          id="moduleImage"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleImageUpload}
-                        />
-                      </label>
-                      {selectedImage && (
-                        <span className="text-sm text-green-600 flex items-center">
-                          <Check size={16} className="mr-1" />
-                          {selectedImage.name}
-                        </span>
-                      )}
-                    </div>
-                    {imagePreview && (
-                      <div className="mt-2 relative w-full h-32 bg-gray-100 rounded-md overflow-hidden">
-                        <img 
-                          src={imagePreview} 
-                          alt="Preview modul" 
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="py-4">
+                <ModuleCreationPanel 
+                  onAddModule={(module) => {
+                    handleAddModule(module);
+                    setIsNewModuleDialogOpen(false);
+                  }}
+                  onClose={() => setIsNewModuleDialogOpen(false)}
+                />
               </div>
-              
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Anulează</Button>
-                </DialogClose>
-                <Button onClick={handleCreateModule} className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Creează modul
-                </Button>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
