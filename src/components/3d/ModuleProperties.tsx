@@ -13,6 +13,14 @@ import { useToast } from '@/hooks/use-toast';
 import { FurnitureModule, ModuleType, Material, AccessoryItem, MaterialType } from '@/types';
 import { ComboLogicService } from '@/services/comboLogicService';
 
+// Define the ModulePropertiesProps interface that was missing
+interface ModulePropertiesProps {
+  module: FurnitureModule;
+  onUpdate: (module: FurnitureModule) => void;
+  onDelete: (moduleId: string) => void;
+  onClose: () => void;
+}
+
 // Helper to format measurements
 const formatMeasurement = (value: number) => {
   return `${value}mm`;
