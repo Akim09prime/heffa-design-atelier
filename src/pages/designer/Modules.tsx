@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
   Search, Filter, Box, ArrowRight, Plus, Printer, 
-  Settings, Tag, Check 
+  Settings, Check 
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -13,12 +14,33 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
+// Define a ModuleData interface to better track module state
+interface ModuleData {
+  id?: number;
+  name: string;
+  category: string;
+  width: string;
+  depth: string;
+  height: string;
+  description?: string;
+}
+
+// Cache for storing created modules
+const moduleCache: Record<string, ModuleData[]> = {
+  base: [],
+  wall: [],
+  tall: [],
+  drawer: [],
+  corner: [],
+  island: []
+};
+
 const Modules = () => {
   const [isNewModuleDialogOpen, setIsNewModuleDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('base');
   const [hoveredModule, setHoveredModule] = useState<number | null>(null);
-  const [newModuleData, setNewModuleData] = useState({
+  const [newModuleData, setNewModuleData] = useState<ModuleData>({
     name: '',
     category: 'base',
     width: '600',
@@ -53,6 +75,26 @@ const Modules = () => {
     }
 
     const moduleId = Math.floor(Math.random() * 1000) + 100;
+    
+    // Create new module with additional data
+    const createdModule = {
+      ...newModuleData,
+      id: moduleId,
+      description: `${newModuleData.name} - ${newModuleData.width}×${newModuleData.height}×${newModuleData.depth}mm`,
+      price: 275 + (Math.floor(Math.random() * 10) * 25),
+      dimensions: `${newModuleData.width}×${newModuleData.height}×${newModuleData.depth}mm`,
+      popularity: Math.floor(Math.random() * 5) + 1,
+    };
+    
+    // Cache the new module
+    moduleCache[newModuleData.category] = [
+      ...moduleCache[newModuleData.category], 
+      createdModule
+    ];
+    
+    console.log("Created module:", createdModule);
+    console.log("Updated module cache:", moduleCache);
+    
     setIsNewModuleDialogOpen(false);
     
     toast({
@@ -60,6 +102,10 @@ const Modules = () => {
       description: "Your new module has been created successfully",
     });
     
+    // Switch to the category of the created module
+    setActiveCategory(newModuleData.category);
+    
+    // Navigate to the module details
     navigate(`/designer/modules/${moduleId}`);
   };
 
@@ -82,23 +128,31 @@ const Modules = () => {
     if (!searchQuery) return modules;
     return modules.filter(m => 
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      m.description.toLowerCase().includes(searchQuery.toLowerCase())
+      m.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
   const getModulesForCategory = (category: string) => {
-    return Array.from({ length: 8 }).map((_, i) => ({
-      id: i + 100,
-      name: `${category.charAt(0).toUpperCase() + category.slice(1)}-${i+100}`,
-      description: `Standard ${category} cabinet`,
-      price: 275 + (i * 25),
-      dimensions: category === 'base' ? '600×800×560mm' : 
-                 category === 'wall' ? '600×300×560mm' : 
-                 category === 'tall' ? '600×2100×560mm' :
-                 category === 'drawer' ? '600×800×560mm' :
-                 category === 'corner' ? '900×800×560mm' : '1200×800×560mm',
-      popularity: Math.floor(Math.random() * 5) + 1,
-    }));
+    // Return cached modules if available, otherwise generate defaults
+    const cachedModules = moduleCache[category] || [];
+    
+    // Generate default modules if no cached ones exist
+    if (cachedModules.length === 0) {
+      return Array.from({ length: 8 }).map((_, i) => ({
+        id: i + 100,
+        name: `${category.charAt(0).toUpperCase() + category.slice(1)}-${i+100}`,
+        description: `Standard ${category} cabinet`,
+        price: 275 + (i * 25),
+        dimensions: category === 'base' ? '600×800×560mm' : 
+                  category === 'wall' ? '600×300×560mm' : 
+                  category === 'tall' ? '600×2100×560mm' :
+                  category === 'drawer' ? '600×800×560mm' :
+                  category === 'corner' ? '900×800×560mm' : '1200×800×560mm',
+        popularity: Math.floor(Math.random() * 5) + 1,
+      }));
+    }
+    
+    return [...cachedModules];
   };
 
   const modules = getModulesForCategory(activeCategory);

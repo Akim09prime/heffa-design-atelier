@@ -108,10 +108,6 @@ const NewProject = () => {
   const handleContinueTo3D = () => {
     if (projectId) {
       console.log(`Navigating to 3D editor for project ${projectId}`);
-      // For debugging, add the project to sampleProjects if it doesn't exist there
-      if (createdProject && !ProjectService.getProjectById(projectId)) {
-        ProjectService.sampleProjects.push(createdProject);
-      }
       navigate(`/designer/projects/${projectId}/3d-editor`);
     } else {
       toast({
@@ -134,6 +130,19 @@ const NewProject = () => {
       });
     }
   };
+  
+  const handleBrowseModules = () => {
+    if (projectId) {
+      console.log(`Navigating to modules for project ${projectId}`);
+      navigate(`/designer/modules`);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Please create a project first before browsing modules',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <DesignerLayout>
@@ -150,15 +159,24 @@ const NewProject = () => {
             />
           </CardContent>
           {projectId && (
-            <CardFooter className="bg-gray-50 border-t border-gray-200 flex justify-end gap-4 p-4">
-              <Button 
-                variant="outline" 
-                onClick={handleEditProject}
-                className="fancy-btn"
-              >
-                <Save size={16} className="mr-2" />
-                Edit Project
-              </Button>
+            <CardFooter className="bg-gray-50 border-t border-gray-200 flex justify-between gap-4 p-4">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={handleEditProject}
+                  className="fancy-btn"
+                >
+                  <Save size={16} className="mr-2" />
+                  Edit Project
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleBrowseModules}
+                  className="fancy-btn"
+                >
+                  Browse Modules
+                </Button>
+              </div>
               <Button 
                 onClick={handleContinueTo3D}
                 className="bg-blue-600 hover:bg-blue-700 shadow hover:shadow-lg transition-all btn-glow"

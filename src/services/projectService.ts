@@ -96,6 +96,35 @@ export const ProjectService = {
     console.log(`Looking for project with ID: ${id}`);
     console.log(`Available projects: ${sampleProjects.map(p => p.id).join(', ')}`);
     
+    // Special handling for module preview projects (module-XXX)
+    if (id.startsWith('module-')) {
+      const moduleId = id.replace('module-', '');
+      console.log(`Creating temporary project for module preview with ID: ${moduleId}`);
+      
+      // Create a temporary project for module preview
+      const tempProject: Project = {
+        id: id,
+        userId: 'designer',
+        name: `Module Preview ${moduleId}`,
+        description: 'Temporary project for module preview',
+        type: 'Free Mode',
+        parameters: {},
+        status: 'draft',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        roomType: 'other',
+        modules: [],
+        dimensions: {
+          width: 3000,
+          length: 3000,
+          height: 2400,
+          walls: ProjectService.generateDefaultWalls('Free Mode')
+        }
+      };
+      
+      return Promise.resolve(tempProject);
+    }
+    
     const project = sampleProjects.find(project => project.id === id);
     
     if (!project) {
@@ -148,6 +177,7 @@ export const ProjectService = {
     };
     
     // Here we'd update the project in the database
+    sampleProjects[existingProjectIndex] = updatedProject;
     
     return Promise.resolve(updatedProject);
   },
@@ -165,6 +195,7 @@ export const ProjectService = {
     }
     
     // Here we'd delete the project from the database
+    sampleProjects.splice(projectIndex, 1);
     
     return Promise.resolve();
   },
@@ -305,5 +336,28 @@ export const ProjectService = {
     if (role === 'client' && project.userId === userId) return true;
     
     return false;
+  },
+  
+  // Create a module preview project
+  createModulePreviewProject: (moduleId: string): Project => {
+    return {
+      id: `module-${moduleId}`,
+      userId: 'designer',
+      name: `Module Preview ${moduleId}`,
+      description: 'Temporary project for module preview',
+      type: 'Free Mode',
+      parameters: {},
+      status: 'draft',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      roomType: 'other',
+      modules: [],
+      dimensions: {
+        width: 3000,
+        length: 3000,
+        height: 2400,
+        walls: ProjectService.generateDefaultWalls('Free Mode')
+      }
+    };
   }
 };

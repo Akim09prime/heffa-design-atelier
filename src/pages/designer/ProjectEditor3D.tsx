@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -23,6 +22,39 @@ const ProjectEditor3D = () => {
       try {
         if (projectId) {
           console.log(`Fetching project with ID: ${projectId}`);
+          console.log(`Available projects: ${ProjectService.sampleProjects.map(p => p.id).join(', ')}`);
+          
+          // For module IDs that start with "module-", create a temporary project
+          if (projectId.startsWith('module-')) {
+            const moduleId = projectId.replace('module-', '');
+            console.log(`This is a module preview with ID: ${moduleId}`);
+            
+            // Create a temporary project for module preview
+            const tempProject = {
+              id: projectId,
+              userId: 'designer',
+              name: `Module Preview ${moduleId}`,
+              description: 'Temporary project for module preview',
+              type: 'Free Mode',
+              parameters: {},
+              status: 'draft',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              roomType: 'other',
+              modules: [],
+              dimensions: {
+                width: 3000,
+                length: 3000,
+                height: 2400,
+                walls: ProjectService.generateDefaultWalls('Free Mode')
+              }
+            };
+            
+            setProject(tempProject as Project);
+            setLoading(false);
+            return;
+          }
+          
           const fetchedProject = await ProjectService.getProjectById(projectId);
           if (!fetchedProject) {
             console.error(`Project not found with ID: ${projectId}`);
@@ -60,7 +92,12 @@ const ProjectEditor3D = () => {
   };
 
   const handleBack = () => {
-    navigate(`/designer/projects`);
+    // Check if we're viewing a module or a regular project
+    if (projectId?.startsWith('module-')) {
+      navigate('/designer/modules');
+    } else {
+      navigate('/designer/projects');
+    }
   };
 
   if (loading) {
@@ -106,7 +143,9 @@ const ProjectEditor3D = () => {
             <Button variant="outline" size="icon" onClick={handleBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-medium gradient-text">{project.name} - 3D Editor</h1>
+            <h1 className="text-2xl font-medium gradient-text">
+              {project?.name || 'Project'} - 3D Editor
+            </h1>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleSave} className="fancy-btn">
@@ -125,10 +164,10 @@ const ProjectEditor3D = () => {
             <Card className="shadow-lg border-gray-200 h-[600px]">
               <CardContent className="p-0 h-full">
                 <SceneContainer
-                  modules={project.modules}
-                  roomWidth={project.dimensions.width / 1000} // Convert to meters
-                  roomLength={project.dimensions.length / 1000} // Convert to meters
-                  roomHeight={project.dimensions.height / 1000} // Convert to meters
+                  modules={project?.modules || []}
+                  roomWidth={(project?.dimensions?.width || 4000) / 1000} // Convert to meters
+                  roomLength={(project?.dimensions?.length || 3000) / 1000} // Convert to meters
+                  roomHeight={(project?.dimensions?.height || 2400) / 1000} // Convert to meters
                   showGrid={true}
                   enableOrbitControls={true}
                 />
@@ -144,15 +183,15 @@ const ProjectEditor3D = () => {
               <CardContent className="space-y-3">
                 <div>
                   <span className="text-sm text-muted-foreground">Type</span>
-                  <p className="font-medium">{project.type} {project.subType ? `(${project.subType})` : ''}</p>
+                  <p className="font-medium">{project?.type} {project?.subType ? `(${project.subType})` : ''}</p>
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Room</span>
-                  <p className="font-medium capitalize">{project.roomType}</p>
+                  <p className="font-medium capitalize">{project?.roomType}</p>
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Dimensions</span>
-                  <p>{project.dimensions.width}mm × {project.dimensions.length}mm × {project.dimensions.height}mm</p>
+                  <p>{project?.dimensions?.width || 0}mm × {project?.dimensions?.length || 0}mm × {project?.dimensions?.height || 0}mm</p>
                 </div>
               </CardContent>
             </Card>
