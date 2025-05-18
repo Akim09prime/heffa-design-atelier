@@ -135,7 +135,8 @@ export const createAsyncActionHandler = (
     // Show loading toast if message is provided
     let loadingToastId;
     if (options.loadingMessage) {
-      loadingToastId = toast({
+      // Create loading toast without id reference
+      toast({
         title: options.loadingMessage,
         description: "Vă rugăm așteptați...",
         duration: Infinity,
@@ -145,33 +146,15 @@ export const createAsyncActionHandler = (
     try {
       const result = await actionFn(...args);
       
-      // Dismiss loading toast if it exists
-      if (loadingToastId) {
-        toast({
-          id: loadingToastId,
-          title: options.successTitle,
-          description: options.successDescription || "Operație realizată cu succes",
-          variant: 'default',
-        });
-      } else {
-        showSuccessToast(toast, options.successTitle, options.successDescription);
-      }
+      // Show success toast
+      showSuccessToast(toast, options.successTitle, options.successDescription);
       
       return result;
     } catch (error) {
       console.error(error);
       
-      // Dismiss loading toast if it exists
-      if (loadingToastId) {
-        toast({
-          id: loadingToastId,
-          title: options.errorTitle,
-          description: options.errorDescription || (error as Error).message,
-          variant: 'destructive',
-        });
-      } else {
-        showErrorToast(toast, options.errorTitle, options.errorDescription || (error as Error).message);
-      }
+      // Show error toast
+      showErrorToast(toast, options.errorTitle, options.errorDescription || (error as Error).message);
       
       throw error;
     }
