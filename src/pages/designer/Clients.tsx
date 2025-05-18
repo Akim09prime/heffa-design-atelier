@@ -6,27 +6,34 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import { Search, Plus, Edit, Mail, Phone, User, FileText, Trash2, MessageSquare } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Plus, Edit, Mail, Phone, FileText, Trash2, MessageSquare, Download, Upload, UserPlus, FilePlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { ClientForm } from '@/components/clients/ClientForm';
+import { ImportExportDialog } from '@/components/clients/ImportExportDialog';
+import { Client } from '@/types';
 
 const Clients = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
+  const [isEditClientDialogOpen, setIsEditClientDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<{ id: string, name: string } | null>(null);
-  const [newClient, setNewClient] = useState({
+  const [isImportExportDialogOpen, setIsImportExportDialogOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [newClient, setNewClient] = useState<Partial<Client>>({
     name: "",
     email: "",
     phone: "",
-    address: ""
+    projects: 0,
+    lastActive: new Date().toISOString().split('T')[0],
+    status: 'pending'
   });
   
   // Mock client data
-  const clients = [
+  const [clients, setClients] = useState<Client[]>([
     { 
       id: 'c1', 
       name: 'John Doe', 
@@ -63,7 +70,17 @@ const Clients = () => {
       lastActive: '2023-06-10',
       status: 'pending'
     }
-  ];
+  ]);
+
+  const handleNewClientChange = (field: keyof Client, value: string) => {
+    setNewClient(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditClientChange = (field: keyof Client, value: string) => {
+    if (selectedClient) {
+      setSelectedClient({ ...selectedClient, [field]: value });
+    }
+  };
 
   const handleAddClient = () => {
     if (!newClient.name || !newClient.email) {
@@ -75,7 +92,18 @@ const Clients = () => {
       return;
     }
     
-    // In a real application, this would call an API to add the client
+    // Create new client with generated ID
+    const newClientWithId: Client = {
+      ...newClient as Client,
+      id: `c${Date.now()}`,
+      projects: 0,
+      lastActive: new Date().toISOString().split('T')[0],
+      status: 'pending'
+    };
+    
+    // Add to clients list
+    setClients(prevClients => [...prevClients, newClientWithId]);
+    
     toast({
       title: "Client Added",
       description: `${newClient.name} has been successfully added as a client`,
@@ -86,26 +114,53 @@ const Clients = () => {
       name: "",
       email: "",
       phone: "",
-      address: ""
+      projects: 0,
+      lastActive: new Date().toISOString().split('T')[0],
+      status: 'pending'
     });
   };
   
-  const handleEditClient = (clientId: string) => {
+  const handleOpenEditDialog = (client: Client) => {
+    setSelectedClient(client);
+    setIsEditClientDialogOpen(true);
+  };
+  
+  const handleEditClient = () => {
+    if (!selectedClient || !selectedClient.name || !selectedClient.email) {
+      toast({
+        title: "Error",
+        description: "Name and email are required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Update client in the list
+    setClients(prevClients => 
+      prevClients.map(c => c.id === selectedClient.id ? selectedClient : c)
+    );
+    
     toast({
-      title: "Edit Client",
-      description: `Opening edit form for client ID: ${clientId}`,
+      title: "Client Updated",
+      description: `${selectedClient.name}'s information has been updated`,
     });
-    navigate(`/designer/clients/${clientId}/edit`);
+    
+    setIsEditClientDialogOpen(false);
+    setSelectedClient(null);
   };
   
-  const handleDeleteClient = (clientId: string, clientName: string) => {
-    setSelectedClient({ id: clientId, name: clientName });
+  const handleDeleteClient = (client: Client) => {
+    setSelectedClient(client);
     setIsDeleteDialogOpen(true);
   };
   
   const confirmDeleteClient = () => {
     if (selectedClient) {
-      // In a real application, this would call an API to delete the client
+      // Remove client from the list
+      setClients(prevClients => 
+        prevClients.filter(c => c.id !== selectedClient.id)
+      );
+      
       toast({
         title: "Client Deleted",
         description: `${selectedClient.name} has been removed from your clients`,
@@ -113,6 +168,27 @@ const Clients = () => {
       setIsDeleteDialogOpen(false);
       setSelectedClient(null);
     }
+  };
+  
+  const handleImportClients = (importedClients: Client[]) => {
+    // Add imported clients with generated IDs if they don't have one
+    const clientsToAdd = importedClients.map(client => ({
+      ...client,
+      id: client.id || `c${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      projects: client.projects || 0,
+      status: client.status || 'pending'
+    }));
+    
+    setClients(prev => [...prev, ...clientsToAdd]);
+    
+    toast({
+      title: "Import Successful",
+      description: `Imported ${clientsToAdd.length} clients`,
+    });
+  };
+  
+  const handleOpenImportExportDialog = () => {
+    setIsImportExportDialogOpen(true);
   };
   
   const handleViewProjects = (clientId: string, clientName: string) => {
@@ -137,7 +213,7 @@ const Clients = () => {
     return (
       client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.phone.toLowerCase().includes(searchQuery.toLowerCase())
+      client.phone?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -149,7 +225,7 @@ const Clients = () => {
             <h1 className="text-3xl font-medium mb-2">Client Management</h1>
             <p className="text-gray-500">Manage your clients and their projects</p>
           </div>
-          <div className="flex w-full sm:w-auto space-x-2">
+          <div className="flex w-full sm:w-auto gap-2 flex-wrap">
             <div className="relative flex-grow">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -160,8 +236,12 @@ const Clients = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            <Button variant="outline" onClick={handleOpenImportExportDialog}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
             <Button onClick={() => setIsAddClientDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
+              <UserPlus className="h-4 w-4 mr-2" />
               Add Client
             </Button>
           </div>
@@ -230,7 +310,7 @@ const Clients = () => {
                           <Button
                             variant="ghost" 
                             size="icon"
-                            onClick={() => handleEditClient(client.id)}
+                            onClick={() => handleOpenEditDialog(client)}
                             title="Edit client"
                           >
                             <Edit className="h-4 w-4" />
@@ -246,7 +326,7 @@ const Clients = () => {
                           <Button
                             variant="ghost" 
                             size="icon"
-                            onClick={() => handleDeleteClient(client.id, client.name)}
+                            onClick={() => handleDeleteClient(client)}
                             className="hover:bg-red-50 hover:text-red-600"
                             title="Delete client"
                           >
@@ -278,6 +358,10 @@ const Clients = () => {
               <Button variant="outline" size="sm" disabled={!searchQuery} onClick={() => setSearchQuery("")}>
                 Clear search
               </Button>
+              <Button variant="outline" size="sm" onClick={() => setIsAddClientDialogOpen(true)}>
+                <FilePlus className="h-4 w-4 mr-1" />
+                New Client
+              </Button>
             </div>
           </CardFooter>
         </Card>
@@ -292,57 +376,36 @@ const Clients = () => {
               Enter the details of the new client
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name" className="text-right">
-                Name*
-              </label>
-              <Input 
-                id="name" 
-                className="col-span-3" 
-                value={newClient.name}
-                onChange={(e) => setNewClient({...newClient, name: e.target.value})}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="email" className="text-right">
-                Email*
-              </label>
-              <Input 
-                id="email" 
-                type="email" 
-                className="col-span-3" 
-                value={newClient.email}
-                onChange={(e) => setNewClient({...newClient, email: e.target.value})}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="phone" className="text-right">
-                Phone
-              </label>
-              <Input 
-                id="phone" 
-                type="tel" 
-                className="col-span-3" 
-                value={newClient.phone}
-                onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="address" className="text-right">
-                Address
-              </label>
-              <Input 
-                id="address" 
-                className="col-span-3" 
-                value={newClient.address}
-                onChange={(e) => setNewClient({...newClient, address: e.target.value})}
-              />
-            </div>
-          </div>
+          <ClientForm 
+            client={newClient} 
+            onChange={handleNewClientChange} 
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddClientDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleAddClient}>Add Client</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Client Dialog */}
+      <Dialog open={isEditClientDialogOpen} onOpenChange={setIsEditClientDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Client</DialogTitle>
+            <DialogDescription>
+              Update client information
+            </DialogDescription>
+          </DialogHeader>
+          {selectedClient && (
+            <ClientForm 
+              client={selectedClient} 
+              onChange={handleEditClientChange}
+              isEditing={true}
+            />
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditClientDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleEditClient}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -362,6 +425,14 @@ const Clients = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Import/Export Dialog */}
+      <ImportExportDialog
+        isOpen={isImportExportDialogOpen}
+        onOpenChange={setIsImportExportDialogOpen}
+        onImport={handleImportClients}
+        clients={clients}
+      />
     </DesignerLayout>
   );
 };
