@@ -4,14 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FilePdf, FileText } from 'lucide-react';
+import { FileSpreadsheet, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
 interface ExportSidebarProps {
-  modulesRef: React.MutableRefObject<THREE.Mesh[]>;
+  modulesRef: { current: Array<{
+    scale: { x: number; y: number; z: number; };
+    material: { color: { getHexString: () => string; }; };
+  }> };
   projectName?: string;
 }
 
@@ -44,8 +47,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
       };
       
       // Get color in hex
-      const material = module.material as THREE.MeshStandardMaterial;
-      const color = `#${material.color.getHexString()}`;
+      const color = `#${module.material.color.getHexString()}`;
       
       // Calculate estimated price based on volume
       const volume = dimensions.width * dimensions.height * dimensions.depth / 1000000000; // in cubic meters
@@ -86,7 +88,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
     doc.text(`${total} RON`, 170, finalY);
     
     // Add footer
-    const pageCount = doc.internal.getNumberOfPages();
+    const pageCount = (doc as any).internal.getNumberOfPages();
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     for(let i = 1; i <= pageCount; i++) {
@@ -117,8 +119,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
       };
       
       // Get color in hex
-      const material = module.material as THREE.MeshStandardMaterial;
-      const color = `#${material.color.getHexString()}`;
+      const color = `#${module.material.color.getHexString()}`;
       
       // Calculate estimated price based on volume
       const volume = dimensions.width * dimensions.height * dimensions.depth / 1000000000; // in cubic meters
@@ -195,7 +196,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
                 onClick={handlePDFExport}
                 className="flex justify-start bg-[#6A4B31] hover:bg-[#5a3f2a] text-white"
               >
-                <FilePdf className="mr-2 h-4 w-4" />
+                <FileText className="mr-2 h-4 w-4" />
                 Export to PDF
               </Button>
               
@@ -204,7 +205,7 @@ export const ExportSidebar: React.FC<ExportSidebarProps> = ({
                 variant="outline"
                 className="flex justify-start border-[#C1A57B] text-[#6A4B31]"
               >
-                <FileText className="mr-2 h-4 w-4" />
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
                 Export to Excel
               </Button>
             </div>
