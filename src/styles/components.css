@@ -1,38 +1,45 @@
 
-/* Form elements styling */
-.form-label {
-  @apply block text-sm font-medium mb-1;
-}
+@layer components {
+  /* Form elements styling */
+  .form-label {
+    @apply block text-sm font-medium mb-1;
+  }
 
-.form-input {
-  @apply block w-full rounded-xl border bg-white/80 backdrop-blur-sm px-4 py-2;
-}
+  .form-input {
+    @apply block w-full rounded-xl border bg-white/80 backdrop-blur-sm px-4 py-2;
+  }
 
-.form-input:focus {
-  @apply ring-2 ring-primary border-primary;
-}
+  .form-input:focus {
+    @apply ring-2 ring-primary border-primary;
+  }
 
-/* Tooltip styling */
-.tooltip {
-  @apply relative inline-block;
-}
+  /* Tooltip styling */
+  .tooltip {
+    @apply relative inline-block;
+  }
 
-.tooltip .tooltip-text {
-  @apply invisible absolute z-10 p-2 text-xs rounded-xl bg-white/80 backdrop-blur-sm opacity-0 transition-all duration-300 border shadow-md;
-  border-color: rgba(255, 255, 255, 0.3);
-  width: 120px;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -60px;
-  text-align: center;
-}
+  .tooltip .tooltip-text {
+    @apply invisible absolute z-10 p-2 text-xs rounded-xl bg-white/80 backdrop-blur-sm opacity-0 transition-all duration-300 border shadow-md;
+    border-color: rgba(255, 255, 255, 0.3);
+    width: 120px;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    text-align: center;
+  }
 
-.tooltip:hover .tooltip-text {
-  @apply visible opacity-100;
-}
+  .tooltip:hover .tooltip-text {
+    @apply visible opacity-100;
+  }
 
-/* Project specific styling */
-.scene-container {
-  border-radius: 1rem;
-  overflow: hidden;
+  /* Project specific styling */
+  .scene-container {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  /* Shadow utilities */
+  .shadow-soft {
+    @apply shadow-[0_10px_25px_rgba(0,0,0,0.05)];
+  }
 }

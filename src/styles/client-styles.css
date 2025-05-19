@@ -30,28 +30,30 @@
   --ring: 173 83% 31%;
 }
 
-/* Client-specific components */
-.client-card {
-  @apply glass border-client-100 shadow-soft;
-}
+@layer components {
+  /* Client-specific components */
+  .client-card {
+    @apply bg-white/70 backdrop-blur-sm border border-client-100 shadow-soft rounded-2xl;
+  }
 
-.client-button {
-  @apply bg-client-primary text-white hover:bg-client-accent hover:shadow-client-glow transition-all duration-300;
-}
+  .client-button {
+    @apply bg-client-primary text-white hover:bg-client-accent hover:shadow-client-glow transition-all duration-300;
+  }
 
-.client-header {
-  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
-}
+  .client-header {
+    @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
+  }
 
-.client-gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-client-primary to-client-accent;
-}
+  .client-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-client-primary to-client-accent;
+  }
 
-.badge-client {
-  @apply px-2 py-1 rounded-lg text-xs font-medium;
-  background-color: rgba(13, 148, 136, 0.1);
-  color: #0d9488;
-  border: 1px solid rgba(13, 148, 136, 0.3);
+  .badge-client {
+    @apply px-2 py-1 rounded-lg text-xs font-medium;
+    background-color: rgba(13, 148, 136, 0.1);
+    color: #0d9488;
+    border: 1px solid rgba(13, 148, 136, 0.3);
+  }
 }
 
 /* Glow effect for client theme */

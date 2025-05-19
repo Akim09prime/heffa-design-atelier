@@ -30,28 +30,30 @@
   --ring: 192 80% 60%;
 }
 
-/* Designer-specific components */
-.designer-card {
-  @apply glass border-designer-100 shadow-soft;
-}
+@layer components {
+  /* Designer-specific components */
+  .designer-card {
+    @apply bg-white/70 backdrop-blur-sm border border-designer-100 shadow-soft rounded-2xl;
+  }
 
-.designer-button {
-  @apply bg-designer-primary text-white hover:bg-designer-accent hover:shadow-glow transition-all duration-300;
-}
+  .designer-button {
+    @apply bg-designer-primary text-white hover:bg-designer-accent hover:shadow-glow transition-all duration-300;
+  }
 
-.designer-header {
-  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
-}
+  .designer-header {
+    @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
+  }
 
-.designer-gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-designer-primary to-designer-accent;
-}
+  .designer-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-designer-primary to-designer-accent;
+  }
 
-.badge-designer {
-  @apply px-2 py-1 rounded-lg text-xs font-medium;
-  background-color: rgba(61, 213, 243, 0.1);
-  color: #3dd5f3;
-  border: 1px solid rgba(61, 213, 243, 0.3);
+  .badge-designer {
+    @apply px-2 py-1 rounded-lg text-xs font-medium;
+    background-color: rgba(61, 213, 243, 0.1);
+    color: #3dd5f3;
+    border: 1px solid rgba(61, 213, 243, 0.3);
+  }
 }
 
 /* Glow effect for designer theme */
