@@ -10,7 +10,7 @@ const AdminDashboard = () => {
     <AuthProvider>
       <TranslationProvider>
         <UiProvider>
-          <div className="admin-theme min-h-screen">
+          <div className="admin-theme min-h-screen w-full">
             <Dashboard />
           </div>
         </UiProvider>

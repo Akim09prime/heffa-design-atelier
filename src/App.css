@@ -1,3 +1,4 @@
+
 #root {
   width: 100%;
   height: 100%;
@@ -114,33 +115,44 @@ body {
 
 /* Special headers for each area */
 .designer-header {
-  @apply text-3xl font-poppins font-semibold text-designer-900 uppercase tracking-wide;
+  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
 }
 
 .admin-header {
-  @apply text-3xl font-poppins font-semibold text-admin-900 uppercase tracking-wide;
+  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
 }
 
 .client-header {
-  @apply text-3xl font-poppins font-semibold text-client-900 uppercase tracking-wide;
+  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
 }
 
 /* Dashboard cards styling - Updated for dark theme */
 .dashboard-card-dark {
-  @apply rounded-2xl border border-admin-border-light shadow-soft transition-all duration-300 hover:shadow-md hover:-translate-y-1 bg-admin-bg-secondary;
+  @apply rounded-2xl border shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1;
+  border-color: #2d3748;
+  background-color: #1A1F2C;
 }
 
 /* Badge styling updates */
 .badge-designer {
-  @apply bg-designer-primary/10 text-designer-primary border border-designer-primary/30 px-2 py-1 rounded-lg text-xs font-medium;
+  @apply px-2 py-1 rounded-lg text-xs font-medium;
+  background-color: rgba(61, 213, 243, 0.1);
+  color: #3dd5f3;
+  border: 1px solid rgba(61, 213, 243, 0.3);
 }
 
 .badge-admin {
-  @apply bg-admin-primary/10 text-admin-primary border border-admin-primary/30 px-2 py-1 rounded-lg text-xs font-medium;
+  @apply px-2 py-1 rounded-lg text-xs font-medium;
+  background-color: rgba(155, 135, 245, 0.1);
+  color: #9b87f5;
+  border: 1px solid rgba(155, 135, 245, 0.3);
 }
 
 .badge-client {
-  @apply bg-client-primary/10 text-client-primary border border-client-primary/30 px-2 py-1 rounded-lg text-xs font-medium;
+  @apply px-2 py-1 rounded-lg text-xs font-medium;
+  background-color: rgba(13, 148, 136, 0.1);
+  color: #0d9488;
+  border: 1px solid rgba(13, 148, 136, 0.3);
 }
 
 /* Table styling enhancements - Updated for dark theme */
@@ -149,7 +161,8 @@ body {
 }
 
 .table-modern-dark thead {
-  @apply bg-admin-bg-tertiary text-admin-text-secondary;
+  @apply text-white/70;
+  background-color: #272d3d;
 }
 
 .table-modern-dark thead th {
@@ -157,15 +170,21 @@ body {
 }
 
 .table-modern-dark tbody {
-  @apply divide-y divide-admin-border-light;
+  @apply divide-y;
+  border-color: #2d3748;
 }
 
 .table-modern-dark tbody tr {
-  @apply hover:bg-admin-bg-highlight transition-colors;
+  @apply transition-colors;
+}
+
+.table-modern-dark tbody tr:hover {
+  background-color: #2d3748;
 }
 
 .table-modern-dark td {
-  @apply px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary;
+  @apply px-6 py-4 whitespace-nowrap text-sm;
+  color: #c8c8c9;
 }
 
 /* Form elements styling */
@@ -197,7 +216,8 @@ body {
 }
 
 .tooltip .tooltip-text {
-  @apply invisible absolute z-10 p-2 text-xs rounded-xl bg-white/80 backdrop-blur-sm opacity-0 transition-all duration-300 border border-white/30 shadow-glass;
+  @apply invisible absolute z-10 p-2 text-xs rounded-xl bg-white/80 backdrop-blur-sm opacity-0 transition-all duration-300 border shadow-md;
+  border-color: rgba(255, 255, 255, 0.3);
   width: 120px;
   bottom: 125%;
   left: 50%;

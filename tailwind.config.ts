@@ -1,6 +1,7 @@
 
 import type { Config } from 'tailwindcss';
 import { fontFamily } from "tailwindcss/defaultTheme";
+import { adminColors } from "./src/styles/admin-theme";
 
 export default {
   content: [
@@ -15,6 +16,10 @@ export default {
         poppins: ["Poppins", "sans-serif"],
       },
       colors: {
+        // Admin theme colors (direct values)
+        ...adminColors,
+        
+        // Original colors
         wood: '#6A4B31',
         gold: '#C1A57B',
         heffa: {

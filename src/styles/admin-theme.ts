@@ -70,6 +70,7 @@ export const adminThemeColors = {
 export const createAdminThemeClass = () => {
   return {
     '.admin-theme': {
+      // Set CSS variables
       '--admin-bg-primary': adminThemeColors.background.primary,
       '--admin-bg-secondary': adminThemeColors.background.secondary,
       '--admin-bg-tertiary': adminThemeColors.background.tertiary,
@@ -94,8 +95,25 @@ export const createAdminThemeClass = () => {
       '--admin-gradient-secondary': adminThemeColors.gradient.secondary,
       '--admin-gradient-accent': adminThemeColors.gradient.accent,
       
+      // Apply base styles
       'background-color': adminThemeColors.background.primary,
       'color': adminThemeColors.text.primary,
     }
   };
+};
+
+// Export the color values directly for use in Tailwind config
+export const adminColors = {
+  'admin-bg-primary': adminThemeColors.background.primary,
+  'admin-bg-secondary': adminThemeColors.background.secondary,
+  'admin-bg-tertiary': adminThemeColors.background.tertiary,
+  'admin-bg-highlight': adminThemeColors.background.highlight,
+  'admin-text-primary': adminThemeColors.text.primary,
+  'admin-text-secondary': adminThemeColors.text.secondary,
+  'admin-text-muted': adminThemeColors.text.muted,
+  'admin-text-link': adminThemeColors.text.link,
+  'admin-border-light': adminThemeColors.border.light,
+  'admin-border-mid': adminThemeColors.border.mid,
+  'admin-border-dark': adminThemeColors.border.dark,
+  'admin-accent-purple': adminThemeColors.accent.purple,
 };
