@@ -2,68 +2,68 @@
 export const adminThemeColors = {
   // Background colors
   background: {
-    primary: '#131620',
-    secondary: '#1A1F2C',
-    tertiary: '#272d3d',
-    highlight: '#2d3748',
+    primary: '#0f172a', // Dark blue background
+    secondary: '#1e293b', // Slightly lighter blue
+    tertiary: '#334155', // Medium blue for accents
+    highlight: '#475569', // Highlight color
   },
   
   // Text colors
   text: {
-    primary: '#FFFFFF',
-    secondary: '#c8c8c9',
-    muted: '#8E9196',
-    link: '#9b87f5',
+    primary: '#f8fafc', // Almost white
+    secondary: '#cbd5e1', // Light gray
+    muted: '#94a3b8', // Muted text
+    link: '#38bdf8', // Bright blue for links
   },
   
   // Button colors
   button: {
     primary: {
-      background: '#9b87f5',
-      hover: '#7E69AB',
-      text: '#FFFFFF',
+      background: '#38bdf8', // Bright blue
+      hover: '#0ea5e9', // Darker blue on hover
+      text: '#f8fafc', // Almost white
     },
     secondary: {
-      background: '#1E293B',
-      hover: '#334155',
-      text: '#F1F0FB',
+      background: '#334155', // Medium blue
+      hover: '#475569', // Darker blue on hover
+      text: '#f8fafc', // Almost white
     },
     destructive: {
-      background: '#991B1B',
-      hover: '#B91C1C',
-      text: '#FFFFFF',
+      background: '#ef4444', // Red
+      hover: '#dc2626', // Darker red on hover
+      text: '#f8fafc', // Almost white
     },
   },
   
   // Border colors
   border: {
-    light: '#2d3748',
-    mid: '#1f2937',
-    dark: '#111827',
+    light: '#334155', // Medium blue
+    mid: '#1e293b', // Slightly lighter blue
+    dark: '#0f172a', // Dark blue
   },
   
   // Status colors
   status: {
-    success: '#10B981',
-    error: '#EF4444',
-    warning: '#F59E0B',
-    info: '#3B82F6',
+    success: '#10b981', // Green
+    error: '#ef4444', // Red
+    warning: '#f59e0b', // Orange
+    info: '#3b82f6', // Blue
   },
   
   // Accent colors
   accent: {
-    blue: '#0EA5E9',
-    purple: '#9b87f5',
-    pink: '#D946EF',
-    orange: '#F97316',
-    green: '#10B981',
+    blue: '#38bdf8', // Bright blue
+    purple: '#8b5cf6', // Purple
+    pink: '#ec4899', // Pink
+    orange: '#f97316', // Orange
+    green: '#10b981', // Green
   },
   
   // Gradient colors
   gradient: {
-    primary: 'linear-gradient(to right, #9b87f5, #7E69AB)',
-    secondary: 'linear-gradient(to right, #0EA5E9, #3B82F6)',
-    accent: 'linear-gradient(to right, #D946EF, #9b87f5)',
+    primary: 'linear-gradient(to right, #38bdf8, #0ea5e9)',
+    secondary: 'linear-gradient(to right, #8b5cf6, #6366f1)',
+    accent: 'linear-gradient(to right, #ec4899, #8b5cf6)',
   }
 };
 
@@ -113,7 +113,11 @@ export const adminColors = {
   'admin-text-muted': adminThemeColors.text.muted,
   'admin-text-link': adminThemeColors.text.link,
   'admin-border-light': adminThemeColors.border.light,
-  'admin-border-mid': adminThemeColors.border.mid,
+  'admin-border-mid': adminThemeColors.border.mid, 
   'admin-border-dark': adminThemeColors.border.dark,
+  'admin-accent-blue': adminThemeColors.accent.blue,
   'admin-accent-purple': adminThemeColors.accent.purple,
+  'admin-accent-pink': adminThemeColors.accent.pink,
+  'admin-accent-orange': adminThemeColors.accent.orange,
+  'admin-accent-green': adminThemeColors.accent.green,
 };

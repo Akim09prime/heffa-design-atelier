@@ -48,18 +48,18 @@ body {
   --designer-accent: #5c7cfa;
 }
 
-/* Admin area - dark theme with purple accents */
+/* Admin area - dark theme with blue accents */
 .admin-area {
-  --admin-primary: #9b87f5;
-  --admin-primary-light: #b3a3f7;
-  --admin-secondary: #1A1F2C;
-  --admin-accent: #7E69AB;
-  --admin-text: #FFFFFF;
-  --admin-text-secondary: #c8c8c9;
-  --admin-text-muted: #8E9196;
-  --admin-border: #2d3748;
-  --admin-bg-dark: #131620;
-  --admin-bg-card: #1A1F2C;
+  --admin-primary: #38bdf8;
+  --admin-primary-light: #7dd3fc;
+  --admin-secondary: #1e293b;
+  --admin-accent: #0ea5e9;
+  --admin-text: #f8fafc;
+  --admin-text-secondary: #cbd5e1;
+  --admin-text-muted: #94a3b8;
+  --admin-border: #334155;
+  --admin-bg-dark: #0f172a;
+  --admin-bg-card: #1e293b;
 }
 
 /* Client area - teal zen theme */
@@ -102,11 +102,11 @@ body {
 }
 
 .glow-hover:hover {
-  box-shadow: 0 0 15px rgba(61, 213, 243, 0.5);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
 }
 
 .admin-glow-hover:hover {
-  box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
 }
 
 .client-glow-hover:hover {
@@ -128,9 +128,9 @@ body {
 
 /* Dashboard cards styling - Updated for dark theme */
 .dashboard-card-dark {
-  @apply rounded-2xl border shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1;
-  border-color: #2d3748;
-  background-color: #1A1F2C;
+  @apply rounded-lg border shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  background-color: #1e293b;
+  border-color: #334155;
 }
 
 /* Badge styling updates */
@@ -143,9 +143,9 @@ body {
 
 .badge-admin {
   @apply px-2 py-1 rounded-lg text-xs font-medium;
-  background-color: rgba(155, 135, 245, 0.1);
-  color: #9b87f5;
-  border: 1px solid rgba(155, 135, 245, 0.3);
+  background-color: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .badge-client {
@@ -162,7 +162,7 @@ body {
 
 .table-modern-dark thead {
   @apply text-white/70;
-  background-color: #272d3d;
+  background-color: #334155;
 }
 
 .table-modern-dark thead th {
@@ -171,7 +171,7 @@ body {
 
 .table-modern-dark tbody {
   @apply divide-y;
-  border-color: #2d3748;
+  border-color: #334155;
 }
 
 .table-modern-dark tbody tr {
@@ -179,12 +179,12 @@ body {
 }
 
 .table-modern-dark tbody tr:hover {
-  background-color: #2d3748;
+  background-color: #475569;
 }
 
 .table-modern-dark td {
   @apply px-6 py-4 whitespace-nowrap text-sm;
-  color: #c8c8c9;
+  color: #cbd5e1;
 }
 
 /* Form elements styling */
@@ -231,8 +231,8 @@ body {
 
 /* Neumorphic effects - Updated for dark theme */
 .neumorphic-dark {
-  background: #1A1F2C;
-  box-shadow: 5px 5px 10px #161b26, -5px -5px 10px #1e2332;
+  background: #1e293b;
+  box-shadow: 5px 5px 10px #192330, -5px -5px 10px #233046;
   border-radius: 1rem;
 }
 
@@ -240,4 +240,186 @@ body {
 .scene-container {
   border-radius: 1rem;
   overflow: hidden;
+}
+
+/* UIVerse.io inspired animations */
+.fancy-border-gradient {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.fancy-border-gradient::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #38bdf8, #8b5cf6, #ec4899, #f97316);
+  z-index: -1;
+  border-radius: 0.7rem;
+  animation: animateGradient 10s linear infinite;
+}
+
+@keyframes animateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.fancy-border-gradient::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background-color: #1e293b;
+  z-index: -1;
+  border-radius: 0.5rem;
+}
+
+/* Neon button from uiverse.io */
+.neon-button {
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  padding: 0.7em 1.7em;
+}
+
+.neon-button:before {
+  content: '';
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+.neon-button:active {
+  color: #000;
+}
+
+.neon-button:active:after {
+  background: transparent;
+}
+
+.neon-button:hover:before {
+  opacity: 1;
+}
+
+.neon-button:after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #111;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* Card shine effect */
+.card-with-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-with-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: all 0.75s;
+}
+
+.card-with-shine:hover::before {
+  left: 100%;
+}
+
+/* Button with liquid animation */
+.liquid-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.liquid-button:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent 0%, transparent 25%, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.1) 50%, transparent 50%, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
+  background-size: 200% 100%;
+  animation: liquidMove 3s linear infinite;
+  transform: translateX(-100%);
+  z-index: 1;
+}
+
+@keyframes liquidMove {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.liquid-button:hover:after {
+  animation-play-state: paused;
 }

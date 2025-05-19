@@ -5,8 +5,14 @@ import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { glass?: boolean, variant?: 'admin' | 'designer' | 'client' | 'default' }
->(({ className, glass = false, variant = 'default', ...props }, ref) => {
+  React.HTMLAttributes<HTMLDivElement> & { 
+    glass?: boolean, 
+    variant?: 'admin' | 'designer' | 'client' | 'default',
+    shine?: boolean,
+    gradient?: boolean,
+    animation?: 'none' | 'float' | 'fade-in' | 'slide-in'
+  }
+>(({ className, glass = false, variant = 'default', shine = false, gradient = false, animation = 'none', ...props }, ref) => {
   const variantClasses = {
     'admin': 'admin-card',
     'designer': 'designer-card',
@@ -18,9 +24,14 @@ const Card = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-300",
+        "rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all duration-300",
         glass && "bg-white/80 backdrop-blur-md border border-white/30",
         variant !== 'default' && variantClasses[variant],
+        shine && "card-with-shine",
+        gradient && "fancy-border-gradient",
+        animation === 'float' && "float-animation",
+        animation === 'fade-in' && "fade-in",
+        animation === 'slide-in' && "slide-in",
         className
       )}
       {...props}
@@ -43,12 +54,13 @@ CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLHeadingElement> & { gradient?: boolean }
+>(({ className, gradient = false, ...props }, ref) => (
   <h3
     ref={ref}
     className={cn(
       "text-2xl font-semibold leading-none tracking-tight",
+      gradient && "gradient-text from-admin-accent-blue to-admin-accent-purple",
       className
     )}
     {...props}

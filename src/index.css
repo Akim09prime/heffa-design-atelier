@@ -31,30 +31,27 @@
   --radius: 0.75rem;
 }
 
-/* Admin theme - Professional dark purple theme */
+/* Admin theme - Modern dark blue theme */
 .admin-theme {
-  --background: 222 25% 10%;
+  --background: 222 47% 11%;
   --foreground: 210 40% 98%;
-  --card: 222 25% 14%;
+  --card: 215 25% 27%;
   --card-foreground: 210 40% 98%;
-  --popover: 222 25% 14%;
+  --popover: 215 25% 27%;
   --popover-foreground: 210 40% 98%;
-  --primary: 260 79% 75%;
+  --primary: 199 89% 48%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 222 25% 16%;
+  --secondary: 215 25% 27%;
   --secondary-foreground: 210 40% 98%;
-  --muted: 223 25% 40%;
+  --muted: 215 25% 40%;
   --muted-foreground: 214 32% 80%;
-  --accent: 260 79% 75%;
+  --accent: 199 89% 48%;
   --accent-foreground: 210 40% 98%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
-  --border: 223 25% 23%;
-  --input: 223 25% 23%;
-  --ring: 260 79% 75%;
-  
-  background-color: var(--admin-bg-primary, #131620);
-  color: var(--admin-text-primary, #FFFFFF);
+  --border: 215 25% 27%;
+  --input: 215 25% 27%;
+  --ring: 199 89% 48%;
 }
 
 /* Client theme - Zen teal comfort */
@@ -97,11 +94,59 @@
 @layer components {
   /* Admin styles - Updated for dark theme */
   .admin-card {
-    @apply bg-admin-bg-secondary border-admin-border-light shadow-md text-admin-text-primary;
+    @apply bg-admin-bg-secondary border border-admin-border-light shadow-md rounded-lg text-admin-text-primary;
   }
   
   .admin-button {
-    @apply bg-admin-accent-purple text-white hover:bg-admin-accent-purple/80 hover:shadow-admin-glow transition-all duration-300;
+    @apply bg-admin-accent-blue text-admin-text-primary rounded-lg px-4 py-2 font-medium 
+           shadow-md hover:shadow-lg hover:bg-admin-accent-blue/90
+           transition-all duration-300 ease-in-out transform hover:-translate-y-1;
+  }
+  
+  .admin-button-secondary {
+    @apply bg-admin-bg-tertiary text-admin-text-primary rounded-lg px-4 py-2 font-medium 
+           border border-admin-border-light shadow-sm hover:shadow-md
+           transition-all duration-300 ease-in-out transform hover:-translate-y-1;
+  }
+  
+  .admin-button-outline {
+    @apply bg-transparent text-admin-accent-blue rounded-lg px-4 py-2 font-medium 
+           border border-admin-accent-blue shadow-sm hover:bg-admin-accent-blue/10
+           transition-all duration-300 ease-in-out;
+  }
+  
+  .admin-button-destructive {
+    @apply bg-red-600 text-white rounded-lg px-4 py-2 font-medium 
+           shadow-md hover:shadow-lg hover:bg-red-700
+           transition-all duration-300 ease-in-out;
+  }
+  
+  .admin-input {
+    @apply bg-admin-bg-secondary border border-admin-border-light rounded-lg px-3 py-2 
+           text-admin-text-primary focus:ring-2 focus:ring-admin-accent-blue focus:border-admin-accent-blue
+           transition-all duration-300 ease-in-out;
+  }
+  
+  .admin-select {
+    @apply bg-admin-bg-secondary border border-admin-border-light rounded-lg px-3 py-2
+           text-admin-text-primary focus:ring-2 focus:ring-admin-accent-blue focus:border-admin-accent-blue
+           transition-all duration-300 ease-in-out;
+  }
+  
+  .admin-table {
+    @apply w-full rounded-lg overflow-hidden bg-admin-bg-secondary border border-admin-border-light;
+  }
+  
+  .admin-table-header {
+    @apply bg-admin-bg-tertiary text-admin-text-secondary py-3 px-4 text-left text-sm font-medium uppercase tracking-wider;
+  }
+  
+  .admin-table-cell {
+    @apply py-3 px-4 text-admin-text-secondary border-t border-admin-border-light;
+  }
+  
+  .admin-table-row {
+    @apply hover:bg-admin-bg-highlight transition-colors duration-200;
   }
   
   /* Designer styles */
@@ -137,7 +182,7 @@
   }
   
   .admin-gradient-text {
-    @apply gradient-text from-admin-primary to-admin-accent;
+    @apply gradient-text from-admin-accent-blue to-admin-accent-purple;
   }
   
   .designer-gradient-text {
@@ -169,5 +214,127 @@
   /* Input styling */
   .input-glass {
     @apply bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl focus:ring-2 focus:ring-primary/50 transition-all duration-300;
+  }
+  
+  /* Admin animations from uiverse.io */
+  .hover-scale {
+    @apply transition-all duration-300 hover:scale-105;
+  }
+  
+  .hover-text-glow {
+    @apply transition-all duration-300;
+  }
+  
+  .hover-text-glow:hover {
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+  }
+  
+  .pulse-animation {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    }
+  }
+  
+  .slide-in {
+    animation: slideIn 0.5s ease-out;
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  /* Button from uiverse.io */
+  .ui-button {
+    --glow-color: rgb(56, 189, 248);
+    --glow-spread-color: rgba(56, 189, 248, 0.3);
+    --enhanced-glow-color: rgb(56, 189, 248);
+    --btn-color: rgba(56, 189, 248, 0.1);
+    border: 0.25em solid var(--glow-color);
+    padding: 0.5em 1.5em;
+    color: var(--glow-color);
+    font-weight: bold;
+    background-color: var(--btn-color);
+    border-radius: 0.45em;
+    outline: none;
+    box-shadow: 0 0 1em 0.25em var(--glow-color),
+      0 0 4em 1em var(--glow-spread-color),
+      inset 0 0 0.75em 0.25em var(--glow-color);
+    text-shadow: 0 0 0.5em var(--glow-color);
+    position: relative;
+    transition: all 0.3s;
+  }
+  
+  .ui-button::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    top: 120%;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--glow-spread-color);
+    filter: blur(2em);
+    opacity: 0.7;
+    transform: perspective(1.5em) rotateX(35deg) scale(1, 0.6);
+  }
+  
+  .ui-button:hover {
+    color: var(--btn-color);
+    background-color: var(--glow-color);
+    box-shadow: 0 0 1em 0.25em var(--glow-color),
+      0 0 4em 2em var(--glow-spread-color),
+      inset 0 0 0.75em 0.25em var(--glow-color);
+  }
+  
+  .ui-button:active {
+    box-shadow: 0 0 0.6em 0.25em var(--glow-color),
+      0 0 2.5em 2em var(--glow-spread-color),
+      inset 0 0 0.5em 0.25em var(--glow-color);
   }
 }
