@@ -6,36 +6,39 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 button-modern",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 button-modern",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg hover:scale-[1.02]",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all hover:shadow-lg hover:scale-[1.02]",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all hover:border-primary/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-soft hover:shadow-lg hover:scale-[1.02]",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-soft hover:shadow-lg hover:scale-[1.02]",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-primary/50",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        glow: "relative bg-blue-600 text-white hover:bg-blue-700 overflow-hidden shadow-lg transition-all hover:shadow-blue-500/20 hover:scale-[1.02] after:content-[''] after:absolute after:h-full after:w-full after:top-0 after:left-[-100%] after:bg-gradient-to-r after:from-transparent after:via-white/20 after:to-transparent hover:after:left-[100%] after:transition-all after:duration-500",
-        glass: "border border-gray-200 bg-white/80 backdrop-blur-sm text-gray-900 hover:bg-white/90 transition-all shadow hover:shadow-lg hover:scale-[1.02]",
+        glass: "glass bg-white/70 text-foreground shadow-glass backdrop-blur-sm hover:bg-white/90 hover:shadow-lg hover:scale-[1.02]",
+        "glass-primary": "glass bg-primary/70 backdrop-blur-sm text-primary-foreground shadow-glass hover:bg-primary/90 hover:shadow-lg hover:scale-[1.02]",
+        
         // Admin specific buttons
-        admin: "bg-accent text-accent-foreground hover:bg-accent/90 transition-all hover:shadow-lg hover:scale-[1.02]",
-        "admin-outline": "border border-accent bg-transparent text-accent-foreground hover:bg-accent/10 transition-all",
-        // Client specific buttons
-        client: "bg-[#84C21E] text-white hover:bg-[#67981A] transition-all hover:shadow-lg hover:scale-[1.02]",
-        "client-outline": "border border-[#84C21E] bg-transparent text-[#84C21E] hover:bg-[#F2FCE2] transition-all",
+        admin: "bg-admin-primary text-white shadow-soft hover:bg-admin-accent hover:shadow-admin-glow transition-all hover:scale-[1.02]",
+        "admin-outline": "border border-admin-primary bg-transparent text-admin-primary hover:bg-admin-primary/10 transition-all",
+        "admin-glass": "glass border-admin-100 bg-white/70 text-admin-primary shadow-glass backdrop-blur-sm hover:bg-white/90 hover:shadow-admin-glow hover:scale-[1.02]",
+        
         // Designer specific buttons
-        designer: "bg-[#3b5bdb] text-white hover:bg-[#364fc7] transition-all hover:shadow-lg hover:scale-[1.02]",
-        "designer-outline": "border border-[#3b5bdb] bg-transparent text-[#3b5bdb] hover:bg-[#edf2ff] transition-all",
+        designer: "bg-designer-primary text-white shadow-soft hover:bg-designer-accent hover:shadow-glow transition-all hover:scale-[1.02]",
+        "designer-outline": "border border-designer-primary bg-transparent text-designer-primary hover:bg-designer-primary/10 transition-all",
+        "designer-glass": "glass border-designer-100 bg-white/70 text-designer-primary shadow-glass backdrop-blur-sm hover:bg-white/90 hover:shadow-glow hover:scale-[1.02]",
+        
+        // Client specific buttons
+        client: "bg-client-primary text-white shadow-soft hover:bg-client-accent hover:shadow-client-glow transition-all hover:scale-[1.02]",
+        "client-outline": "border border-client-primary bg-transparent text-client-primary hover:bg-client-primary/10 transition-all",
+        "client-glass": "glass border-client-100 bg-white/70 text-client-primary shadow-glass backdrop-blur-sm hover:bg-white/90 hover:shadow-client-glow hover:scale-[1.02]",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        sm: "h-9 rounded-lg px-3",
+        lg: "h-11 rounded-xl px-8",
+        icon: "h-10 w-10 rounded-full",
       },
     },
     defaultVariants: {

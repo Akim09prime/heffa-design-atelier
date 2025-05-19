@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sidebar, 
@@ -71,33 +70,33 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
 
   return (
     <UiProvider>
-      <div className="flex w-full min-h-screen bg-admin-950 admin-theme">
+      <div className="flex w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 admin-theme">
         <SidebarProvider>
-          <Sidebar className="bg-[#131620] border-r border-[#2d3748] shadow-xl">
+          <Sidebar className="glass border-r border-white/20 shadow-lg backdrop-blur-md">
             <SidebarHeader>
-              <div className="flex items-center px-4 py-4 border-b border-[#2d3748]">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white mr-3 shadow-lg shadow-purple-500/20">
-                  <span className="font-playfair text-lg font-bold">H</span>
+              <div className="flex items-center px-4 py-4 border-b border-white/10">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent flex items-center justify-center text-white mr-3 shadow-admin-glow">
+                  <span className="font-poppins text-lg font-bold">H</span>
                 </div>
-                <span className="font-playfair text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-300">HeffaDesign</span>
+                <span className="font-poppins text-xl font-semibold admin-gradient-text">HeffaDesign</span>
               </div>
             </SidebarHeader>
             <SidebarContent>
               <div className="px-3 py-3">
-                <Badge className="bg-purple-900/50 text-purple-200 border border-purple-800/50 mb-3 px-3 py-1 uppercase text-xs font-medium tracking-wider">Admin Platform</Badge>
+                <Badge className="bg-admin-primary/20 text-admin-primary border border-admin-primary/30 mb-3 px-3 py-1 uppercase text-xs font-medium tracking-wider">Admin Platform</Badge>
               </div>
               <nav className="space-y-1 px-2">
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/dashboard", t('common.dashboard'))}
                 >
                   <Home size={18} />
-                  <span>{t('common.dashboard')}</span>
+                  <span className="font-medium">{t('common.dashboard')}</span>
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/materials-database", t('common.materials'))}
                 >
                   <Palette size={18} />
@@ -105,7 +104,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/accessories", t('common.accessories'))}
                 >
                   <Box size={18} />
@@ -113,7 +112,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/processing", t('common.processing'))}
                 >
                   <Layers size={18} />
@@ -121,7 +120,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/users", t('common.users'))}
                 >
                   <Users size={18} />
@@ -129,7 +128,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/reports", t('common.reports'))}
                 >
                   <FileSpreadsheet size={18} />
@@ -137,7 +136,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/import-data", t('common.importData'))}
                 >
                   <Upload size={18} />
@@ -145,7 +144,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/analytics", t('common.analytics'))}
                 >
                   <BarChart size={18} />
@@ -153,7 +152,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={() => handleNavigation("/admin/settings", t('common.settings'))}
                 >
                   <Settings size={18} />
@@ -161,32 +160,32 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start gap-3 text-gray-300 hover:bg-[#272d3d] hover:text-purple-300"
+                  className="w-full justify-start gap-3 text-gray-700 hover:bg-admin-primary/10 hover:text-admin-primary"
                   onClick={handleLanguageToggle}
                 >
                   <Globe size={18} />
-                  <span>{language === 'en' ? 'English' : 'Română'}</span>
+                  <span className="font-medium">{language === 'en' ? 'English' : 'Română'}</span>
                 </Button>
               </nav>
             </SidebarContent>
             <SidebarFooter>
-              <div className="px-4 py-4 border-t border-[#2d3748]">
+              <div className="px-4 py-4 border-t border-white/10">
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border border-purple-900/50 bg-admin-700">
+                  <Avatar className="h-10 w-10 border-2 border-admin-primary/20 ring-2 ring-white/50">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-700 to-indigo-700">
+                    <AvatarFallback className="bg-gradient-to-br from-admin-primary to-admin-accent text-white">
                       <User size={16} />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-white">{user?.name}</p>
-                    <p className="text-xs text-gray-400">{user?.email}</p>
+                    <p className="text-sm font-medium">{user?.name}</p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon"
                     onClick={handleLogout} 
-                    className="text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded-full"
+                    className="text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-full"
                   >
                     <LogOut size={18} />
                   </Button>
@@ -194,7 +193,7 @@ const AdminLayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
             </SidebarFooter>
           </Sidebar>
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100">
             {children}
           </main>
         </SidebarProvider>

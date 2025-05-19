@@ -45,33 +45,33 @@ export const SceneContainer: React.FC<SceneContainerProps> = ({
     <div ref={containerRef} className="scene-container w-full h-full relative">
       {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-100/80 flex items-center justify-center z-10 backdrop-blur-sm">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-[#6A4B31] border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="mt-4 text-[#6A4B31] font-medium">Se încarcă scena 3D...</p>
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-10">
+          <div className="text-center glass rounded-2xl p-6 shadow-glow">
+            <div className="w-12 h-12 border-4 border-designer-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="mt-4 text-designer-primary font-medium">Se încarcă scena 3D...</p>
           </div>
         </div>
       )}
       
       {/* Info overlay */}
       <div className="absolute top-4 left-4 right-4 z-10 flex justify-between pointer-events-none">
-        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md text-sm text-gray-700 pointer-events-auto">
+        <div className="glass bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-soft text-sm text-gray-700 pointer-events-auto">
           <p><strong>Module active:</strong> {modules.length}</p>
         </div>
-        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md text-sm text-gray-700 pointer-events-auto">
+        <div className="glass bg-white/70 backdrop-blur-sm px-4 py-2 rounded-xl shadow-soft text-sm text-gray-700 pointer-events-auto">
           <p><strong>Dimensiuni:</strong> {roomLength}m × {roomWidth}m × {roomHeight}m</p>
         </div>
       </div>
       
       {/* Camera controls overlay */}
       <div className="absolute bottom-4 right-4 z-10">
-        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-lg shadow-md flex gap-2 pointer-events-auto">
+        <div className="glass bg-white/70 backdrop-blur-sm p-2 rounded-xl shadow-soft flex gap-2 pointer-events-auto">
           <button 
             onClick={() => setCameraPosition([4, 3, 4])} 
-            className="p-1 hover:bg-gray-200 rounded"
+            className="p-2 hover:bg-designer-primary/10 rounded-lg transition-all"
             title="Vedere izometrică"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
               <circle cx="12" cy="12" r="10"/>
               <path d="m8 12 4-4 4 4"/>
               <path d="m16 16-4-4-4 4"/>
@@ -79,30 +79,30 @@ export const SceneContainer: React.FC<SceneContainerProps> = ({
           </button>
           <button 
             onClick={() => setCameraPosition([0, 3, 8])} 
-            className="p-1 hover:bg-gray-200 rounded"
+            className="p-2 hover:bg-designer-primary/10 rounded-lg transition-all"
             title="Vedere din față"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
               <path d="m7 7 10 10"/>
               <path d="M17 7v10H7"/>
             </svg>
           </button>
           <button 
             onClick={() => setCameraPosition([8, 3, 0])} 
-            className="p-1 hover:bg-gray-200 rounded"
+            className="p-2 hover:bg-designer-primary/10 rounded-lg transition-all"
             title="Vedere laterală"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
               <path d="m7 7 10 10"/>
               <path d="M7 17V7h10"/>
             </svg>
           </button>
           <button 
             onClick={() => setCameraPosition([0, 8, 0])} 
-            className="p-1 hover:bg-gray-200 rounded"
+            className="p-2 hover:bg-designer-primary/10 rounded-lg transition-all"
             title="Vedere de sus"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700">
               <circle cx="12" cy="12" r="10"/>
               <path d="m16 12-4-4-4 4"/>
               <path d="M12 16V8"/>

@@ -87,10 +87,10 @@ const ProjectEditorContent = () => {
     <>
       {/* Global loading overlay */}
       {(isLoading('save-project') || isLoading('export-project')) && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center space-y-3">
-            <Loader className="h-8 w-8 animate-spin text-heffa-600" />
-            <p className="text-sm">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+          <div className="glass p-6 rounded-2xl shadow-lg flex flex-col items-center space-y-3">
+            <Loader className="h-8 w-8 animate-spin text-designer-primary" />
+            <p className="text-sm font-medium">
               {isLoading('save-project') ? 'Saving your project...' : 'Exporting your project...'}
             </p>
           </div>
@@ -112,11 +112,11 @@ const ProjectEditorContent = () => {
         <div className="flex-1 flex overflow-hidden">
           {/* Left Sidebar - Module Library */}
           {showLibrary && (
-            <div className="w-64 border-r bg-white flex flex-col">
+            <div className="w-64 glass border-r border-white/20 shadow-lg backdrop-blur-md flex flex-col">
               <Tabs defaultValue="library" className="flex-1 flex flex-col">
-                <TabsList className="w-full">
-                  <TabsTrigger value="library" className="flex-1">Library</TabsTrigger>
-                  <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
+                <TabsList className="w-full bg-transparent border-b border-white/10">
+                  <TabsTrigger value="library" className="flex-1 data-[state=active]:bg-designer-primary/20 data-[state=active]:text-designer-primary">Library</TabsTrigger>
+                  <TabsTrigger value="export" className="flex-1 data-[state=active]:bg-designer-primary/20 data-[state=active]:text-designer-primary">Export</TabsTrigger>
                 </TabsList>
                 <TabsContent value="library" className="flex-1 p-0 m-0 overflow-auto">
                   <ModuleLibrary
@@ -137,16 +137,18 @@ const ProjectEditorContent = () => {
           )}
 
           {/* 3D Scene */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <ProjectSceneView
-              modules={project.modules || []}
-              roomWidth={(project.dimensions?.width || 4000) / 1000} // Convert to meters
-              roomLength={(project.dimensions?.length || 3000) / 1000} // Convert to meters
-              roomHeight={(project.dimensions?.height || 2400) / 1000} // Convert to meters
-              onSelectModule={setSelectedModuleId}
-              selectedModuleId={selectedModuleId}
-              useAdvanced3D={true}
-            />
+          <div className="flex-1 flex flex-col overflow-hidden p-4">
+            <div className="rounded-2xl overflow-hidden shadow-lg flex-1 glass-dark border border-gray-100/10 backdrop-blur-md">
+              <ProjectSceneView
+                modules={project.modules || []}
+                roomWidth={(project.dimensions?.width || 4000) / 1000} // Convert to meters
+                roomLength={(project.dimensions?.length || 3000) / 1000} // Convert to meters
+                roomHeight={(project.dimensions?.height || 2400) / 1000} // Convert to meters
+                onSelectModule={setSelectedModuleId}
+                selectedModuleId={selectedModuleId}
+                useAdvanced3D={true}
+              />
+            </div>
           </div>
 
           {/* Right Sidebar - Module Properties */}
@@ -162,7 +164,7 @@ const ProjectEditorContent = () => {
         
         {/* Export Dialog */}
         <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-          <DialogContent className="sm:max-w-2xl">
+          <DialogContent className="glass sm:max-w-2xl border-white/20 shadow-lg backdrop-blur-md">
             <ExportOptions 
               project={project} 
               onClose={() => setShowExportDialog(false)} 

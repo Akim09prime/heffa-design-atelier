@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -31,49 +31,73 @@
   --radius: 0.75rem;
 }
 
-/* Admin dark theme */
+/* Admin theme - Professional royal blue */
 .admin-theme {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
-  --card: 223 47% 14%;
-  --card-foreground: 210 40% 98%;
-  --popover: 223 47% 14%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 249 83% 80%;
-  --primary-foreground: 222 47% 11%;
-  --secondary: 223 47% 20%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 223 47% 20%;
-  --muted-foreground: 215 16% 70%;
-  --accent: 249 83% 70%;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 215 25% 27%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 221 90% 40%;
   --accent-foreground: 210 40% 98%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
-  --border: 223 47% 20%;
-  --input: 223 47% 20%;
-  --ring: 249 83% 70%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
 }
 
-/* Client theme */
+/* Client theme - Zen teal comfort */
 .client-theme {
-  --primary: 152 76% 60%;
+  --background: 180 52% 94%;
+  --foreground: 215 25% 27%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+  --primary: 173 83% 31%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 152 76% 96%;
-  --secondary-foreground: 222 47% 11%;
-  --accent: 187 75% 64%;
-  --accent-foreground: 222 47% 11%;
-  --ring: 152 76% 60%;
+  --secondary: 180 52% 94%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 215 19% 35%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 173 58% 39%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 173 31% 84%;
+  --input: 173 31% 84%;
+  --ring: 173 83% 31%;
 }
 
-/* Designer theme */
+/* Designer theme - Electric blue creativity */
 .designer-theme {
-  --primary: 238 83% 67%;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 192 80% 60%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 238 83% 97%;
+  --secondary: 210 40% 96%;
   --secondary-foreground: 222 47% 11%;
-  --accent: 262 83% 58%;
+  --muted: 215 25% 27%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 230 83% 67%;
   --accent-foreground: 210 40% 98%;
-  --ring: 238 83% 67%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 192 80% 60%;
 }
 
 @layer base {
@@ -84,48 +108,97 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins tracking-wide;
+  }
 
+  /* Glass UI components */
+  .glass {
+    @apply bg-white/70 backdrop-blur-sm border border-white/20 shadow-glass rounded-2xl;
+  }
+  
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-sm border border-white/10 shadow-glass rounded-2xl;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/30 shadow-glass rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Admin styles */
+  .admin-card {
+    @apply glass border-admin-100 shadow-soft;
+  }
+  
+  .admin-button {
+    @apply bg-admin-primary text-white hover:bg-admin-accent hover:shadow-admin-glow transition-all duration-300;
+  }
+  
+  /* Designer styles */
+  .designer-card {
+    @apply glass border-designer-100 shadow-soft;
+  }
+  
+  .designer-button {
+    @apply bg-designer-primary text-white hover:bg-designer-accent hover:shadow-glow transition-all duration-300;
+  }
+  
+  /* Client styles */
+  .client-card {
+    @apply glass border-client-100 shadow-soft;
+  }
+  
+  .client-button {
+    @apply bg-client-primary text-white hover:bg-client-accent hover:shadow-client-glow transition-all duration-300;
+  }
+
+  /* Neumorphic effects */
+  .neumorphic {
+    @apply bg-white rounded-2xl shadow-neumorphic transition-all duration-300;
+  }
+  
+  .neumorphic:hover {
+    @apply shadow-none;
+  }
+
+  /* Gradient text */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60;
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+  
+  .admin-gradient-text {
+    @apply gradient-text from-admin-primary to-admin-accent;
+  }
+  
+  .designer-gradient-text {
+    @apply gradient-text from-designer-primary to-designer-accent;
+  }
+  
+  .client-gradient-text {
+    @apply gradient-text from-client-primary to-client-accent;
   }
 
-  /* Modern button styles */
+  /* Button effects */
   .button-modern {
-    @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:transition-all before:duration-300;
+    @apply relative overflow-hidden rounded-xl transition-all duration-300;
+  }
+  
+  .button-glow {
+    @apply transition-all duration-300;
+  }
+  
+  .button-glow:hover {
+    @apply transform scale-105;
   }
 
-  .button-modern::before {
-    content: '';
-    @apply -left-full -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent;
-  }
-
-  .button-modern:hover::before {
-    @apply left-[150%] transition-all duration-1000;
-  }
-
-  /* Card hover effect */
+  /* Card hover effects */
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
   }
   
-  /* Input focus animation */
-  .input-focus-effect {
-    @apply transition-all duration-300 border-b-2 border-transparent focus:border-primary;
-  }
-
-  /* Button ripple effect */
-  @keyframes ripple {
-    to {
-      transform: scale(4);
-      opacity: 0;
-    }
-  }
-  
-  .ripple {
-    position: absolute;
-    border-radius: 50%;
-    transform: scale(0);
-    animation: ripple 0.6s linear;
-    background-color: rgba(255, 255, 255, 0.3);
+  /* Input styling */
+  .input-glass {
+    @apply bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl focus:ring-2 focus:ring-primary/50 transition-all duration-300;
   }
 }

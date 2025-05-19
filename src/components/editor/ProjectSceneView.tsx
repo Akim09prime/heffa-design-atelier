@@ -27,26 +27,24 @@ export const ProjectSceneView = ({
   const { user } = useAuth();
   
   return (
-    <Card className="m-4 flex-1 shadow-md border-gray-200 overflow-hidden">
-      <CardContent className="p-0 h-full">
-        {useAdvanced3D ? (
-          <ThreeDRoomCanvas 
-            userId={user?.id || 'demoUser'} 
-            className="h-full"
-          />
-        ) : (
-          <SceneContainer
-            modules={modules}
-            roomWidth={roomWidth}
-            roomLength={roomLength}
-            roomHeight={roomHeight}
-            showGrid={true}
-            enableOrbitControls={true}
-            onSelectModule={onSelectModule}
-            selectedModuleId={selectedModuleId}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <div className="h-full w-full relative">
+      {useAdvanced3D ? (
+        <ThreeDRoomCanvas 
+          userId={user?.id || 'demoUser'} 
+          className="h-full w-full"
+        />
+      ) : (
+        <SceneContainer
+          modules={modules}
+          roomWidth={roomWidth}
+          roomLength={roomLength}
+          roomHeight={roomHeight}
+          showGrid={true}
+          enableOrbitControls={true}
+          onSelectModule={onSelectModule}
+          selectedModuleId={selectedModuleId}
+        />
+      )}
+    </div>
   );
 };

@@ -95,8 +95,8 @@ const NewProject = () => {
   return (
     <ClientLayout>
       <div className="p-6">
-        <h1 className="text-3xl font-medium mb-6">Create New Project</h1>
-        <Card>
+        <h1 className="client-header mb-6">Create New Project</h1>
+        <Card glass variant="client" className="shadow-soft">
           <CardContent className="p-6">
             <ProjectTypeSelector 
               onSelectType={handleCreateProject}
