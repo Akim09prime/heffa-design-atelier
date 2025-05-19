@@ -1,7 +1,10 @@
 
 /* Main styles entry point - imports all style files */
 
-// Base styles should be imported first 
+// All CSS files with @layer directives must be imported after the main index.css file
+// which contains the @tailwind directives
+
+// Base styles
 import './base.css';
 
 // Component styles
