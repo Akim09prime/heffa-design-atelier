@@ -1,4 +1,6 @@
 
+@tailwind components;
+
 /* Designer area - blue theme */
 .designer-area {
   --designer-primary: #3dd5f3;

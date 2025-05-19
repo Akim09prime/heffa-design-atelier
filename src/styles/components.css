@@ -1,4 +1,6 @@
 
+@tailwind components;
+
 @layer components {
   /* Form elements styling */
   .form-label {

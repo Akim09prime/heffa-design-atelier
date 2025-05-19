@@ -1,4 +1,6 @@
 
+@tailwind components;
+
 /* Client area - teal zen theme */
 .client-area {
   --client-primary: #0d9488;

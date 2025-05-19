@@ -1,4 +1,6 @@
 
+@tailwind components;
+
 /* Glassmorphism UI components */
 .glass-ui {
   background: rgba(255, 255, 255, 0.7);

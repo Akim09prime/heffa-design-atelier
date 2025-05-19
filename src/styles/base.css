@@ -1,4 +1,6 @@
 
+@tailwind base;
+
 /* Base styles for the application */
 @layer base {
   #root {
