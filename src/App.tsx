@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UiProvider } from './contexts/UiContext';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from './contexts/AuthContext';
@@ -48,8 +48,6 @@ import AdminImportData from './pages/admin/ImportData';
 import AdminAnalytics from './pages/admin/Analytics';
 import AdminSettings from './pages/admin/Settings';
 import AdminDashboard2 from './pages/admin/Dashboard';
-
-import './App.css';
 
 function App() {
   return (

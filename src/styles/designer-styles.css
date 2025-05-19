@@ -1,0 +1,64 @@
+
+/* Designer area - blue theme */
+.designer-area {
+  --designer-primary: #3dd5f3;
+  --designer-primary-light: #a5f3ff;
+  --designer-secondary: #edf2ff;
+  --designer-accent: #5c7cfa;
+}
+
+/* Designer theme - Electric blue creativity */
+.designer-theme {
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 192 80% 60%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 215 25% 27%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 230 83% 67%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 192 80% 60%;
+}
+
+/* Designer-specific components */
+.designer-card {
+  @apply glass border-designer-100 shadow-soft;
+}
+
+.designer-button {
+  @apply bg-designer-primary text-white hover:bg-designer-accent hover:shadow-glow transition-all duration-300;
+}
+
+.designer-header {
+  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
+}
+
+.designer-gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-designer-primary to-designer-accent;
+}
+
+.badge-designer {
+  @apply px-2 py-1 rounded-lg text-xs font-medium;
+  background-color: rgba(61, 213, 243, 0.1);
+  color: #3dd5f3;
+  border: 1px solid rgba(61, 213, 243, 0.3);
+}
+
+/* Glow effect for designer theme */
+.glow-hover {
+  transition: all 0.3s ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 15px rgba(61, 213, 243, 0.5);
+}

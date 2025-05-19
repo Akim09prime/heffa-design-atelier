@@ -1,0 +1,60 @@
+
+/* Client area - teal zen theme */
+.client-area {
+  --client-primary: #0d9488;
+  --client-primary-light: #14b8a6;
+  --client-secondary: #e0f2f1;
+  --client-accent: #0f766e;
+}
+
+/* Client theme - Zen teal comfort */
+.client-theme {
+  --background: 180 52% 94%;
+  --foreground: 215 25% 27%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+  --primary: 173 83% 31%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 180 52% 94%;
+  --secondary-foreground: 215 25% 27%;
+  --muted: 215 19% 35%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 173 58% 39%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 173 31% 84%;
+  --input: 173 31% 84%;
+  --ring: 173 83% 31%;
+}
+
+/* Client-specific components */
+.client-card {
+  @apply glass border-client-100 shadow-soft;
+}
+
+.client-button {
+  @apply bg-client-primary text-white hover:bg-client-accent hover:shadow-client-glow transition-all duration-300;
+}
+
+.client-header {
+  @apply text-3xl font-poppins font-semibold uppercase tracking-wide;
+}
+
+.client-gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-client-primary to-client-accent;
+}
+
+.badge-client {
+  @apply px-2 py-1 rounded-lg text-xs font-medium;
+  background-color: rgba(13, 148, 136, 0.1);
+  color: #0d9488;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+}
+
+/* Glow effect for client theme */
+.client-glow-hover:hover {
+  box-shadow: 0 0 15px rgba(13, 148, 136, 0.5);
+}
