@@ -119,12 +119,12 @@ const Dashboard = () => {
           <div className="flex gap-3">
             <Button 
               onClick={() => handleNavigation("/admin/reports/new", "Create Report")}
-              className="bg-blue-600 hover:bg-blue-700"
+              variant="admin"
             >
               <FileText size={18} className="mr-2" /> Generate Report
             </Button>
             <Button 
-              variant="outline" 
+              variant="admin-outline"
               onClick={() => handleNavigation("/admin/import-data", "Import Data")}
             >
               <Upload size={18} className="mr-2" /> Import Data
@@ -134,7 +134,7 @@ const Dashboard = () => {
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card variant="admin">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Total Users</CardTitle>
             </CardHeader>
@@ -146,7 +146,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card variant="admin">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Materials</CardTitle>
             </CardHeader>
@@ -158,7 +158,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card variant="admin">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Accessories</CardTitle>
             </CardHeader>
@@ -170,7 +170,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card variant="admin">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Projects</CardTitle>
             </CardHeader>
@@ -186,7 +186,7 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card variant="admin">
               <CardHeader>
                 <CardTitle>System Activity</CardTitle>
                 <CardDescription>Monthly data overview</CardDescription>
@@ -205,7 +205,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card variant="admin">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>Recently Added Materials</CardTitle>
@@ -246,6 +246,7 @@ const Dashboard = () => {
               <CardFooter className="border-t px-6 py-4">
                 <Button 
                   className="ml-auto"
+                  variant="admin"
                   onClick={() => handleNavigation("/admin/materials-database/new", "Add Material")}
                 >
                   <Plus size={16} className="mr-2" />
@@ -256,7 +257,7 @@ const Dashboard = () => {
           </div>
           
           <div className="space-y-6">
-            <Card>
+            <Card variant="admin">
               <CardHeader>
                 <CardTitle>System Alerts</CardTitle>
                 <CardDescription>Important notifications</CardDescription>
@@ -294,13 +295,13 @@ const Dashboard = () => {
               </CardFooter>
             </Card>
             
-            <Card>
+            <Card variant="admin">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-3">
                 <Button 
-                  variant="outline" 
+                  variant="admin-outline" 
                   className="w-full sm:w-auto flex-grow"
                   onClick={() => handleQuickAction("Import Materials")}
                 >
@@ -308,7 +309,7 @@ const Dashboard = () => {
                   Import Materials
                 </Button>
                 <Button 
-                  variant="outline"
+                  variant="admin-outline"
                   className="w-full sm:w-auto flex-grow"
                   onClick={() => handleQuickAction("Add User")}
                 >
@@ -316,7 +317,7 @@ const Dashboard = () => {
                   Add User
                 </Button>
                 <Button 
-                  variant="outline"
+                  variant="admin-outline"
                   className="w-full sm:w-auto flex-grow"
                   onClick={() => handleQuickAction("Add Accessory")}
                 >
@@ -324,7 +325,7 @@ const Dashboard = () => {
                   Add Accessory
                 </Button>
                 <Button 
-                  variant="outline"
+                  variant="admin-outline"
                   className="w-full sm:w-auto flex-grow"
                   onClick={() => handleQuickAction("Generate Report")}
                 >
