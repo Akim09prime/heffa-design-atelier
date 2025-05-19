@@ -1,4 +1,3 @@
-
 #root {
   width: 100%;
   height: 100%;
@@ -48,12 +47,18 @@ body {
   --designer-accent: #5c7cfa;
 }
 
-/* Admin area - dark theme with royal blue accents */
+/* Admin area - dark theme with purple accents */
 .admin-area {
-  --admin-primary: #2563eb;
-  --admin-primary-light: #3b82f6;
-  --admin-secondary: #f7fafc;
-  --admin-accent: #1e40af;
+  --admin-primary: #9b87f5;
+  --admin-primary-light: #b3a3f7;
+  --admin-secondary: #1A1F2C;
+  --admin-accent: #7E69AB;
+  --admin-text: #FFFFFF;
+  --admin-text-secondary: #c8c8c9;
+  --admin-text-muted: #8E9196;
+  --admin-border: #2d3748;
+  --admin-bg-dark: #131620;
+  --admin-bg-card: #1A1F2C;
 }
 
 /* Client area - teal zen theme */
@@ -120,9 +125,9 @@ body {
   @apply text-3xl font-poppins font-semibold text-client-900 uppercase tracking-wide;
 }
 
-/* Dashboard cards styling */
-.dashboard-card {
-  @apply rounded-2xl border border-white/20 shadow-soft transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-white/80 backdrop-blur-sm;
+/* Dashboard cards styling - Updated for dark theme */
+.dashboard-card-dark {
+  @apply rounded-2xl border border-admin-border-light shadow-soft transition-all duration-300 hover:shadow-md hover:-translate-y-1 bg-admin-bg-secondary;
 }
 
 /* Badge styling updates */
@@ -138,29 +143,29 @@ body {
   @apply bg-client-primary/10 text-client-primary border border-client-primary/30 px-2 py-1 rounded-lg text-xs font-medium;
 }
 
-/* Table styling enhancements */
-.table-modern {
+/* Table styling enhancements - Updated for dark theme */
+.table-modern-dark {
   @apply w-full rounded-xl overflow-hidden;
 }
 
-.table-modern thead {
-  @apply bg-secondary text-secondary-foreground;
+.table-modern-dark thead {
+  @apply bg-admin-bg-tertiary text-admin-text-secondary;
 }
 
-.table-modern thead th {
+.table-modern-dark thead th {
   @apply px-6 py-3 text-left text-xs font-medium uppercase tracking-wider;
 }
 
-.table-modern tbody {
-  @apply divide-y divide-white/10;
+.table-modern-dark tbody {
+  @apply divide-y divide-admin-border-light;
 }
 
-.table-modern tbody tr {
-  @apply hover:bg-white/10 transition-colors;
+.table-modern-dark tbody tr {
+  @apply hover:bg-admin-bg-highlight transition-colors;
 }
 
-.table-modern td {
-  @apply px-6 py-4 whitespace-nowrap text-sm;
+.table-modern-dark td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary;
 }
 
 /* Form elements styling */
@@ -204,16 +209,10 @@ body {
   @apply visible opacity-100;
 }
 
-/* Neumorphic effects */
-.neumorphic-light {
-  background: #f0f0f0;
-  box-shadow:  5px 5px 10px #d9d9d9, -5px -5px 10px #ffffff;
-  border-radius: 1rem;
-}
-
+/* Neumorphic effects - Updated for dark theme */
 .neumorphic-dark {
-  background: #1a1f2c;
-  box-shadow:  5px 5px 10px #161b26, -5px -5px 10px #1e2332;
+  background: #1A1F2C;
+  box-shadow: 5px 5px 10px #161b26, -5px -5px 10px #1e2332;
   border-radius: 1rem;
 }
 

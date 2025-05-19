@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { AuthProvider } from '../contexts/AuthContext';
 import Dashboard from './admin/Dashboard';
 import { TranslationProvider } from '@/contexts/TranslationContext';
@@ -11,7 +10,7 @@ const AdminDashboard = () => {
     <AuthProvider>
       <TranslationProvider>
         <UiProvider>
-          <div className="admin-theme w-full">
+          <div className="admin-theme min-h-screen">
             <Dashboard />
           </div>
         </UiProvider>

@@ -3,13 +3,14 @@ import React from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowRight, Plus, Upload, Users, Database, Box, FileText } from 'lucide-react';
+import { Search, ArrowRight, Plus, Upload, Users, Database, Box, FileText, BarChart3, AlertTriangle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 // Sample data for activity chart
 const activityData = [
@@ -113,18 +114,19 @@ const Dashboard = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-8">
           <div>
-            <h1 className="text-3xl font-medium">Admin Dashboard</h1>
-            <p className="text-muted-foreground">System overview and management</p>
+            <h1 className="text-3xl font-medium text-white">Admin Dashboard</h1>
+            <p className="text-admin-text-secondary">System overview and management</p>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={() => handleNavigation("/admin/reports/new", "Create Report")}
-              variant="admin"
+              className="bg-admin-accent-purple hover:bg-admin-accent-purple/80 text-white"
             >
               <FileText size={18} className="mr-2" /> Generate Report
             </Button>
             <Button 
-              variant="admin-outline"
+              variant="outline"
+              className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight hover:text-admin-text-primary"
               onClick={() => handleNavigation("/admin/import-data", "Import Data")}
             >
               <Upload size={18} className="mr-2" /> Import Data
@@ -134,50 +136,50 @@ const Dashboard = () => {
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card variant="admin">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Total Users</CardTitle>
+              <CardTitle className="text-lg font-medium text-white">Total Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">248</div>
-              <p className="text-sm text-green-600 font-medium">
-                +12% <span className="text-muted-foreground font-normal">vs. last month</span>
+              <div className="text-3xl font-bold text-white">248</div>
+              <p className="text-sm text-admin-status-success font-medium">
+                +12% <span className="text-admin-text-secondary font-normal">vs. last month</span>
               </p>
             </CardContent>
           </Card>
           
-          <Card variant="admin">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Materials</CardTitle>
+              <CardTitle className="text-lg font-medium text-white">Materials</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">542</div>
-              <p className="text-sm text-green-600 font-medium">
-                +8 <span className="text-muted-foreground font-normal">new items added</span>
+              <div className="text-3xl font-bold text-white">542</div>
+              <p className="text-sm text-admin-status-success font-medium">
+                +8 <span className="text-admin-text-secondary font-normal">new items added</span>
               </p>
             </CardContent>
           </Card>
           
-          <Card variant="admin">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Accessories</CardTitle>
+              <CardTitle className="text-lg font-medium text-white">Accessories</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">324</div>
-              <p className="text-sm text-green-600 font-medium">
-                +4% <span className="text-muted-foreground font-normal">inventory value</span>
+              <div className="text-3xl font-bold text-white">324</div>
+              <p className="text-sm text-admin-status-success font-medium">
+                +4% <span className="text-admin-text-secondary font-normal">inventory value</span>
               </p>
             </CardContent>
           </Card>
           
-          <Card variant="admin">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Projects</CardTitle>
+              <CardTitle className="text-lg font-medium text-white">Projects</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">157</div>
-              <p className="text-sm text-blue-600 font-medium">
-                +24 <span className="text-muted-foreground font-normal">active projects</span>
+              <div className="text-3xl font-bold text-white">157</div>
+              <p className="text-sm text-admin-status-info font-medium">
+                +24 <span className="text-admin-text-secondary font-normal">active projects</span>
               </p>
             </CardContent>
           </Card>
@@ -186,34 +188,41 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card variant="admin">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader>
-                <CardTitle>System Activity</CardTitle>
-                <CardDescription>Monthly data overview</CardDescription>
+                <CardTitle className="text-white">System Activity</CardTitle>
+                <CardDescription className="text-admin-text-muted">Monthly data overview</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={activityData}>
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="projects" fill="#4f46e5" name="Projects" />
-                    <Bar dataKey="materials" fill="#06b6d4" name="Materials" />
-                    <Bar dataKey="accessories" fill="#8b5cf6" name="Accessories" />
+                    <XAxis dataKey="month" stroke="#8E9196" />
+                    <YAxis stroke="#8E9196" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1A1F2C', 
+                        borderColor: '#2d3748',
+                        color: '#FFFFFF' 
+                      }} 
+                    />
+                    <Bar dataKey="projects" fill="#8B5CF6" name="Projects" />
+                    <Bar dataKey="materials" fill="#0EA5E9" name="Materials" />
+                    <Bar dataKey="accessories" fill="#D946EF" name="Accessories" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
             
-            <Card variant="admin">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Recently Added Materials</CardTitle>
-                  <CardDescription>Latest additions to your materials database</CardDescription>
+                  <CardTitle className="text-white">Recently Added Materials</CardTitle>
+                  <CardDescription className="text-admin-text-muted">Latest additions to your materials database</CardDescription>
                 </div>
                 <Button 
                   variant="link" 
                   size="sm"
+                  className="text-admin-text-link"
                   onClick={() => handleNavigation("/admin/materials-database", "Materials Database")}
                 >
                   View All
@@ -223,30 +232,29 @@ const Dashboard = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Code</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Price</th>
+                      <tr className="border-b border-admin-border-mid">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Code</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Type</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Price</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-admin-border-light">
                       {materials.map((material, i) => (
-                        <tr key={i} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{material.code}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{material.name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{material.type}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{material.price}</td>
+                        <tr key={i} className="hover:bg-admin-bg-highlight">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{material.code}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.type}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.price}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4">
+              <CardFooter className="border-t border-admin-border-mid px-6 py-4">
                 <Button 
-                  className="ml-auto"
-                  variant="admin"
+                  className="ml-auto bg-admin-accent-purple hover:bg-admin-accent-purple/80 text-white"
                   onClick={() => handleNavigation("/admin/materials-database/new", "Add Material")}
                 >
                   <Plus size={16} className="mr-2" />
@@ -257,37 +265,46 @@ const Dashboard = () => {
           </div>
           
           <div className="space-y-6">
-            <Card variant="admin">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader>
-                <CardTitle>System Alerts</CardTitle>
-                <CardDescription>Important notifications</CardDescription>
+                <CardTitle className="text-white">System Alerts</CardTitle>
+                <CardDescription className="text-admin-text-muted">Important notifications</CardDescription>
               </CardHeader>
               <CardContent className="px-0 py-0">
-                <ul className="divide-y divide-gray-200">
+                <ul className="divide-y divide-admin-border-light">
                   {systemAlerts.map((alert) => (
-                    <li key={alert.id} className="px-6 py-4 hover:bg-gray-50">
+                    <li key={alert.id} className="px-6 py-4 hover:bg-admin-bg-highlight">
                       <div className="flex flex-col space-y-1">
                         <div className="flex justify-between items-center">
-                          <p className="font-medium">
-                            {alert.title}
+                          <p className="font-medium text-white flex items-center">
                             {alert.severity === 'error' && (
-                              <Badge className="ml-2 bg-red-500 text-white">Error</Badge>
+                              <AlertTriangle size={16} className="text-admin-status-error mr-2" />
                             )}
                             {alert.severity === 'warning' && (
-                              <Badge className="ml-2 bg-amber-500 text-white">Warning</Badge>
+                              <AlertTriangle size={16} className="text-admin-status-warning mr-2" />
+                            )}
+                            {alert.severity === 'info' && (
+                              <AlertTriangle size={16} className="text-admin-status-info mr-2" />
+                            )}
+                            {alert.title}
+                            {alert.severity === 'error' && (
+                              <Badge className="ml-2 bg-admin-status-error text-white">Error</Badge>
+                            )}
+                            {alert.severity === 'warning' && (
+                              <Badge className="ml-2 bg-admin-status-warning text-white">Warning</Badge>
                             )}
                           </p>
                         </div>
-                        <p className="text-sm text-muted-foreground">{alert.description}</p>
+                        <p className="text-sm text-admin-text-muted">{alert.description}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4">
+              <CardFooter className="border-t border-admin-border-mid px-6 py-4">
                 <Button 
                   variant="link" 
-                  className="ml-auto"
+                  className="ml-auto text-admin-text-link"
                   onClick={() => handleNavigation("/admin/alerts", "All Alerts")}
                 >
                   View All Alerts
@@ -295,38 +312,34 @@ const Dashboard = () => {
               </CardFooter>
             </Card>
             
-            <Card variant="admin">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle className="text-white">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-3">
                 <Button 
-                  variant="admin-outline" 
-                  className="w-full sm:w-auto flex-grow"
+                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
                   onClick={() => handleQuickAction("Import Materials")}
                 >
                   <Database size={16} className="mr-2" />
                   Import Materials
                 </Button>
                 <Button 
-                  variant="admin-outline"
-                  className="w-full sm:w-auto flex-grow"
+                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
                   onClick={() => handleQuickAction("Add User")}
                 >
                   <Users size={16} className="mr-2" />
                   Add User
                 </Button>
                 <Button 
-                  variant="admin-outline"
-                  className="w-full sm:w-auto flex-grow"
+                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
                   onClick={() => handleQuickAction("Add Accessory")}
                 >
                   <Box size={16} className="mr-2" />
                   Add Accessory
                 </Button>
                 <Button 
-                  variant="admin-outline"
-                  className="w-full sm:w-auto flex-grow"
+                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
                   onClick={() => handleQuickAction("Generate Report")}
                 >
                   <FileText size={16} className="mr-2" />

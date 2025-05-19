@@ -19,7 +19,7 @@ export const adminThemeColors = {
   // Button colors
   button: {
     primary: {
-      background: '#8B5CF6',
+      background: '#9b87f5',
       hover: '#7E69AB',
       text: '#FFFFFF',
     },
@@ -53,7 +53,7 @@ export const adminThemeColors = {
   // Accent colors
   accent: {
     blue: '#0EA5E9',
-    purple: '#8B5CF6',
+    purple: '#9b87f5',
     pink: '#D946EF',
     orange: '#F97316',
     green: '#10B981',
@@ -63,7 +63,7 @@ export const adminThemeColors = {
   gradient: {
     primary: 'linear-gradient(to right, #9b87f5, #7E69AB)',
     secondary: 'linear-gradient(to right, #0EA5E9, #3B82F6)',
-    accent: 'linear-gradient(to right, #D946EF, #8B5CF6)',
+    accent: 'linear-gradient(to right, #D946EF, #9b87f5)',
   }
 };
 
@@ -93,6 +93,9 @@ export const createAdminThemeClass = () => {
       '--admin-gradient-primary': adminThemeColors.gradient.primary,
       '--admin-gradient-secondary': adminThemeColors.gradient.secondary,
       '--admin-gradient-accent': adminThemeColors.gradient.accent,
+      
+      'background-color': adminThemeColors.background.primary,
+      'color': adminThemeColors.text.primary,
     }
   };
 };
