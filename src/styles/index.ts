@@ -1,13 +1,9 @@
 
 /* Main styles entry point - imports all style files */
 
-// Import Tailwind base directives first
-import './base.css';
-
 // Import component styles
+import './base.css';
 import './components.css';
-
-// Import effect styles
 import './glassmorphism.css';
 import './animations.css';
 
