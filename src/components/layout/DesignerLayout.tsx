@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Sidebar, 
@@ -54,7 +53,9 @@ const DesignerLayoutContent: React.FC<DesignerLayoutProps> = ({ children }) => {
     changeLanguage(newLanguage);
     toast({
       title: t('settings.languageChanged'),
-      description: t('settings.languageSetTo'),
+      description: language === 'en' 
+        ? t('settings.languageSetTo.ro') 
+        : t('settings.languageSetTo.en'),
     });
   };
 
