@@ -1,14 +1,17 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-// First import the main CSS file containing Tailwind directives
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
 import './index.css'
-// Then import additional style files
-import './styles/index.ts'
+import './styles/index'
+import { Toaster } from './components/ui/toaster'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+      <Toaster />
+    </BrowserRouter>
   </React.StrictMode>,
 )

@@ -29,4 +29,47 @@
   --input: 214 32% 91%;
   --ring: 221 83% 53%;
   --radius: 0.75rem;
+
+  /* Admin-specific theme variables */
+  --admin-primary: #38bdf8;
+  --admin-primary-light: #7dd3fc;
+  --admin-secondary: #1e293b;
+  --admin-accent: #0ea5e9;
+  --admin-text: #f8fafc;
+  --admin-text-secondary: #cbd5e1;
+  --admin-text-muted: #94a3b8;
+  --admin-border: #334155;
+  --admin-bg-dark: #0f172a;
+  --admin-bg-card: #1e293b;
+  
+  /* Admin theme colors */
+  --admin-bg-primary: #0f172a;
+  --admin-bg-secondary: #1e293b;
+  --admin-bg-tertiary: #243044;
+  --admin-bg-highlight: #2a3a53;
+  --admin-text-primary: #f8fafc;
+  --admin-text-secondary: #cbd5e1;
+  --admin-text-muted: #94a3b8;
+  --admin-text-link: #60a5fa;
+  --admin-border-light: #334155;
+  --admin-border-mid: #1e293b;
+  --admin-accent-blue: #0ea5e9;
+  --admin-accent-purple: #8b5cf6;
+  --admin-accent-pink: #f472b6;
+  --admin-status-success: #10b981;
+  --admin-status-warning: #f59e0b;
+  --admin-status-error: #ef4444;
+  --admin-status-info: #3b82f6;
+
+  /* Designer theme colors */
+  --designer-primary: #3dd5f3;
+  --designer-primary-light: #a5f3ff;
+  --designer-secondary: #edf2ff;
+  --designer-accent: #5c7cfa;
+  
+  /* Client theme colors */
+  --client-primary: #0d9488;
+  --client-primary-light: #14b8a6;
+  --client-secondary: #e0f2f1;
+  --client-accent: #0f766e;
 }

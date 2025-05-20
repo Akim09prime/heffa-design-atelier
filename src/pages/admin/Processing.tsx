@@ -1,463 +1,505 @@
 
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Save, Edit, Trash, AlertTriangle } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { 
+  Scissors, Box, Router, Palette, Mail, HelpCircle, Search, 
+  Sliders, Download, Clock, Settings, ChevronDown, Filter, Plus 
+} from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { MaterialType, ProcessingType, ComboRule } from '@/types';
-import { ComboRulesEditor } from '@/components/processing/ComboRulesEditor';
-import { comboRules } from '@/services/comboRulesService';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ProcessingSectionCard } from '@/components/processing/ProcessingSectionCard';
+import { ProcessingRulesTable } from '@/components/processing/ProcessingRulesTable';
+import { ProcessingStatusTable } from '@/components/processing/ProcessingStatusTable';
+import { ProcessingGanttChart } from '@/components/processing/ProcessingGanttChart';
+import { useToast } from '@/hooks/use-toast';
 
-interface ProcessingOption {
-  id: string;
-  name: string;
-  type: ProcessingType;
-  pricePerUnit: number;
-  unit: string;
-  compatibleMaterials: MaterialType[];
-}
+// Sample data for processing sections
+const processingSections = [
+  {
+    id: 1,
+    name: 'Tăiere',
+    icon: Scissors,
+    machines: ['Felder Kappa 550', 'Holzmann FKS 305'],
+    activeJobs: 3,
+    pendingJobs: 5,
+    standardTime: 2.5, // min/mp
+    color: 'blue'
+  },
+  {
+    id: 2,
+    name: 'Cant',
+    icon: Box,
+    machines: ['Holz-Her Sprint 1327', 'Felder G 480'],
+    activeJobs: 1,
+    pendingJobs: 2,
+    standardTime: 1.8, // min/mp
+    color: 'green'
+  },
+  {
+    id: 3,
+    name: 'CNC',
+    icon: Router,
+    machines: ['BIESSE Rover K', 'SCM Tech Z5'],
+    activeJobs: 2,
+    pendingJobs: 4,
+    standardTime: 5.2, // min/mp
+    color: 'purple'
+  },
+  {
+    id: 4,
+    name: 'Vopsitorie',
+    icon: Palette,
+    machines: ['Cabină vopsit Wagner', 'Uscător UV'],
+    activeJobs: 0,
+    pendingJobs: 1,
+    standardTime: 15.0, // min/mp
+    color: 'amber'
+  },
+  {
+    id: 5,
+    name: 'Sticlă',
+    icon: Mail,
+    machines: ['Mașină tăiat sticlă', 'Mașină șlefuit'],
+    activeJobs: 1,
+    pendingJobs: 0,
+    standardTime: 8.5, // min/mp
+    color: 'cyan'
+  },
+];
+
+// Sample data for routing rules
+const routingRules = [
+  {
+    id: 1,
+    material: 'PAL',
+    thickness: '18mm',
+    condition: 'Standard',
+    route: ['Tăiere', 'Cant'],
+    isActive: true
+  },
+  {
+    id: 2,
+    material: 'MDF',
+    thickness: '18mm',
+    condition: 'Vopsit',
+    route: ['Tăiere', 'CNC', 'Vopsitorie'],
+    isActive: true
+  },
+  {
+    id: 3,
+    material: 'PAL',
+    thickness: '18mm',
+    condition: 'Cu frezare',
+    route: ['Tăiere', 'CNC', 'Cant'],
+    isActive: true
+  },
+  {
+    id: 4,
+    material: 'PFL',
+    thickness: '3mm',
+    condition: 'Standard',
+    route: ['Tăiere'],
+    isActive: false
+  },
+  {
+    id: 5,
+    material: 'Sticlă',
+    thickness: '6mm',
+    condition: 'Standard',
+    route: ['Sticlă'],
+    isActive: true
+  }
+];
+
+// Sample data for projects in production
+const productionProjects = [
+  {
+    id: 'PRJ-001',
+    name: 'Modern Kitchen Set',
+    client: 'John Smith',
+    status: 'În producție',
+    currentSection: 'Tăiere',
+    nextSection: 'Cant',
+    totalPieces: 32,
+    completedPieces: 12,
+    startDate: '2023-06-15',
+    estimatedCompletion: '2023-06-22'
+  },
+  {
+    id: 'PRJ-002',
+    name: 'Office Furniture Set',
+    client: 'Tech Solutions SRL',
+    status: 'În așteptare',
+    currentSection: '-',
+    nextSection: 'Tăiere',
+    totalPieces: 24,
+    completedPieces: 0,
+    startDate: '2023-06-20',
+    estimatedCompletion: '2023-06-28'
+  },
+  {
+    id: 'PRJ-003',
+    name: 'Living Room Remodel',
+    client: 'Elena Dumitru',
+    status: 'În producție',
+    currentSection: 'CNC',
+    nextSection: 'Vopsitorie',
+    totalPieces: 18,
+    completedPieces: 8,
+    startDate: '2023-06-10',
+    estimatedCompletion: '2023-06-18'
+  },
+  {
+    id: 'PRJ-004',
+    name: 'Master Bedroom Closets',
+    client: 'Daniel Popa',
+    status: 'Finalizat',
+    currentSection: 'Finalizat',
+    nextSection: '-',
+    totalPieces: 28,
+    completedPieces: 28,
+    startDate: '2023-05-28',
+    estimatedCompletion: '2023-06-08'
+  }
+];
 
 const Processing = () => {
-  const { toast } = useToast();
-  const [processingOptions, setProcessingOptions] = useState<ProcessingOption[]>([
-    { id: '1', name: 'CNC Classic', type: 'cnc_classic', pricePerUnit: 60, unit: 'm²', compatibleMaterials: ['MDF'] },
-    { id: '2', name: 'CNC Rifled', type: 'cnc_rifled', pricePerUnit: 68, unit: 'm²', compatibleMaterials: ['MDF'] },
-    { id: '3', name: 'Glass Cutting', type: 'glass_cut', pricePerUnit: 0, unit: 'pcs', compatibleMaterials: ['GLASS'] },
-    { id: '4', name: 'Glass Sandblasting', type: 'glass_sandblast', pricePerUnit: 18, unit: 'm²', compatibleMaterials: ['GLASS'] },
-    { id: '5', name: 'Glass Drilling', type: 'glass_drill', pricePerUnit: 5, unit: 'pcs', compatibleMaterials: ['GLASS'] },
-    { id: '6', name: 'Edge Banding', type: 'edge_banding', pricePerUnit: 3.5, unit: 'ml', compatibleMaterials: ['PAL', 'MDF-AGT'] },
-    { id: '7', name: 'Painting', type: 'painting', pricePerUnit: 40, unit: 'm²', compatibleMaterials: ['MDF'] },
-  ]);
-
-  const [managedComboRules, setManagedComboRules] = useState<ComboRule[]>(comboRules);
-
-  const [isAddProcessingOpen, setIsAddProcessingOpen] = useState(false);
-  const [isAddRuleOpen, setIsAddRuleOpen] = useState(false);
-  const [editingProcessing, setEditingProcessing] = useState<ProcessingOption | null>(null);
-  const [editingRule, setEditingRule] = useState<ComboRule | null>(null);
+  const [activeTab, setActiveTab] = useState('sections');
+  const [viewMode, setViewMode] = useState('table');
+  const [isRuleDialogOpen, setIsRuleDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [materialFilter, setMaterialFilter] = useState('all');
+  const { toast } = useToast();
 
-  const handleAddProcessing = () => {
-    setEditingProcessing(null);
-    setIsAddProcessingOpen(true);
-  };
-
-  const handleEditProcessing = (processing: ProcessingOption) => {
-    setEditingProcessing(processing);
-    setIsAddProcessingOpen(true);
-  };
-
-  const handleDeleteProcessing = (id: string) => {
-    setProcessingOptions(prev => prev.filter(p => p.id !== id));
-    toast({
-      title: "Processing Option Deleted",
-      description: "The processing option has been removed successfully.",
-    });
-  };
+  const filteredProjects = productionProjects.filter(project =>
+    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAddRule = () => {
-    setEditingRule(null);
-    setIsAddRuleOpen(true);
-  };
-
-  const handleEditRule = (rule: ComboRule) => {
-    setEditingRule(rule);
-    setIsAddRuleOpen(true);
-  };
-
-  const handleDeleteRule = (id: string) => {
-    setManagedComboRules(prev => prev.filter(r => r.id !== id));
     toast({
-      title: "Combo Rule Deleted",
-      description: "The combo rule has been removed successfully.",
+      title: "Regulă nouă adăugată",
+      description: "Regula a fost salvată cu succes.",
+    });
+    setIsRuleDialogOpen(false);
+  };
+
+  const handleToggleRule = (id: number, isActive: boolean) => {
+    toast({
+      title: isActive ? "Regulă activată" : "Regulă dezactivată",
+      description: `Regula ${id} a fost ${isActive ? 'activată' : 'dezactivată'} cu succes.`,
     });
   };
 
-  const handleToggleRule = (id: string) => {
-    setManagedComboRules(prev => prev.map(rule => {
-      if (rule.id === id) {
-        const newEnabled = !rule.enabled;
-        toast({
-          title: newEnabled ? "Rule Enabled" : "Rule Disabled",
-          description: `"${rule.name}" has been ${newEnabled ? 'enabled' : 'disabled'}.`,
-        });
-        return { ...rule, enabled: newEnabled };
-      }
-      return rule;
-    }));
-  };
-
-  const handleSaveProcessing = (processing: ProcessingOption) => {
-    if (editingProcessing) {
-      // Update existing processing option
-      setProcessingOptions(prev => prev.map(p => 
-        p.id === editingProcessing.id ? processing : p
-      ));
-      toast({
-        title: "Processing Option Updated",
-        description: `${processing.name} has been updated successfully.`,
-      });
-    } else {
-      // Add new processing option
-      setProcessingOptions(prev => [...prev, { ...processing, id: `${Date.now()}` }]);
-      toast({
-        title: "Processing Option Added",
-        description: `${processing.name} has been added successfully.`,
-      });
-    }
-    setIsAddProcessingOpen(false);
-  };
-
-  const handleSaveRule = (rule: ComboRule) => {
-    if (editingRule) {
-      // Update existing rule
-      setManagedComboRules(prev => prev.map(r => 
-        r.id === editingRule.id ? rule : r
-      ));
-    } else {
-      // Add new rule
-      setManagedComboRules(prev => [...prev, rule]);
-    }
-    setIsAddRuleOpen(false);
+  const handleExport = () => {
     toast({
-      title: editingRule ? "Rule Updated" : "Rule Added",
-      description: `${rule.name} has been ${editingRule ? 'updated' : 'added'} successfully.`,
+      title: "Export în curs",
+      description: "Se exportă datele în format CSV/Excel...",
     });
   };
-
-  const handleSaveChanges = () => {
-    toast({
-      title: "Changes Saved",
-      description: "Your processing options and rules have been updated.",
-    });
-  };
-
-  const filteredProcessingOptions = processingOptions.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const filteredComboRules = managedComboRules.filter(r => 
-    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <AdminLayout>
       <div className="p-6">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-6">
           <div>
-            <h1 className="text-3xl font-medium text-white">Processing Rules</h1>
-            <p className="text-gray-300">Configure material processing options and automation rules</p>
+            <h1 className="text-3xl font-medium text-white">Production Planning</h1>
+            <p className="text-admin-text-secondary">Gestionarea fluxului de producție și a regulilor de rutare</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search rules..."
-                className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <Button onClick={handleSaveChanges}>
-              <Save className="h-4 w-4 mr-2" />
-              Save Changes
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Processing Options */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="border-b border-gray-700">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Processing Options</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Material processing types and pricing
-                  </CardDescription>
-                </div>
-                <Button onClick={handleAddProcessing}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Option
+          <div className="flex gap-3">
+            <Dialog open={isRuleDialogOpen} onOpenChange={setIsRuleDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-admin-accent-purple hover:bg-admin-accent-purple/80">
+                  <Plus size={18} className="mr-2" /> Adaugă regulă
                 </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gray-700 hover:bg-gray-800">
-                      <TableHead className="text-gray-400">Name</TableHead>
-                      <TableHead className="text-gray-400">Type</TableHead>
-                      <TableHead className="text-gray-400">Price</TableHead>
-                      <TableHead className="text-gray-400">Compatible Materials</TableHead>
-                      <TableHead className="text-gray-400 text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProcessingOptions.map((option) => (
-                      <TableRow key={option.id} className="border-gray-700 hover:bg-gray-700">
-                        <TableCell className="font-medium text-gray-300">{option.name}</TableCell>
-                        <TableCell className="text-gray-300">{option.type}</TableCell>
-                        <TableCell className="text-gray-300">€{option.pricePerUnit.toFixed(2)}/{option.unit}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {option.compatibleMaterials.map((material) => (
-                              <span 
-                                key={material} 
-                                className="px-2 py-0.5 bg-blue-900/30 text-blue-400 rounded-full text-xs"
-                              >
-                                {material}
-                              </span>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleEditProcessing(option)}
-                            >
-                              <Edit className="h-4 w-4 text-gray-400" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleDeleteProcessing(option.id)}
-                            >
-                              <Trash className="h-4 w-4 text-gray-400" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Combo Rules */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="border-b border-gray-700">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Combo Rules</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Automatic rules for materials and accessories
-                  </CardDescription>
-                </div>
-                <Button onClick={handleAddRule}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Rule
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gray-700 hover:bg-gray-800">
-                      <TableHead className="text-gray-400">Rule Name</TableHead>
-                      <TableHead className="text-gray-400">Description</TableHead>
-                      <TableHead className="text-gray-400 text-center">Status</TableHead>
-                      <TableHead className="text-gray-400 text-right">Controls</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredComboRules.map((rule) => (
-                      <TableRow key={rule.id} className="border-gray-700 hover:bg-gray-700">
-                        <TableCell className="font-medium text-gray-300">
-                          {rule.name}
-                        </TableCell>
-                        <TableCell className="text-gray-300">{rule.description}</TableCell>
-                        <TableCell className="text-center">
-                          <Switch 
-                            checked={rule.enabled !== false} 
-                            onCheckedChange={() => handleToggleRule(rule.id)} 
-                          />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleEditRule(rule)}
-                            >
-                              <Edit className="h-4 w-4 text-gray-400" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleDeleteRule(rule.id)}
-                            >
-                              <Trash className="h-4 w-4 text-gray-400" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Rule Conflicts Card */}
-        <Card className="mt-6 bg-gray-800 border-gray-700">
-          <CardHeader className="border-b border-gray-700">
-            <CardTitle className="text-white flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-2 text-yellow-400" />
-              Rule Conflicts
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Potential issues with current rule configuration
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="space-y-4">
-              <div className="flex items-start gap-3 p-3 bg-yellow-900/20 border border-yellow-900/30 rounded-md">
-                <AlertTriangle className="h-5 w-5 mt-0.5 text-yellow-400" />
-                <div>
-                  <h3 className="font-medium text-yellow-400">Push System vs Handles</h3>
-                  <p className="text-sm text-gray-300">
-                    "Push System" rule may conflict with handle selections. Consider adding a condition to check if handles are already present.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3 p-3 bg-yellow-900/20 border border-yellow-900/30 rounded-md">
-                <AlertTriangle className="h-5 w-5 mt-0.5 text-yellow-400" />
-                <div>
-                  <h3 className="font-medium text-yellow-400">Glass Processing Constraints</h3>
-                  <p className="text-sm text-gray-300">
-                    Glass materials are only compatible with glass-specific processing operations. Ensure validation is in place.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add/Edit Processing Dialog */}
-      <Dialog open={isAddProcessingOpen} onOpenChange={setIsAddProcessingOpen}>
-        <DialogContent className="bg-gray-800 border-gray-700 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-white">
-              {editingProcessing ? 'Edit Processing Option' : 'Add Processing Option'}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="processing-name" className="text-right">Name</Label>
-              <Input
-                id="processing-name"
-                defaultValue={editingProcessing?.name}
-                className="col-span-3 bg-gray-700 border-gray-600"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="processing-type" className="text-right">Type</Label>
-              <Input
-                id="processing-type"
-                defaultValue={editingProcessing?.type}
-                className="col-span-3 bg-gray-700 border-gray-600"
-                placeholder="e.g. cnc_classic, glass_cut"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="processing-price" className="text-right">Price</Label>
-              <Input
-                id="processing-price"
-                type="number"
-                defaultValue={editingProcessing?.pricePerUnit}
-                className="col-span-3 bg-gray-700 border-gray-600"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="processing-unit" className="text-right">Unit</Label>
-              <Input
-                id="processing-unit"
-                defaultValue={editingProcessing?.unit}
-                className="col-span-3 bg-gray-700 border-gray-600"
-                placeholder="e.g. m², pcs, ml"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Compatible Materials</Label>
-              <div className="col-span-3 grid grid-cols-2 gap-2">
-                {(['PAL', 'MDF', 'MDF-AGT', 'PFL', 'GLASS', 'COUNTERTOP'] as MaterialType[]).map(material => (
-                  <div key={material} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`material-${material}`}
-                      defaultChecked={editingProcessing?.compatibleMaterials.includes(material)}
-                    />
-                    <Label htmlFor={`material-${material}`}>{material}</Label>
+              </DialogTrigger>
+              <DialogContent className="bg-admin-bg-secondary border-admin-border-light">
+                <DialogHeader>
+                  <DialogTitle className="text-white">Adaugă regulă nouă de rutare</DialogTitle>
+                  <DialogDescription className="text-admin-text-secondary">
+                    Configurează regula de rutare pentru un tip specific de material și grosime.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="material" className="text-right text-white">Material</Label>
+                    <Select defaultValue="pal">
+                      <SelectTrigger className="col-span-3 bg-admin-bg-tertiary border-admin-border-light text-white">
+                        <SelectValue placeholder="Selectează material" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                        <SelectItem value="pal">PAL</SelectItem>
+                        <SelectItem value="mdf">MDF</SelectItem>
+                        <SelectItem value="pfl">PFL</SelectItem>
+                        <SelectItem value="glass">Sticlă</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="thickness" className="text-right text-white">Grosime</Label>
+                    <Select defaultValue="18">
+                      <SelectTrigger className="col-span-3 bg-admin-bg-tertiary border-admin-border-light text-white">
+                        <SelectValue placeholder="Selectează grosime" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                        <SelectItem value="3">3mm</SelectItem>
+                        <SelectItem value="16">16mm</SelectItem>
+                        <SelectItem value="18">18mm</SelectItem>
+                        <SelectItem value="22">22mm</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="condition" className="text-right text-white">Condiție</Label>
+                    <Input 
+                      id="condition"
+                      className="col-span-3 bg-admin-bg-tertiary border-admin-border-light text-white"
+                      placeholder="Ex: Standard, Cu frezare, etc."
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="route" className="text-right text-white">Rută</Label>
+                    <div className="col-span-3 space-y-2">
+                      {['Tăiere', 'Cant', 'CNC', 'Vopsitorie', 'Sticlă'].map((section, idx) => (
+                        <div key={idx} className="flex items-center space-x-2">
+                          <Switch id={`section-${idx}`} />
+                          <Label htmlFor={`section-${idx}`} className="text-admin-text-secondary">{section}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsRuleDialogOpen(false)}
+                    className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight"
+                  >
+                    Anulează
+                  </Button>
+                  <Button onClick={handleAddRule}>Salvează</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button 
+              variant="outline" 
+              onClick={handleExport}
+              className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight"
+            >
+              <Download size={18} className="mr-2" /> Export CSV
+            </Button>
           </div>
+        </div>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="bg-admin-bg-tertiary border border-admin-border-light">
+            <TabsTrigger 
+              value="sections" 
+              className="data-[state=active]:bg-admin-accent-blue data-[state=active]:text-white"
+            >
+              Secții Producție
+            </TabsTrigger>
+            <TabsTrigger 
+              value="rules" 
+              className="data-[state=active]:bg-admin-accent-blue data-[state=active]:text-white"
+            >
+              Reguli Rutare
+            </TabsTrigger>
+            <TabsTrigger 
+              value="status" 
+              className="data-[state=active]:bg-admin-accent-blue data-[state=active]:text-white"
+            >
+              Status Producție
+            </TabsTrigger>
+          </TabsList>
           
-          <DialogFooter className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setIsAddProcessingOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" onClick={() => {
-              setIsAddProcessingOpen(false);
-              toast({
-                title: editingProcessing ? 'Processing Updated' : 'Processing Added',
-                description: editingProcessing 
-                  ? `${editingProcessing.name} has been updated` 
-                  : 'New processing option has been added',
-              });
-            }}>
-              {editingProcessing ? 'Update' : 'Add'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* ComboRulesEditor Dialog */}
-      <ComboRulesEditor 
-        rule={editingRule || undefined}
-        isOpen={isAddRuleOpen}
-        onClose={() => setIsAddRuleOpen(false)}
-        onSave={handleSaveRule}
-      />
+          <TabsContent value="sections" className="space-y-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+              {processingSections.map((section) => (
+                <ProcessingSectionCard key={section.id} section={section} />
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="rules" className="mt-6">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white">Reguli de Rutare</CardTitle>
+                <CardDescription className="text-admin-text-muted">
+                  Configurează fluxul pieselor în funcție de material și caracteristici
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ProcessingRulesTable 
+                  rules={routingRules} 
+                  onToggleRule={handleToggleRule} 
+                />
+              </CardContent>
+              <CardFooter className="border-t border-admin-border-mid py-4 flex justify-between">
+                <div className="text-sm text-admin-text-secondary">
+                  Afișare {routingRules.length} reguli
+                </div>
+                <Button 
+                  onClick={() => setIsRuleDialogOpen(true)}
+                  size="sm"
+                  className="bg-admin-accent-purple hover:bg-admin-accent-purple/80"
+                >
+                  <Plus size={14} className="mr-1" /> Adaugă regulă
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="status" className="mt-6">
+            <Card className="bg-admin-bg-secondary border-admin-border-light">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-white">Status Proiecte în Producție</CardTitle>
+                    <CardDescription className="text-admin-text-muted">
+                      Monitorizează statusul și progresul proiectelor
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className={`border-admin-border-light ${
+                        viewMode === 'table' 
+                          ? 'bg-admin-accent-blue/20 text-admin-accent-blue' 
+                          : 'text-admin-text-secondary'
+                      }`}
+                      onClick={() => setViewMode('table')}
+                    >
+                      Tabel
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className={`border-admin-border-light ${
+                        viewMode === 'gantt' 
+                          ? 'bg-admin-accent-blue/20 text-admin-accent-blue' 
+                          : 'text-admin-text-secondary'
+                      }`}
+                      onClick={() => setViewMode('gantt')}
+                    >
+                      Gantt
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 border-b border-admin-border-light pb-4">
+                  <div className="relative w-full max-w-sm">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-admin-text-secondary" />
+                    <Input
+                      type="search"
+                      placeholder="Caută după client, proiect sau ID..."
+                      className="pl-9 bg-admin-bg-tertiary border-admin-border-light text-admin-text-primary"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Select 
+                      value={materialFilter} 
+                      onValueChange={setMaterialFilter}
+                    >
+                      <SelectTrigger className="w-[180px] bg-admin-bg-tertiary border-admin-border-light text-admin-text-primary">
+                        <SelectValue placeholder="Filtrează" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                        <SelectItem value="all">Toate statusurile</SelectItem>
+                        <SelectItem value="in_production">În producție</SelectItem>
+                        <SelectItem value="waiting">În așteptare</SelectItem>
+                        <SelectItem value="completed">Finalizat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight"
+                        >
+                          <Sliders size={16} />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80 bg-admin-bg-secondary border-admin-border-light">
+                        <div className="grid gap-4">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-admin-text-primary">Opțiuni filtrare</h4>
+                            <Separator className="bg-admin-border-light" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <div className="mb-1 text-sm text-admin-text-secondary">Sortare</div>
+                              <Select defaultValue="deadline">
+                                <SelectTrigger className="w-full bg-admin-bg-tertiary border-admin-border-light text-admin-text-primary">
+                                  <SelectValue placeholder="Sortare" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                                  <SelectItem value="deadline">După termen</SelectItem>
+                                  <SelectItem value="progress">După progres</SelectItem>
+                                  <SelectItem value="name">După nume</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <div className="mb-1 text-sm text-admin-text-secondary">Direcție</div>
+                              <Select defaultValue="asc">
+                                <SelectTrigger className="w-full bg-admin-bg-tertiary border-admin-border-light text-admin-text-primary">
+                                  <SelectValue placeholder="Direcție" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                                  <SelectItem value="asc">Ascendent</SelectItem>
+                                  <SelectItem value="desc">Descendent</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight w-full mt-2"
+                          >
+                            Resetează filtrele
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {viewMode === 'table' ? (
+                  <ProcessingStatusTable projects={filteredProjects} />
+                ) : (
+                  <ProcessingGanttChart projects={filteredProjects} />
+                )}
+              </CardContent>
+              <CardFooter className="border-t border-admin-border-mid py-4">
+                <div className="text-sm text-admin-text-secondary">
+                  {filteredProjects.length} proiecte afișate
+                </div>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </AdminLayout>
   );
 };
 
 export default Processing;
-
-const Checkbox = ({ id, defaultChecked }: { id: string; defaultChecked?: boolean }) => {
-  return (
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        id={id}
-        defaultChecked={defaultChecked}
-        className="h-4 w-4 text-blue-600 rounded bg-gray-700 border-gray-600"
-      />
-    </div>
-  );
-};
