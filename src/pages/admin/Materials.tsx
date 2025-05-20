@@ -4,7 +4,7 @@ import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Upload, Download, Filter } from 'lucide-react';
+import { Search, Plus, Upload, Download, Filter, Star } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +38,7 @@ const MaterialsContent = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [filterAvailability, setFilterAvailability] = useState<boolean | null>(null);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   
   // Load materials when component mounts or material type changes
   useEffect(() => {
@@ -68,7 +69,7 @@ const MaterialsContent = () => {
     console.log("Language changed to:", language);
   }, [language]);
   
-  // Filter materials when search query or availability filter changes
+  // Filter materials when search query, availability filter, or favorites filter changes
   useEffect(() => {
     let filtered = materials;
     
@@ -86,8 +87,13 @@ const MaterialsContent = () => {
       filtered = filtered.filter(material => material.availability === filterAvailability);
     }
     
+    // Apply favorites filter
+    if (showOnlyFavorites) {
+      filtered = filtered.filter(material => material.isFavorite === true);
+    }
+    
     setFilteredMaterials(filtered);
-  }, [searchQuery, materials, filterAvailability]);
+  }, [searchQuery, materials, filterAvailability, showOnlyFavorites]);
   
   const handleTabChange = (value: string) => {
     setMaterialType(value.toUpperCase() as MaterialType);
@@ -100,7 +106,8 @@ const MaterialsContent = () => {
       const newMaterial = {
         ...formData,
         compatibleOperations: [],
-        type: materialType
+        type: materialType,
+        isFavorite: false
       };
       
       // Call the service to add the material
@@ -144,7 +151,8 @@ const MaterialsContent = () => {
       // Call the service to update the material
       const updatedMaterial = await MaterialService.updateMaterial(selectedMaterial.id, {
         ...formData,
-        type: selectedMaterial.type
+        type: selectedMaterial.type,
+        isFavorite: selectedMaterial.isFavorite
       });
       
       // Update the local state with the updated material
@@ -194,6 +202,36 @@ const MaterialsContent = () => {
     }
   };
   
+  const handleToggleFavorite = async (material: Material) => {
+    try {
+      const updatedMaterial = await MaterialService.updateMaterial(material.id, {
+        ...material,
+        isFavorite: !material.isFavorite
+      });
+      
+      // Update the local state with the updated favorite status
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => m.id === material.id ? updatedMaterial : m)
+      );
+      
+      const toastMessage = updatedMaterial.isFavorite ? 
+        t('materials.addedToFavorites') : 
+        t('materials.removedFromFavorites');
+      
+      toast({
+        title: toastMessage,
+        description: material.name,
+      });
+    } catch (error) {
+      console.error('Error toggling favorite status:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.failedToUpdate'),
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleImportMaterials = () => {
     toast({
       title: t('common.import'),
@@ -211,6 +249,7 @@ const MaterialsContent = () => {
   const handleClearFilters = () => {
     setSearchQuery('');
     setFilterAvailability(null);
+    setShowOnlyFavorites(false);
   };
 
   // Function to render tab content for each material type
@@ -233,7 +272,7 @@ const MaterialsContent = () => {
           ) : filteredMaterials.length === 0 ? (
             <div className="flex justify-center items-center h-64 flex-col">
               <p className="text-gray-400 mb-4">{t('materials.noMaterialsFound')}</p>
-              {(searchQuery || filterAvailability !== null) && (
+              {(searchQuery || filterAvailability !== null || showOnlyFavorites) && (
                 <Button 
                   variant="outline"
                   onClick={handleClearFilters}
@@ -252,6 +291,7 @@ const MaterialsContent = () => {
                   onEdit={handleEditMaterial}
                   onDelete={handleDeleteMaterial}
                   onView={handleViewMaterial}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               ))}
             </div>
@@ -292,6 +332,14 @@ const MaterialsContent = () => {
                 <DropdownMenuLabel>{t('materials.filterBy')}</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem 
+                  className={`${showOnlyFavorites ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
+                  onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
+                >
+                  <Star className={`h-4 w-4 mr-2 ${showOnlyFavorites ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+                  {t('materials.favorites')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem 
                   className={`${filterAvailability === true ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
                   onClick={() => setFilterAvailability(true)}
                 >
@@ -306,7 +354,7 @@ const MaterialsContent = () => {
                 <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem 
                   className="text-gray-300 cursor-pointer hover:bg-gray-700"
-                  onClick={() => setFilterAvailability(null)}
+                  onClick={handleClearFilters}
                 >
                   {t('materials.clearFilters')}
                 </DropdownMenuItem>
@@ -388,6 +436,7 @@ const MaterialsContent = () => {
         material={selectedMaterial}
         open={viewDialogOpen}
         onOpenChange={setViewDialogOpen}
+        onToggleFavorite={handleToggleFavorite}
       />
     </AdminLayout>
   );

@@ -28,6 +28,7 @@ export interface Material {
   availability: boolean;
   compatibleOperations: ProcessingType[];
   supplier: 'Egger' | 'AGT' | 'SticlaExpert' | 'Hafele' | 'Blum' | 'GTV' | 'Other';
+  isFavorite?: boolean;
 }
 
 // Project types

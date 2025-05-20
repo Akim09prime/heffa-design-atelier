@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Material } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash, Image, Check, Eye } from 'lucide-react';
+import { Edit, Trash, Image, Check, Eye, Star } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Badge } from '@/components/ui/badge';
 
@@ -12,19 +12,26 @@ interface MaterialCardProps {
   onEdit: (material: Material) => void;
   onDelete: (material: Material) => void;
   onView?: (material: Material) => void;
+  onToggleFavorite?: (material: Material) => void;
 }
 
 export const MaterialCard: React.FC<MaterialCardProps> = ({
   material,
   onEdit,
   onDelete,
-  onView
+  onView,
+  onToggleFavorite
 }) => {
   const { t } = useTranslation();
   const fallbackImage = 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500';
+  const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <Card className="overflow-hidden h-full flex flex-col material-card border-gray-700 group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <Card 
+      className="overflow-hidden h-full flex flex-col material-card border-gray-700 group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div 
         className="aspect-square relative material-image overflow-hidden"
         style={{
@@ -39,6 +46,24 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             {material.availability ? t('common.inStock') : t('materials.outOfStock')}
           </Badge>
         </div>
+
+        {/* Favorite button */}
+        {onToggleFavorite && (
+          <div className="absolute top-3 right-3 z-10">
+            <Button
+              variant="ghost" 
+              size="icon" 
+              className={`h-8 w-8 rounded-full ${material.isFavorite ? 'text-yellow-400' : 'text-white opacity-60 hover:opacity-100'} transition-opacity`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(material);
+              }}
+              title={material.isFavorite ? t('materials.removeFromFavorites') : t('materials.addToFavorites')}
+            >
+              <Star className={`h-5 w-5 ${material.isFavorite ? 'fill-yellow-400' : ''}`} />
+            </Button>
+          </div>
+        )}
         
         {/* Overlay with image or placeholder */}
         <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-0 hover:bg-opacity-20 transition-all">
@@ -90,6 +115,11 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             <Trash className="h-4 w-4" />
           </Button>
         </div>
+
+        {/* Hover zoom effect overlay */}
+        {isHovered && (
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40 transition-opacity duration-300" />
+        )}
       </div>
       <CardContent className="p-4 flex-grow flex flex-col bg-gray-800 text-white">
         <div className="flex-grow">

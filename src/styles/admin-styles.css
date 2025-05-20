@@ -1,3 +1,4 @@
+
 /* Admin area - dark theme with blue accents */
 .admin-area {
   --admin-primary: #38bdf8;
@@ -275,6 +276,8 @@
 /* Material card styling */
 .material-card {
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .material-card:hover {
@@ -335,4 +338,116 @@
 .material-action-button:hover {
   background-color: rgba(31, 41, 55, 1);
   transform: scale(1.05);
+}
+
+/* Material card highlight effects */
+.material-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.material-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* Favorite material animation */
+@keyframes favorite-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.favorite-icon-active {
+  animation: favorite-pulse 0.3s ease;
+  fill: #fcd34d;
+  color: #fcd34d;
+}
+
+/* Material zoom effect */
+.material-zoom-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.material-zoom-image {
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+
+.material-zoom-container:hover .material-zoom-image {
+  transform: scale(1.05);
+}
+
+/* Material view dialog improvements */
+.material-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.material-detail-row:last-child {
+  border-bottom: none;
+}
+
+.material-property-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.material-property-badge.paintable {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.material-property-badge.cantable {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.material-property-badge.available {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.material-property-badge.unavailable {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Material favorites */
+.favorite-materials-section {
+  margin-bottom: 2rem;
+}
+
+.favorite-materials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
