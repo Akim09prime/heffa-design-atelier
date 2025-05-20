@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,7 +39,7 @@ const formSchema = z.object({
   supplier: z.enum(["Egger", "AGT", "SticlaExpert", "Hafele", "Blum", "GTV", "Other"]),
   availability: z.boolean().default(true),
   textureUrl: z.string().optional(),
-  // Update this to receive ProcessingType[] compatible values
+  // Update this to properly handle the ProcessingType[] in the form
   compatibleOperations: z.array(z.string()).transform(operations => 
     operations as unknown as ProcessingType[]
   ).optional(),
@@ -92,7 +91,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
-    // Fixed: Properly cast compatibleOperations to match the expected type
+    // Cast as a string[] for the form, but will be transformed back to ProcessingType[] by the schema
     compatibleOperations: (material?.compatibleOperations || []) as unknown as string[],
   };
 
