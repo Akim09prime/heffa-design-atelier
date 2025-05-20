@@ -20,6 +20,23 @@ export const BodyService = {
   getBodyById: async (id: string): Promise<FurnitureBody | undefined> => {
     return bodies.find(body => body.id === id);
   },
+  
+  // Generate body from template
+  generateFromTemplate: async (
+    spaceId: string, 
+    name: string, 
+    width: number, 
+    height: number, 
+    depth: number,
+    materialId: string
+  ): Promise<FurnitureBody> => {
+    return BodyService.createStandardWardrobe(spaceId, width, height, depth);
+  },
+  
+  // Get available part types
+  getPartTypes: async (): Promise<string[]> => {
+    return ["side", "top", "bottom", "shelf", "door", "drawer", "back"];
+  },
 
   // Create standard wardrobe body
   createStandardWardrobe: async (spaceId: string, width: number, height: number, depth: number): Promise<FurnitureBody> => {
@@ -36,56 +53,54 @@ export const BodyService = {
       parts: [
         {
           id: uuidv4(),
-          name: "Laterală stânga",
+          type: "side",
           material: "PAL",
           thickness: 18,
           width: depth,
           height,
-          position: "left", // Changed from "front" to "left"
           edge: { top: true, right: true, bottom: true, left: false },
+          position: "left",
         },
         {
           id: uuidv4(),
-          name: "Laterală dreapta",
+          type: "side",
           material: "PAL",
           thickness: 18,
           width: depth,
           height,
-          position: "right", // Changed from "front" to "right"
           edge: { top: true, right: false, bottom: true, left: true },
+          position: "right",
         },
         {
           id: uuidv4(),
-          name: "Blat superior",
+          type: "top",
           material: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
-          position: "top", // Changed from "front" to "top"
           edge: { top: true, right: false, bottom: true, left: false },
+          position: "top",
         },
         {
           id: uuidv4(),
-          name: "Blat inferior",
+          type: "bottom",
           material: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
-          position: "bottom", // Changed from "front" to "bottom"
           edge: { top: true, right: false, bottom: true, left: false },
+          position: "bottom",
         }
       ],
       accessories: [
         {
           id: uuidv4(),
-          name: "Balama standard",
           type: "hinge",
           quantity: 4,
           price: 10,
         },
         {
           id: uuidv4(),
-          name: "Mâner mobilier",
           type: "handle",
           quantity: 2,
           price: 15,
@@ -110,7 +125,6 @@ export const BodyService = {
       parts: body.parts.map(part => ({
         ...part,
         id: part.id || uuidv4(),
-        position: part.position as "left" | "right" | "top" | "bottom", // Ensure position is valid
       })),
       accessories: body.accessories.map(acc => ({
         ...acc,
@@ -127,14 +141,6 @@ export const BodyService = {
     const index = bodies.findIndex(body => body.id === id);
     if (index === -1) {
       throw new Error(`Body with id ${id} not found`);
-    }
-    
-    // Convert any "front" position to "left" for compatibility
-    if (bodyUpdates.parts) {
-      bodyUpdates.parts = bodyUpdates.parts.map(part => ({
-        ...part,
-        position: (part.position === "front" ? "left" : part.position) as "left" | "right" | "top" | "bottom",
-      }));
     }
     
     bodies[index] = {
@@ -161,13 +167,9 @@ export const BodyService = {
       throw new Error(`Body with id ${bodyId} not found`);
     }
     
-    // Convert "front" position to "left" for compatibility
-    const position = part.position === "front" ? "left" : part.position;
-    
     const newPart: BodyPart = {
       ...part,
       id: uuidv4(),
-      position: position as "left" | "right" | "top" | "bottom",
     };
     
     body.parts.push(newPart);

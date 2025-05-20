@@ -1,4 +1,3 @@
-
 // Add these declarations to your types
 declare module 'jspdf-autotable' {
   import jsPDF from 'jspdf';
@@ -30,3 +29,8 @@ declare module 'jspdf-autotable' {
   const autoTable: (pdf: jsPDF, options: UserOptions) => any;
   export default autoTable;
 }
+
+import { BodyPart, BodyAccessory, FurnitureBody } from './body';
+
+// Re-export types from body.d.ts
+export { BodyPart, BodyAccessory, FurnitureBody };
