@@ -199,16 +199,18 @@ const Reports = () => {
   };
 
   const handleExportChart = (chartType: string) => {
+    const typeParam = { type: chartType };
+    
     showToastMessage(
       t('reports.exportStarted'),
-      t('reports.preparingExport', { type: chartType })
+      t('reports.preparingExport', typeParam)
     );
     
     // Simulate export process
     setTimeout(() => {
       showToastMessage(
         t('reports.exportSuccess'),
-        t('reports.exportCompleted', { type: chartType })
+        t('reports.exportCompleted', typeParam)
       );
     }, 1500);
   };

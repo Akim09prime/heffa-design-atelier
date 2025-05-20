@@ -15,6 +15,7 @@ import { ComboRulesService } from '@/services/comboRulesService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ComboRule, ModuleType } from '@/types';
 
 // Simulăm comboRules dacă nu există în ComboRulesService
 const defaultComboRules = [
@@ -22,7 +23,7 @@ const defaultComboRules = [
     id: 'rule-1',
     name: 'Regula de bază pentru corpuri de bucătărie',
     description: 'Aplică accesorii standard pentru corpuri de bucătărie',
-    if: { moduleType: 'base_cabinet' },
+    if: { moduleType: 'base_cabinet' as ModuleType },
     then: { suggest: { accessory: { type: 'default' } } },
     enabled: true
   },
@@ -30,7 +31,7 @@ const defaultComboRules = [
     id: 'rule-2',
     name: 'Regula pentru corpuri suspendate',
     description: 'Aplică sisteme de ridicare pentru corpuri suspendate',
-    if: { moduleType: 'wall_cabinet' },
+    if: { moduleType: 'wall_cabinet' as ModuleType },
     then: { suggest: { accessory: { type: 'default' } } },
     enabled: true
   }
@@ -47,9 +48,9 @@ const Settings = () => {
     ? ComboRulesService.comboRules 
     : defaultComboRules;
     
-  const [comboRules, setComboRules] = useState(initialRules);
+  const [comboRules, setComboRules] = useState<ComboRule[]>(initialRules as ComboRule[]);
   const [isRuleDialogOpen, setIsRuleDialogOpen] = useState(false);
-  const [editingRule, setEditingRule] = useState<any>(null);
+  const [editingRule, setEditingRule] = useState<ComboRule | null>(null);
   
   const setLoading = (key: string, loading: boolean) => {
     setIsLoading(prev => ({ ...prev, [key]: loading }));
@@ -122,7 +123,9 @@ const Settings = () => {
   const handleSaveRule = (formData: FormData) => {
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
-    const moduleType = formData.get('moduleType') as string;
+    const moduleTypeValue = formData.get('moduleType') as string;
+    // Convert the string value to ModuleType or undefined if empty
+    const moduleType = moduleTypeValue ? moduleTypeValue as ModuleType : undefined;
     
     if (editingRule) {
       // Actualizam regula existentă
@@ -141,7 +144,7 @@ const Settings = () => {
       });
     } else {
       // Adăugăm regulă nouă
-      const newRule = {
+      const newRule: ComboRule = {
         id: `rule-${Date.now()}`,
         name,
         description,
@@ -158,9 +161,10 @@ const Settings = () => {
         enabled: true
       };
       
-      setComboRules([...comboRules, newRule]);
+      const updatedRules = [...comboRules, newRule];
+      setComboRules(updatedRules);
       if (typeof ComboRulesService.updateComboRules === 'function') {
-        ComboRulesService.updateComboRules([...comboRules, newRule]);
+        ComboRulesService.updateComboRules(updatedRules);
       }
       toast({
         title: t('settings.ruleAdded'),
