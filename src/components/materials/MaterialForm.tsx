@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -91,7 +92,8 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
-    compatibleOperations: material?.compatibleOperations as unknown as string[] || [],
+    // Fixed: Properly cast compatibleOperations to match the expected type
+    compatibleOperations: (material?.compatibleOperations || []) as unknown as string[],
   };
 
   // Set image preview if material has a textureUrl
