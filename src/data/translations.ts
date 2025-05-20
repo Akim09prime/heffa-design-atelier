@@ -1,4 +1,3 @@
-
 import { Translations } from '@/types/translations';
 
 // Define translations for all pages
@@ -118,6 +117,10 @@ export const translations: Translations = {
     loading: {
       en: 'Loading...',
       ro: 'Se încarcă...'
+    },
+    apply: {
+      en: 'Apply',
+      ro: 'Aplică'
     },
 
     // Status
@@ -986,6 +989,106 @@ export const translations: Translations = {
     templatesDesc: {
       en: 'Download templates for data import',
       ro: 'Descarcă șabloane pentru import de date'
+    },
+    materialsTemplateDesc: {
+      en: 'Template for importing materials data',
+      ro: 'Șablon pentru importul datelor despre materiale'
+    },
+    accessoriesTemplateDesc: {
+      en: 'Template for importing accessories data',
+      ro: 'Șablon pentru importul datelor despre accesorii'
+    },
+    usersTemplateDesc: {
+      en: 'Template for importing user accounts',
+      ro: 'Șablon pentru importul conturilor de utilizator'
+    },
+    modulesTemplateDesc: {
+      en: 'Template for importing furniture modules',
+      ro: 'Șablon pentru importul modulelor de mobilier'
+    },
+    clientsTemplateDesc: {
+      en: 'Template for importing client information',
+      ro: 'Șablon pentru importul informațiilor despre clienți'
+    },
+    uploadCsvOrExcel: {
+      en: 'Upload a CSV or Excel file to import data',
+      ro: 'Încarcă un fișier CSV sau Excel pentru a importa datele'
+    },
+    dataType: {
+      en: 'Data Type',
+      ro: 'Tip de date'
+    },
+    selectDataType: {
+      en: 'Select data type',
+      ro: 'Selectează tipul de date'
+    },
+    dragAndDrop: {
+      en: 'Drag and drop your file here, or click to select',
+      ro: 'Trage și plasează fișierul aici, sau apasă pentru a selecta'
+    },
+    csvOrExcel: {
+      en: 'CSV or Excel files only (.csv, .xlsx, .xls)',
+      ro: 'Doar fișiere CSV sau Excel (.csv, .xlsx, .xls)'
+    },
+    selectFile: {
+      en: 'Select File',
+      ro: 'Selectează Fișier'
+    },
+    dataPreview: {
+      en: 'Data Preview',
+      ro: 'Previzualizare date'
+    },
+    columnMapping: {
+      en: 'Column Mapping',
+      ro: 'Mapare coloane'
+    },
+    selectTargetColumn: {
+      en: 'Select target column',
+      ro: 'Selectează coloana țintă'
+    },
+    ignoreColumn: {
+      en: 'Ignore this column',
+      ro: 'Ignoră această coloană'
+    },
+    validationIssues: {
+      en: 'Validation Issues',
+      ro: 'Probleme de validare'
+    },
+    importing: {
+      en: 'Importing...',
+      ro: 'Se importă...'
+    },
+    importSuccessful: {
+      en: 'Import Successful',
+      ro: 'Import realizat cu succes'
+    },
+    dataImportedSuccessfully: {
+      en: 'Your data has been imported successfully',
+      ro: 'Datele tale au fost importate cu succes'
+    },
+    importFailed: {
+      en: 'Import Failed',
+      ro: 'Import eșuat'
+    },
+    errorOccurredDuringImport: {
+      en: 'An error occurred during import. Please try again.',
+      ro: 'A apărut o eroare în timpul importului. Te rugăm să încerci din nou.'
+    },
+    importCompletedWithWarnings: {
+      en: 'Import Completed with Warnings',
+      ro: 'Import finalizat cu avertismente'
+    },
+    checkValidationIssues: {
+      en: 'Some items may not have been imported correctly. Please check the validation issues.',
+      ro: 'Este posibil ca unele elemente să nu fi fost importate corect. Te rugăm să verifici problemele de validare.'
+    },
+    invalidFileType: {
+      en: 'Invalid File Type',
+      ro: 'Tip de fișier invalid'
+    },
+    pleaseSelectCsvOrExcel: {
+      en: 'Please select a CSV or Excel file (.csv, .xlsx, .xls)',
+      ro: 'Te rugăm să selectezi un fișier CSV sau Excel (.csv, .xlsx, .xls)'
     },
     cuttingList: {
       en: 'Cutting List',

@@ -83,8 +83,8 @@ export const MaterialsAdvancedFilter: React.FC<MaterialsAdvancedFilterProps> = (
           <div className="space-y-2">
             <Label className="text-sm text-gray-300">{t('materials.manufacturer')}</Label>
             <Select 
-              value={selectedManufacturer || ''} 
-              onValueChange={(value) => onManufacturerChange(value || null)}
+              value={selectedManufacturer || 'all'} 
+              onValueChange={(value) => onManufacturerChange(value === 'all' ? null : value)}
             >
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder={t('materials.allManufacturers')} />
@@ -119,8 +119,8 @@ export const MaterialsAdvancedFilter: React.FC<MaterialsAdvancedFilterProps> = (
           <div className="space-y-2">
             <Label className="text-sm text-gray-300">{t('materials.thickness')}</Label>
             <Select 
-              value={selectedThickness?.toString() || ''} 
-              onValueChange={(value) => onThicknessChange(value ? Number(value) : null)}
+              value={selectedThickness?.toString() || 'all'} 
+              onValueChange={(value) => onThicknessChange(value === 'all' ? null : Number(value))}
             >
               <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                 <SelectValue placeholder={t('materials.allThicknesses')} />
