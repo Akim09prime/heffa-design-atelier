@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -102,7 +101,7 @@ const MaterialsContent = () => {
   
   const handleAddMaterial = async (formData: Partial<Material>) => {
     try {
-      // Fix: Adding compatibleOperations to match the Material type
+      // Ensure compatibleOperations is properly typed as ProcessingType[]
       const materialData: Omit<Material, 'id'> = {
         ...formData,
         type: (formData.type || categoryFilter) as any,
@@ -115,7 +114,8 @@ const MaterialsContent = () => {
         cantable: formData.cantable || false,
         supplier: formData.supplier || 'Other',
         availability: formData.availability !== undefined ? formData.availability : true,
-        compatibleOperations: formData.compatibleOperations || [] as ProcessingType[]
+        // Ensure we have the correct type
+        compatibleOperations: (formData.compatibleOperations || []) as ProcessingType[]
       };
       
       const newMaterial = await MaterialService.addMaterial(materialData);
@@ -141,7 +141,14 @@ const MaterialsContent = () => {
   
   const handleUpdateMaterial = async (material: Material, formData: Partial<Material>) => {
     try {
-      const updatedMaterial = await MaterialService.updateMaterial(material.id, formData);
+      // Ensure compatibleOperations is properly typed as ProcessingType[]
+      const updateData = {
+        ...formData,
+        // Cast to ensure correct type
+        compatibleOperations: formData.compatibleOperations as ProcessingType[]
+      };
+
+      const updatedMaterial = await MaterialService.updateMaterial(material.id, updateData);
       
       setMaterials(prevMaterials => 
         prevMaterials.map(m => m.id === updatedMaterial.id ? updatedMaterial : m)

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,7 +39,10 @@ const formSchema = z.object({
   supplier: z.enum(["Egger", "AGT", "SticlaExpert", "Hafele", "Blum", "GTV", "Other"]),
   availability: z.boolean().default(true),
   textureUrl: z.string().optional(),
-  compatibleOperations: z.array(z.string()).optional(),
+  // Update this to receive ProcessingType[] compatible values
+  compatibleOperations: z.array(z.string()).transform(operations => 
+    operations as unknown as ProcessingType[]
+  ).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,14 +66,14 @@ interface MaterialFormProps {
   };
   onSubmit: (values: FormValues) => void;
   onCancel: () => void;
-  defaultType?: MaterialType | string; // Added defaultType prop
+  defaultType?: MaterialType | string;
 }
 
 export const MaterialForm: React.FC<MaterialFormProps> = ({
   material,
   onSubmit,
   onCancel,
-  defaultType = 'PAL' // Default value for defaultType
+  defaultType = 'PAL'
 }) => {
   const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -89,7 +91,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
-    compatibleOperations: material?.compatibleOperations || [],
+    compatibleOperations: material?.compatibleOperations as unknown as string[] || [],
   };
 
   // Set image preview if material has a textureUrl
