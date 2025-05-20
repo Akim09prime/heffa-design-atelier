@@ -1,137 +1,49 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Plus, Upload, Download, Filter, Star } from 'lucide-react';
+import { Plus, Upload, Download } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
-import { MaterialType, Material } from '@/types';
-import { MaterialService } from '@/services/materialService';
-import { MaterialCard } from '@/components/materials/MaterialCard';
+import { Material } from '@/types';
 import { MaterialForm } from '@/components/materials/MaterialForm';
 import { MaterialViewDialog } from '@/components/materials/MaterialViewDialog';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useMaterialsManagement } from '@/hooks/useMaterialsManagement';
+import { MaterialsFilter } from '@/components/materials/MaterialsFilter';
+import { MaterialsGrid } from '@/components/materials/MaterialsGrid';
 
 // Create a wrapper component that uses the contexts
 const MaterialsContent = () => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { toast } = useToast();
-  const [materialType, setMaterialType] = useState<MaterialType>('PAL');
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [filteredMaterials, setFilteredMaterials] = useState<Material[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [filterAvailability, setFilterAvailability] = useState<boolean | null>(null);
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   
-  // Load materials when component mounts or material type changes
-  useEffect(() => {
-    const fetchMaterials = async () => {
-      setIsLoading(true);
-      try {
-        const fetchedMaterials = await MaterialService.getMaterialsByType(materialType);
-        setMaterials(fetchedMaterials);
-        setFilteredMaterials(fetchedMaterials);
-      } catch (error) {
-        console.error('Error fetching materials:', error);
-        toast({
-          title: t('common.error'),
-          description: t('materials.failedToLoad'),
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchMaterials();
-  }, [materialType, toast, t]);
-
-  // Force refresh when language changes
-  useEffect(() => {
-    // This will trigger a re-render when language changes
-    console.log("Language changed to:", language);
-  }, [language]);
-  
-  // Filter materials when search query, availability filter, or favorites filter changes
-  useEffect(() => {
-    let filtered = materials;
-    
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter(material => 
-        material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        material.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        material.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    // Apply availability filter
-    if (filterAvailability !== null) {
-      filtered = filtered.filter(material => material.availability === filterAvailability);
-    }
-    
-    // Apply favorites filter
-    if (showOnlyFavorites) {
-      filtered = filtered.filter(material => material.isFavorite === true);
-    }
-    
-    setFilteredMaterials(filtered);
-  }, [searchQuery, materials, filterAvailability, showOnlyFavorites]);
-  
-  const handleTabChange = (value: string) => {
-    setMaterialType(value.toUpperCase() as MaterialType);
-  };
-  
-  const handleAddMaterial = async (formData: any) => {
-    setIsLoading(true);
-    try {
-      // Create a new material object from form data
-      const newMaterial = {
-        ...formData,
-        compatibleOperations: [],
-        type: materialType,
-        isFavorite: false
-      };
-      
-      // Call the service to add the material
-      const addedMaterial = await MaterialService.addMaterial(newMaterial);
-      
-      // Update the local state with the new material
-      setMaterials(prevMaterials => [...prevMaterials, addedMaterial]);
-      
-      toast({
-        title: t('materials.materialAdded'),
-        description: `${formData.name} ${t('materials.hasBeenAdded')}`,
-      });
-    } catch (error) {
-      console.error('Error adding material:', error);
-      toast({
-        title: t('common.error'),
-        description: t('materials.failedToAdd'),
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-      setIsAddDialogOpen(false);
-    }
-  };
+  const {
+    materialType,
+    filteredMaterials,
+    searchQuery,
+    isLoading,
+    selectedMaterial,
+    filterAvailability,
+    showOnlyFavorites,
+    setSelectedMaterial,
+    setSearchQuery,
+    handleTabChange,
+    handleToggleFavoritesFilter,
+    handleFilterAvailability,
+    handleClearFilters,
+    handleAddMaterial,
+    handleUpdateMaterial,
+    handleDeleteMaterial,
+    handleToggleFavorite,
+    hasActiveFilters
+  } = useMaterialsManagement();
   
   const handleEditMaterial = (material: Material) => {
     setSelectedMaterial(material);
@@ -141,95 +53,6 @@ const MaterialsContent = () => {
   const handleViewMaterial = (material: Material) => {
     setSelectedMaterial(material);
     setViewDialogOpen(true);
-  };
-  
-  const handleUpdateMaterial = async (formData: any) => {
-    if (!selectedMaterial) return;
-    
-    setIsLoading(true);
-    try {
-      // Call the service to update the material
-      const updatedMaterial = await MaterialService.updateMaterial(selectedMaterial.id, {
-        ...formData,
-        type: selectedMaterial.type,
-        isFavorite: selectedMaterial.isFavorite
-      });
-      
-      // Update the local state with the updated material
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => m.id === selectedMaterial.id ? updatedMaterial : m)
-      );
-      
-      toast({
-        title: t('materials.materialUpdated'),
-        description: `${formData.name} ${t('materials.hasBeenUpdated')}`,
-      });
-    } catch (error) {
-      console.error('Error updating material:', error);
-      toast({
-        title: t('common.error'),
-        description: t('materials.failedToUpdate'),
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-      setIsEditDialogOpen(false);
-    }
-  };
-  
-  const handleDeleteMaterial = async (material: Material) => {
-    setIsLoading(true);
-    try {
-      // Call the service to delete the material
-      await MaterialService.deleteMaterial(material.id);
-      
-      // Update the local state by removing the deleted material
-      setMaterials(prevMaterials => prevMaterials.filter(m => m.id !== material.id));
-      
-      toast({
-        title: t('materials.materialDeleted'),
-        description: `${material.name} ${t('materials.hasBeenDeleted')}`,
-      });
-    } catch (error) {
-      console.error('Error deleting material:', error);
-      toast({
-        title: t('common.error'),
-        description: t('materials.failedToDelete'),
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleToggleFavorite = async (material: Material) => {
-    try {
-      const updatedMaterial = await MaterialService.updateMaterial(material.id, {
-        ...material,
-        isFavorite: !material.isFavorite
-      });
-      
-      // Update the local state with the updated favorite status
-      setMaterials(prevMaterials => 
-        prevMaterials.map(m => m.id === material.id ? updatedMaterial : m)
-      );
-      
-      const toastMessage = updatedMaterial.isFavorite ? 
-        t('materials.addedToFavorites') : 
-        t('materials.removedFromFavorites');
-      
-      toast({
-        title: toastMessage,
-        description: material.name,
-      });
-    } catch (error) {
-      console.error('Error toggling favorite status:', error);
-      toast({
-        title: t('common.error'),
-        description: t('materials.failedToUpdate'),
-        variant: 'destructive',
-      });
-    }
   };
 
   const handleImportMaterials = () => {
@@ -246,12 +69,6 @@ const MaterialsContent = () => {
     });
   };
 
-  const handleClearFilters = () => {
-    setSearchQuery('');
-    setFilterAvailability(null);
-    setShowOnlyFavorites(false);
-  };
-
   // Function to render tab content for each material type
   const renderTabContent = (type: string) => {
     const typeName = type.toUpperCase();
@@ -265,37 +82,16 @@ const MaterialsContent = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-gray-400">{t('materials.loading')}</p>
-            </div>
-          ) : filteredMaterials.length === 0 ? (
-            <div className="flex justify-center items-center h-64 flex-col">
-              <p className="text-gray-400 mb-4">{t('materials.noMaterialsFound')}</p>
-              {(searchQuery || filterAvailability !== null || showOnlyFavorites) && (
-                <Button 
-                  variant="outline"
-                  onClick={handleClearFilters}
-                  className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600"
-                >
-                  {t('materials.clearFilters')}
-                </Button>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredMaterials.map((material) => (
-                <MaterialCard 
-                  key={material.id}
-                  material={material}
-                  onEdit={handleEditMaterial}
-                  onDelete={handleDeleteMaterial}
-                  onView={handleViewMaterial}
-                  onToggleFavorite={handleToggleFavorite}
-                />
-              ))}
-            </div>
-          )}
+          <MaterialsGrid 
+            materials={filteredMaterials}
+            isLoading={isLoading}
+            onEdit={handleEditMaterial}
+            onDelete={handleDeleteMaterial}
+            onView={handleViewMaterial}
+            onToggleFavorite={handleToggleFavorite}
+            onClearFilters={handleClearFilters}
+            hasActiveFilters={hasActiveFilters}
+          />
         </CardContent>
       </Card>
     );
@@ -309,57 +105,16 @@ const MaterialsContent = () => {
             <h1 className="text-3xl font-medium text-white">{t('materials.title')}</h1>
             <p className="text-gray-300">{t('materials.description')}</p>
           </div>
-          <div className="flex flex-wrap w-full lg:w-auto gap-4">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={t('materials.searchPlaceholder')}
-                className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
-                  <Filter className="h-4 w-4 mr-2" />
-                  {t('materials.filter')}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-gray-800 border-gray-700 text-white">
-                <DropdownMenuLabel>{t('materials.filterBy')}</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem 
-                  className={`${showOnlyFavorites ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
-                  onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-                >
-                  <Star className={`h-4 w-4 mr-2 ${showOnlyFavorites ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-                  {t('materials.favorites')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem 
-                  className={`${filterAvailability === true ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
-                  onClick={() => setFilterAvailability(true)}
-                >
-                  {t('common.inStock')}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  className={`${filterAvailability === false ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
-                  onClick={() => setFilterAvailability(false)}
-                >
-                  {t('materials.outOfStock')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem 
-                  className="text-gray-300 cursor-pointer hover:bg-gray-700"
-                  onClick={handleClearFilters}
-                >
-                  {t('materials.clearFilters')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex flex-wrap w-full lg:w-auto gap-2">
+            <MaterialsFilter
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              filterAvailability={filterAvailability}
+              onFilterAvailability={handleFilterAvailability}
+              showOnlyFavorites={showOnlyFavorites}
+              onToggleFavorites={handleToggleFavoritesFilter}
+              onClearFilters={handleClearFilters}
+            />
             
             <Button variant="outline" onClick={handleImportMaterials} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
               <Upload className="h-4 w-4 mr-2" />
@@ -409,7 +164,12 @@ const MaterialsContent = () => {
             <DialogTitle className="text-white">{t('materials.addNewMaterial')}</DialogTitle>
           </DialogHeader>
           <MaterialForm 
-            onSubmit={handleAddMaterial}
+            onSubmit={async (formData) => {
+              const success = await handleAddMaterial(formData);
+              if (success) {
+                setIsAddDialogOpen(false);
+              }
+            }}
             onCancel={() => setIsAddDialogOpen(false)}
           />
         </DialogContent>
@@ -424,7 +184,12 @@ const MaterialsContent = () => {
           {selectedMaterial && (
             <MaterialForm 
               material={selectedMaterial}
-              onSubmit={handleUpdateMaterial}
+              onSubmit={async (formData) => {
+                const success = await handleUpdateMaterial(selectedMaterial, formData);
+                if (success) {
+                  setIsEditDialogOpen(false);
+                }
+              }}
               onCancel={() => setIsEditDialogOpen(false)}
             />
           )}

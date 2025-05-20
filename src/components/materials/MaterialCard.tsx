@@ -25,6 +25,24 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
   const { t } = useTranslation();
   const fallbackImage = 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?q=80&w=500';
   const [isHovered, setIsHovered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Handle image load errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    if (e.currentTarget) {
+      e.currentTarget.style.backgroundImage = `url(${fallbackImage})`;
+    }
+  };
+  
+  // Animation for button clicks
+  const handleButtonClick = async (callback: Function) => {
+    setIsLoading(true);
+    try {
+      await Promise.resolve(callback());
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return (
     <Card 
@@ -39,6 +57,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
+        onError={handleImageError}
       >
         {/* Material availability badge */}
         <div className="absolute top-3 left-3 z-10">
@@ -56,11 +75,12 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
               className={`h-8 w-8 rounded-full ${material.isFavorite ? 'text-yellow-400' : 'text-white opacity-60 hover:opacity-100'} transition-opacity`}
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleFavorite(material);
+                handleButtonClick(() => onToggleFavorite(material));
               }}
               title={material.isFavorite ? t('materials.removeFromFavorites') : t('materials.addToFavorites')}
+              disabled={isLoading}
             >
-              <Star className={`h-5 w-5 ${material.isFavorite ? 'fill-yellow-400' : ''}`} />
+              <Star className={`h-5 w-5 ${material.isFavorite ? 'fill-yellow-400' : ''} ${isLoading ? 'animate-pulse' : ''}`} />
             </Button>
           </div>
         )}
@@ -75,7 +95,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
         </div>
         
         {/* Action buttons */}
-        <div className="absolute bottom-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className={`absolute bottom-3 right-3 flex gap-1 transition-all duration-300 ${isHovered ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
           {onView && (
             <Button 
               variant="secondary" 
@@ -83,9 +103,10 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
               className="h-8 w-8 rounded-full bg-gray-800/80 hover:bg-gray-700 shadow-md text-white"
               onClick={(e) => {
                 e.stopPropagation();
-                onView(material);
+                handleButtonClick(() => onView(material));
               }}
               title={t('common.view')}
+              disabled={isLoading}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -96,9 +117,10 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             className="h-8 w-8 rounded-full bg-gray-800/80 hover:bg-gray-700 shadow-md text-white"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(material);
+              handleButtonClick(() => onEdit(material));
             }}
             title={t('common.edit')}
+            disabled={isLoading}
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -108,18 +130,17 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
             className="h-8 w-8 rounded-full shadow-md"
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(material);
+              handleButtonClick(() => onDelete(material));
             }}
             title={t('common.delete')}
+            disabled={isLoading}
           >
             <Trash className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Hover zoom effect overlay */}
-        {isHovered && (
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40 transition-opacity duration-300" />
-        )}
+        <div className={`absolute inset-0 bg-gradient-to-b from-black/20 to-black/40 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
       </div>
       <CardContent className="p-4 flex-grow flex flex-col bg-gray-800 text-white">
         <div className="flex-grow">
