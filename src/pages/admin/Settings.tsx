@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +14,7 @@ import { ComboRulesService } from '@/services/comboRulesService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ComboRule, ModuleType } from '@/types';
+import { ComboRule, ModuleType, AccessoryType } from '@/types';
 
 // Simulăm comboRules dacă nu există în ComboRulesService
 const defaultComboRules = [
@@ -154,7 +153,8 @@ const Settings = () => {
         then: {
           suggest: {
             accessory: {
-              type: 'default'
+              // Fix: Use a valid AccessoryType value instead of 'default'
+              type: 'handle' as AccessoryType
             }
           }
         },

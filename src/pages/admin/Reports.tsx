@@ -199,18 +199,17 @@ const Reports = () => {
   };
 
   const handleExportChart = (chartType: string) => {
-    const typeParam = { type: chartType };
-    
+    // Fix: Use the t function correctly with a single argument that includes interpolation
     showToastMessage(
       t('reports.exportStarted'),
-      t('reports.preparingExport', typeParam)
+      t(`reports.preparingExport.${chartType}`)
     );
     
     // Simulate export process
     setTimeout(() => {
       showToastMessage(
         t('reports.exportSuccess'),
-        t('reports.exportCompleted', typeParam)
+        t(`reports.exportCompleted.${chartType}`)
       );
     }, 1500);
   };
