@@ -2,7 +2,11 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { Language, TranslationContextType } from '@/types/translations';
 import { translations } from '@/data/translations';
+import { defaultTranslations } from '@/data/default-translations';
 import { useTranslationProvider } from '@/hooks/useTranslationProvider';
+
+// Combinăm traducerile default cu cele existente
+const mergedTranslations = { ...defaultTranslations, ...translations };
 
 // Create initial translation context
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
@@ -25,25 +29,25 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
         const [section, parentKey, childKey] = key.split('.');
         
         if (
-          translations[section] && 
-          translations[section][parentKey] && 
-          typeof translations[section][parentKey] === 'object' &&
-          (translations[section][parentKey] as any)[childKey] &&
-          (translations[section][parentKey] as any)[childKey][language]
+          mergedTranslations[section] && 
+          mergedTranslations[section][parentKey] && 
+          typeof mergedTranslations[section][parentKey] === 'object' &&
+          (mergedTranslations[section][parentKey] as any)[childKey] &&
+          (mergedTranslations[section][parentKey] as any)[childKey][language]
         ) {
-          return (translations[section][parentKey] as any)[childKey][language];
+          return (mergedTranslations[section][parentKey] as any)[childKey][language];
         }
         
         // Fallback to other language if translation not found in current language
         const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
         if (
-          translations[section] && 
-          translations[section][parentKey] && 
-          typeof translations[section][parentKey] === 'object' &&
-          (translations[section][parentKey] as any)[childKey] &&
-          (translations[section][parentKey] as any)[childKey][fallbackLang]
+          mergedTranslations[section] && 
+          mergedTranslations[section][parentKey] && 
+          typeof mergedTranslations[section][parentKey] === 'object' &&
+          (mergedTranslations[section][parentKey] as any)[childKey] &&
+          (mergedTranslations[section][parentKey] as any)[childKey][fallbackLang]
         ) {
-          return (translations[section][parentKey] as any)[childKey][fallbackLang];
+          return (mergedTranslations[section][parentKey] as any)[childKey][fallbackLang];
         }
         
         // Return the key if no translation found
@@ -53,23 +57,23 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
       
       // Handle regular keys
       if (
-        translations[section] && 
-        translations[section][translationKey] && 
-        typeof translations[section][translationKey] === 'object' &&
-        (translations[section][translationKey] as any)[language]
+        mergedTranslations[section] && 
+        mergedTranslations[section][translationKey] && 
+        typeof mergedTranslations[section][translationKey] === 'object' &&
+        (mergedTranslations[section][translationKey] as any)[language]
       ) {
-        return (translations[section][translationKey] as any)[language];
+        return (mergedTranslations[section][translationKey] as any)[language];
       }
       
       // Fallback to other language if translation not found in current language
       const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
       if (
-        translations[section] && 
-        translations[section][translationKey] && 
-        typeof translations[section][translationKey] === 'object' &&
-        (translations[section][translationKey] as any)[fallbackLang]
+        mergedTranslations[section] && 
+        mergedTranslations[section][translationKey] && 
+        typeof mergedTranslations[section][translationKey] === 'object' &&
+        (mergedTranslations[section][translationKey] as any)[fallbackLang]
       ) {
-        return (translations[section][translationKey] as any)[fallbackLang];
+        return (mergedTranslations[section][translationKey] as any)[fallbackLang];
       }
       
       // Return key if no translation found

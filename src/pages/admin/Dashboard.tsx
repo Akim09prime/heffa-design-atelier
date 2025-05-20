@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 // Sample data for activity chart
 const activityData = [
@@ -131,6 +132,7 @@ const projectsData = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('');
   const [designerFilter, setDesignerFilter] = useState('all');
@@ -165,16 +167,16 @@ const Dashboard = () => {
 
   const handleNavigation = (path: string, title: string) => {
     toast({
-      title: `Navigating to ${title}`,
-      description: "Loading content..."
+      title: `${t('common.loading')}: ${title}`,
+      description: t('common.loading')
     });
     navigate(path);
   };
 
   const handleQuickAction = (action: string) => {
     toast({
-      title: `${action} initiated`,
-      description: "Processing your request..."
+      title: `${action} ${t('common.loading').toLowerCase()}`,
+      description: t('common.loading')
     });
     
     // Navigate based on action
@@ -210,22 +212,22 @@ const Dashboard = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-8">
           <div>
-            <h1 className="text-3xl font-medium text-white">Admin Dashboard</h1>
+            <h1 className="text-3xl font-medium text-white">{t('admin.menu.dashboard')}</h1>
             <p className="text-admin-text-secondary">Vizualizare generală a sistemului</p>
           </div>
           <div className="flex gap-3">
             <Button 
-              onClick={() => handleNavigation("/admin/reports/new", "Create Report")}
+              onClick={() => handleNavigation("/admin/reports/new", t('admin.reports.exportReport'))}
               className="bg-admin-accent-purple hover:bg-admin-accent-purple/80 text-white"
             >
-              <FileText size={18} className="mr-2" /> Generează raport
+              <FileText size={18} className="mr-2 animate-icon" /> {t('admin.reports.exportReport')}
             </Button>
             <Button 
               variant="outline"
               className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight hover:text-admin-text-primary"
-              onClick={() => handleNavigation("/admin/import-data", "Import Data")}
+              onClick={() => handleNavigation("/admin/import-data", t('admin.menu.importData'))}
             >
-              <Upload size={18} className="mr-2" /> Importă date
+              <Upload size={18} className="mr-2 animate-icon" /> {t('common.import')}
             </Button>
           </div>
         </div>
@@ -233,24 +235,24 @@ const Dashboard = () => {
         {/* Filters */}
         <div className="bg-admin-bg-secondary border border-admin-border-light rounded-lg p-4 mb-8 flex flex-wrap gap-4 items-center">
           <div className="flex items-center">
-            <span className="text-white mr-2">Status:</span>
+            <span className="text-white mr-2">{t('admin.dashboard.status')}:</span>
             <Select defaultValue="all" onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[140px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light">
-                <SelectValue placeholder="Toate" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
-                <SelectItem value="all">Toate</SelectItem>
-                <SelectItem value="active">În lucru</SelectItem>
-                <SelectItem value="completed">Finalizat</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="active">{t('admin.dashboard.active')}</SelectItem>
+                <SelectItem value="completed">{t('admin.dashboard.completed')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div className="flex items-center">
-            <span className="text-white mr-2">Client:</span>
+            <span className="text-white mr-2">{t('admin.dashboard.client')}:</span>
             <Input 
               type="text" 
-              placeholder="Caută client..." 
+              placeholder={t('admin.dashboard.searchClient')} 
               className="w-[200px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light"
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value)}
@@ -258,15 +260,15 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center">
-            <span className="text-white mr-2">Designer:</span>
+            <span className="text-white mr-2">{t('admin.dashboard.designer')}:</span>
             <Select defaultValue="all" onValueChange={setDesignerFilter}>
               <SelectTrigger className="w-[180px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light">
-                <SelectValue placeholder="Toți designerii" />
+                <SelectValue placeholder={t('admin.dashboard.allDesigners')} />
               </SelectTrigger>
               <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
                 {designers.map((designer, index) => (
                   <SelectItem key={index} value={designer}>
-                    {designer === 'all' ? 'Toți designerii' : designer}
+                    {designer === 'all' ? t('admin.dashboard.allDesigners') : designer}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -277,19 +279,19 @@ const Dashboard = () => {
             variant="outline" 
             className="ml-auto border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight"
           >
-            <Filter size={16} className="mr-2" /> Filtre avansate
+            <Filter size={16} className="mr-2 animate-icon" /> {t('admin.dashboard.advancedFilters')}
           </Button>
         </div>
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white card-hover">
             <CardHeader className="pb-2">
               <div className="flex items-center">
                 <div className="p-2 rounded-md bg-blue-500/20 mr-3">
-                  <Clock size={20} className="text-blue-500" />
+                  <Clock size={20} className="text-blue-500 animate-icon" />
                 </div>
-                <CardTitle className="text-lg font-medium text-white">Proiecte active</CardTitle>
+                <CardTitle className="text-lg font-medium text-white">{t('admin.dashboard.activeProjects')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -301,13 +303,13 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white card-hover">
             <CardHeader className="pb-2">
               <div className="flex items-center">
                 <div className="p-2 rounded-md bg-green-500/20 mr-3">
-                  <CheckCircle size={20} className="text-green-500" />
+                  <CheckCircle size={20} className="text-green-500 animate-icon" />
                 </div>
-                <CardTitle className="text-lg font-medium text-white">Proiecte finalizate</CardTitle>
+                <CardTitle className="text-lg font-medium text-white">{t('admin.dashboard.completedProjects')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -318,13 +320,13 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white card-hover">
             <CardHeader className="pb-2">
               <div className="flex items-center">
                 <div className="p-2 rounded-md bg-purple-500/20 mr-3">
-                  <Users size={20} className="text-purple-500" />
+                  <Users size={20} className="text-purple-500 animate-icon" />
                 </div>
-                <CardTitle className="text-lg font-medium text-white">Clienți</CardTitle>
+                <CardTitle className="text-lg font-medium text-white">{t('admin.dashboard.clients')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -335,13 +337,13 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
+          <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white card-hover">
             <CardHeader className="pb-2">
               <div className="flex items-center">
                 <div className="p-2 rounded-md bg-amber-500/20 mr-3">
-                  <Box size={20} className="text-amber-500" />
+                  <Box size={20} className="text-amber-500 animate-icon" />
                 </div>
-                <CardTitle className="text-lg font-medium text-white">Corpuri produse</CardTitle>
+                <CardTitle className="text-lg font-medium text-white">{t('admin.dashboard.furniturePieces')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -354,12 +356,12 @@ const Dashboard = () => {
         </div>
         
         {/* Projects Cards */}
-        <h2 className="text-xl font-semibold text-white mb-4">Proiecte recente</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">{t('admin.dashboard.recentProjects')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {filteredProjects.map((project) => (
             <Card 
               key={project.id} 
-              className="bg-admin-bg-secondary border-admin-border-light overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              className="bg-admin-bg-secondary border-admin-border-light overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 card-hover"
             >
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
@@ -367,11 +369,11 @@ const Dashboard = () => {
                     <CardTitle className="text-white flex items-center gap-2">
                       {project.name}
                       {project.isNew && (
-                        <Badge className="bg-admin-accent-blue text-white ml-2">Nou</Badge>
+                        <Badge className="bg-admin-accent-blue text-white ml-2">{t('admin.dashboard.new')}</Badge>
                       )}
                     </CardTitle>
                     <CardDescription className="text-admin-text-secondary">
-                      Client: {project.client}
+                      {t('admin.dashboard.client')}: {project.client}
                     </CardDescription>
                   </div>
                   <Badge className={project.status === 'Finalizat' 
@@ -386,22 +388,22 @@ const Dashboard = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-admin-text-secondary">Designer:</span>
+                      <span className="text-admin-text-secondary">{t('admin.dashboard.designer')}:</span>
                       <span className="text-white">{project.designer}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-admin-text-secondary">Ultima actualizare:</span>
+                      <span className="text-admin-text-secondary">{t('admin.dashboard.lastUpdate')}:</span>
                       <span className="text-white">{project.lastUpdate}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between text-sm">
-                      <span className="text-admin-text-secondary">Progres:</span>
+                      <span className="text-admin-text-secondary">{t('admin.dashboard.progress')}:</span>
                       <span className="text-white">{project.progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-admin-bg-tertiary rounded-full overflow-hidden">
                       <div 
-                        className={`h-full ${
+                        className={`h-full progress-bar ${
                           project.progress >= 100 ? 'bg-green-500' : 
                           project.progress > 50 ? 'bg-blue-500' : 
                           project.progress > 25 ? 'bg-amber-500' : 'bg-red-500'
@@ -419,8 +421,8 @@ const Dashboard = () => {
                   className="bg-admin-accent-blue hover:bg-admin-accent-blue/80 text-white w-full"
                   onClick={() => handleNavigation(`/admin/projects/${project.id}`, project.name)}
                 >
-                  Vezi detalii
-                  <ArrowRight size={16} className="ml-2" />
+                  {t('admin.dashboard.viewDetails')}
+                  <ArrowRight size={16} className="ml-2 animate-icon" />
                 </Button>
               </CardFooter>
             </Card>
@@ -431,7 +433,7 @@ const Dashboard = () => {
         {filteredProjects.length === 0 && (
           <Card className="bg-admin-bg-secondary border-admin-border-light py-8 text-center">
             <CardContent>
-              <p className="text-admin-text-secondary">Nu s-au găsit proiecte care să corespundă filtrelor selectate.</p>
+              <p className="text-admin-text-secondary">{t('common.noData')}</p>
               <Button 
                 variant="link" 
                 className="text-admin-accent-blue mt-2"
@@ -441,7 +443,7 @@ const Dashboard = () => {
                   setDesignerFilter('all');
                 }}
               >
-                Resetează filtrele
+                {t('common.filter')}
               </Button>
             </CardContent>
           </Card>
@@ -450,10 +452,10 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <div className="lg:col-span-2">
-            <Card className="bg-admin-bg-secondary border-admin-border-light">
+            <Card className="bg-admin-bg-secondary border-admin-border-light card-hover">
               <CardHeader>
-                <CardTitle className="text-white">Activitatea sistemului</CardTitle>
-                <CardDescription className="text-admin-text-muted">Vizualizare lunară</CardDescription>
+                <CardTitle className="text-white">{t('admin.dashboard.systemActivity')}</CardTitle>
+                <CardDescription className="text-admin-text-muted">{t('admin.dashboard.monthlyView')}</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
@@ -477,10 +479,10 @@ const Dashboard = () => {
           </div>
           
           <div>
-            <Card className="bg-admin-bg-secondary border-admin-border-light">
+            <Card className="bg-admin-bg-secondary border-admin-border-light card-hover">
               <CardHeader>
-                <CardTitle className="text-white">Alerte sistem</CardTitle>
-                <CardDescription className="text-admin-text-muted">Notificări importante</CardDescription>
+                <CardTitle className="text-white">{t('admin.dashboard.systemAlerts')}</CardTitle>
+                <CardDescription className="text-admin-text-muted">{t('admin.dashboard.importantNotifications')}</CardDescription>
               </CardHeader>
               <CardContent className="px-0 py-0">
                 <ul className="divide-y divide-admin-border-light">
@@ -500,10 +502,14 @@ const Dashboard = () => {
                             )}
                             {alert.title}
                             {alert.severity === 'error' && (
-                              <Badge className="ml-2 bg-red-500/20 text-red-400 border border-red-500/30">Eroare</Badge>
+                              <Badge className="ml-2 bg-red-500/20 text-red-400 border border-red-500/30">
+                                {t('admin.dashboard.error')}
+                              </Badge>
                             )}
                             {alert.severity === 'warning' && (
-                              <Badge className="ml-2 bg-amber-500/20 text-amber-400 border border-amber-500/30">Atenție</Badge>
+                              <Badge className="ml-2 bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                {t('admin.dashboard.warning')}
+                              </Badge>
                             )}
                           </p>
                         </div>
@@ -517,9 +523,9 @@ const Dashboard = () => {
                 <Button 
                   variant="link" 
                   className="ml-auto text-admin-text-link"
-                  onClick={() => handleNavigation("/admin/alerts", "All Alerts")}
+                  onClick={() => handleNavigation("/admin/alerts", t('admin.dashboard.viewAllAlerts'))}
                 >
-                  Vezi toate alertele
+                  {t('admin.dashboard.viewAllAlerts')}
                 </Button>
               </CardFooter>
             </Card>

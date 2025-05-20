@@ -1,0 +1,242 @@
+
+/* Role-specific themes with differentiated styles */
+
+/* Admin Theme */
+.admin-theme {
+  --bg-primary: #F7F9FC;
+  --bg-card: #FFFFFF;
+  --menu-bg: #1F2937;
+  --text-primary: #111827;
+  --accent-primary: #10B981;
+  --border-ui: #E5E7EB;
+  --hover-button: #34D399;
+}
+
+/* Admin specific elements */
+.admin-theme .animate-icon {
+  transition: all 0.3s ease;
+}
+
+.admin-theme .animate-icon:hover {
+  transform: translateY(-3px) scale(1.1);
+  color: var(--accent-primary);
+}
+
+.admin-theme .card-hover {
+  transition: all 0.3s ease;
+}
+
+.admin-theme .card-hover:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.admin-theme .progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+/* Designer Theme */
+.designer-theme {
+  --bg-primary: #EBF5FF;
+  --bg-card: #FFFFFF;
+  --menu-bg: #2563EB;
+  --text-primary: #1E3A8A;
+  --accent-primary: #3B82F6;
+  --border-ui: #DBEAFE;
+  --hover-button: #60A5FA;
+}
+
+.designer-theme .designer-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.designer-theme .designer-scale {
+  transition: all 0.3s ease;
+}
+
+.designer-theme .designer-scale:hover {
+  transform: scale(1.05);
+}
+
+.designer-theme .cad-animation {
+  position: relative;
+}
+
+.designer-theme .cad-animation::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #3B82F6, transparent);
+  animation: cad-scan 2s infinite linear;
+}
+
+@keyframes cad-scan {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Client Theme */
+.client-theme {
+  --bg-primary: #FFFAF0;
+  --bg-card: #FFFFFF;
+  --menu-bg: #10B981;
+  --text-primary: #065F46;
+  --accent-primary: #10B981;
+  --border-ui: #D1FAE5;
+  --hover-button: #34D399;
+}
+
+.client-theme .big-icon {
+  font-size: 1.5rem;
+}
+
+.client-theme .soft-animation {
+  transition: all 0.5s ease;
+}
+
+.client-theme .soft-animation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Login page special styling */
+.login-page {
+  background: linear-gradient(135deg, #2A303C 0%, #16181D 100%);
+}
+
+.login-form {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  animation: fadeScale 0.5s ease-in-out;
+}
+
+@keyframes fadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.shake-animation {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {transform: translateX(0);}
+  20%, 60% {transform: translateX(-5px);}
+  40%, 80% {transform: translateX(5px);}
+}
+
+.success-animation {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+/* Global CSS effects */
+.hover-scale {
+  transition: all 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.popup-animation {
+  animation: fadeSlideUp 0.3s ease-in-out;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button loading spinner */
+.button-spinner {
+  position: relative;
+}
+
+.button-spinner.loading::after {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: calc(50% - 0.5rem);
+  right: 0.5rem;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+
+/* Animated tooltips */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  padding: 0.25rem 0.5rem;
+  background-color: #333;
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.tooltip:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
