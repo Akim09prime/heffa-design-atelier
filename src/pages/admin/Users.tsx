@@ -8,14 +8,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from '@/components/ui/label';
-import { Search, Plus, Edit, Trash, MoreHorizontal, Mail } from 'lucide-react';
+import { Search, Plus, Edit, Trash, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, UserRole } from '@/types';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 const Users = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
+  
   const [users, setUsers] = useState<User[]>([
     {
       id: '1',
@@ -90,8 +93,8 @@ const Users = () => {
   const handleDeleteUser = (id: string) => {
     setUsers(prev => prev.filter(user => user.id !== id));
     toast({
-      title: 'User Deleted',
-      description: 'The user has been successfully removed.',
+      title: t('admin.users.deleteUser'),
+      description: t('admin.users.userDetails'),
     });
   };
   
@@ -106,7 +109,7 @@ const Users = () => {
         prev.map(user => user.id === selectedUser.id ? { ...user, name, email, role } : user)
       );
       toast({
-        title: 'User Updated',
+        title: t('admin.users.editUser'),
         description: `${name}'s information has been updated.`,
       });
       setIsEditUserDialogOpen(false);
@@ -124,7 +127,7 @@ const Users = () => {
       
       setUsers(prev => [...prev, newUser]);
       toast({
-        title: 'User Added',
+        title: t('admin.users.addUser'),
         description: `${name} has been added successfully.`,
       });
       setIsAddUserDialogOpen(false);
@@ -133,19 +136,19 @@ const Users = () => {
   
   const handleInviteUser = (email: string) => {
     toast({
-      title: 'Invitation Sent',
-      description: `An invitation has been sent to ${email}.`,
+      title: t('admin.users.invitation'),
+      description: `${t('admin.users.invitationSent')} ${email}.`,
     });
   };
 
   const getUserRoleBadge = (role: UserRole) => {
     switch (role) {
       case 'admin':
-        return <Badge className="bg-purple-900/30 text-purple-400 hover:bg-purple-900/40">Admin</Badge>;
+        return <Badge className="bg-purple-900/30 text-purple-400 hover:bg-purple-900/40">{t('admin.users.admins')}</Badge>;
       case 'designer':
-        return <Badge className="bg-blue-900/30 text-blue-400 hover:bg-blue-900/40">Designer</Badge>;
+        return <Badge className="bg-blue-900/30 text-blue-400 hover:bg-blue-900/40">{t('admin.users.designers')}</Badge>;
       case 'client':
-        return <Badge className="bg-green-900/30 text-green-400 hover:bg-green-900/40">Client</Badge>;
+        return <Badge className="bg-green-900/30 text-green-400 hover:bg-green-900/40">{t('admin.users.clients')}</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
@@ -156,15 +159,15 @@ const Users = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-medium text-white mb-2">User Management</h1>
-            <p className="text-gray-300">Manage system users and their permissions</p>
+            <h1 className="text-3xl font-medium text-white mb-2">{t('admin.users.userManagement')}</h1>
+            <p className="text-gray-300">{t('admin.users.manageSystemUsers')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <div className="relative min-w-[200px]">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search users..."
+                placeholder={t('admin.users.searchUsers')}
                 className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -172,44 +175,44 @@ const Users = () => {
             </div>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700 text-white">
-                <SelectValue placeholder="Filter by role" />
+                <SelectValue placeholder={t('admin.users.filterByRole')} />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="all">All Users</SelectItem>
-                <SelectItem value="admin">Admins</SelectItem>
-                <SelectItem value="designer">Designers</SelectItem>
-                <SelectItem value="client">Clients</SelectItem>
+                <SelectItem value="all">{t('admin.users.allUsers')}</SelectItem>
+                <SelectItem value="admin">{t('admin.users.admins')}</SelectItem>
+                <SelectItem value="designer">{t('admin.users.designers')}</SelectItem>
+                <SelectItem value="client">{t('admin.users.clients')}</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={handleAddUser}>
               <Plus className="h-4 w-4 mr-2" />
-              Add User
+              {t('admin.users.addUser')}
             </Button>
           </div>
         </div>
 
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">System Users</CardTitle>
+            <CardTitle className="text-white">{t('admin.users.systemUsers')}</CardTitle>
             <CardDescription className="text-gray-400">
-              Manage users and their permissions in the application
+              {t('admin.users.manageSystemUsers')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow className="border-gray-700 hover:bg-gray-800">
-                  <TableHead className="text-gray-400">User</TableHead>
-                  <TableHead className="text-gray-400">Email</TableHead>
-                  <TableHead className="text-gray-400">Role</TableHead>
-                  <TableHead className="text-gray-400 text-right">Actions</TableHead>
+                  <TableHead className="text-gray-400">{t('admin.users.userDetails')}</TableHead>
+                  <TableHead className="text-gray-400">{t('auth.email')}</TableHead>
+                  <TableHead className="text-gray-400">{t('admin.users.role')}</TableHead>
+                  <TableHead className="text-gray-400 text-right">{t('common.edit')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.length === 0 ? (
                   <TableRow className="border-gray-700">
                     <TableCell colSpan={4} className="text-center py-8 text-gray-400">
-                      No users found matching your criteria
+                      {t('admin.users.noUsersFound')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -269,7 +272,7 @@ const Users = () => {
       <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>Add New User</DialogTitle>
+            <DialogTitle>{t('admin.users.addUser')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={(e) => {
             e.preventDefault();
@@ -277,7 +280,7 @@ const Users = () => {
           }}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">Name</Label>
+                <Label htmlFor="name" className="text-right">{t('admin.users.name')}</Label>
                 <Input
                   id="name"
                   name="name"
@@ -287,7 +290,7 @@ const Users = () => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">Email</Label>
+                <Label htmlFor="email" className="text-right">{t('admin.users.email')}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -298,25 +301,25 @@ const Users = () => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="role" className="text-right">Role</Label>
+                <Label htmlFor="role" className="text-right">{t('admin.users.role')}</Label>
                 <Select name="role" defaultValue="client">
                   <SelectTrigger id="role" className="col-span-3 bg-gray-700 border-gray-600">
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder={t('admin.users.role')} />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-700 border-gray-600">
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="designer">Designer</SelectItem>
-                    <SelectItem value="client">Client</SelectItem>
+                    <SelectItem value="admin">{t('admin.users.admins')}</SelectItem>
+                    <SelectItem value="designer">{t('admin.users.designers')}</SelectItem>
+                    <SelectItem value="client">{t('admin.users.clients')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button type="submit">
-                Add User
+                {t('admin.users.addUser')}
               </Button>
             </DialogFooter>
           </form>
@@ -327,7 +330,7 @@ const Users = () => {
       <Dialog open={isEditUserDialogOpen} onOpenChange={setIsEditUserDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>{t('admin.users.editUser')}</DialogTitle>
           </DialogHeader>
           {selectedUser && (
             <form onSubmit={(e) => {
@@ -336,7 +339,7 @@ const Users = () => {
             }}>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-name" className="text-right">Name</Label>
+                  <Label htmlFor="edit-name" className="text-right">{t('admin.users.name')}</Label>
                   <Input
                     id="edit-name"
                     name="name"
@@ -346,7 +349,7 @@ const Users = () => {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-email" className="text-right">Email</Label>
+                  <Label htmlFor="edit-email" className="text-right">{t('admin.users.email')}</Label>
                   <Input
                     id="edit-email"
                     name="email"
@@ -357,25 +360,25 @@ const Users = () => {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="edit-role" className="text-right">Role</Label>
+                  <Label htmlFor="edit-role" className="text-right">{t('admin.users.role')}</Label>
                   <Select name="role" defaultValue={selectedUser.role}>
                     <SelectTrigger id="edit-role" className="col-span-3 bg-gray-700 border-gray-600">
-                      <SelectValue placeholder="Select role" />
+                      <SelectValue placeholder={t('admin.users.role')} />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-700 border-gray-600">
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="designer">Designer</SelectItem>
-                      <SelectItem value="client">Client</SelectItem>
+                      <SelectItem value="admin">{t('admin.users.admins')}</SelectItem>
+                      <SelectItem value="designer">{t('admin.users.designers')}</SelectItem>
+                      <SelectItem value="client">{t('admin.users.clients')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsEditUserDialogOpen(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit">
-                  Update User
+                  {t('common.save')}
                 </Button>
               </DialogFooter>
             </form>

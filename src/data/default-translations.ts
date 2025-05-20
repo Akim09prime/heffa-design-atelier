@@ -455,6 +455,58 @@ export const defaultTranslations: TranslationsStructure = {
       inactive: {
         ro: "Inactiv",
         en: "Inactive"
+      },
+      userManagement: {
+        ro: "Gestionare utilizatori",
+        en: "User Management"
+      },
+      manageSystemUsers: {
+        ro: "Gestionează utilizatorii sistemului",
+        en: "Manage system users"
+      },
+      systemUsers: {
+        ro: "Utilizatori sistem",
+        en: "System Users"
+      },
+      userDetails: {
+        ro: "Detalii utilizator",
+        en: "User Details"
+      },
+      searchUsers: {
+        ro: "Caută utilizatori...",
+        en: "Search users..."
+      },
+      filterByRole: {
+        ro: "Filtrează după rol",
+        en: "Filter by role"
+      },
+      allUsers: {
+        ro: "Toți utilizatorii",
+        en: "All Users"
+      },
+      admins: {
+        ro: "Administratori",
+        en: "Admins"
+      },
+      designers: {
+        ro: "Designeri",
+        en: "Designers"
+      },
+      clients: {
+        ro: "Clienți",
+        en: "Clients"
+      },
+      noUsersFound: {
+        ro: "Nu au fost găsiți utilizatori",
+        en: "No users found matching your criteria"
+      },
+      invitation: {
+        ro: "Invitație",
+        en: "Invitation"
+      },
+      invitationSent: {
+        ro: "Invitația a fost trimisă",
+        en: "Invitation has been sent"
       }
     },
     reports: {
@@ -716,3 +768,4 @@ export const extractTranslationKeys = (
   
   return result;
 };
+
