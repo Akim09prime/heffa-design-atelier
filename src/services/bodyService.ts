@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType, BodyPartPosition, AccessoryType } from '@/types';
 
@@ -35,7 +34,7 @@ export const BodyService = {
   
   // Get available part types
   getPartTypes: async (): Promise<BodyPartType[]> => {
-    return ["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[];
+    return (["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
   },
 
   // Create standard wardrobe body
@@ -55,45 +54,45 @@ export const BodyService = {
           id: uuidv4(),
           type: "side" as BodyPartType,
           materialId: "PAL",
-          material: "PAL", // For backward compatibility
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: true, bottom: true, left: false },
           position: "left" as BodyPartPosition,
+          material: "PAL", // For backward compatibility
         },
         {
           id: uuidv4(),
           type: "side" as BodyPartType,
           materialId: "PAL",
-          material: "PAL", // For backward compatibility
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: false, bottom: true, left: true },
           position: "right" as BodyPartPosition,
+          material: "PAL", // For backward compatibility
         },
         {
           id: uuidv4(),
           type: "top" as BodyPartType,
           materialId: "PAL",
-          material: "PAL", // For backward compatibility
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
           position: "top" as BodyPartPosition,
+          material: "PAL", // For backward compatibility
         },
         {
           id: uuidv4(),
           type: "bottom" as BodyPartType,
           materialId: "PAL",
-          material: "PAL", // For backward compatibility
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
           position: "bottom" as BodyPartPosition,
+          material: "PAL", // For backward compatibility
         }
       ],
       accessories: [

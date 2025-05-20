@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -101,10 +100,11 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
   };
   
   // Add the missing handleAccessoriesChange function
-  const handleAccessoriesChange = (accessories: any) => {
-    // This function would typically handle changes to accessories data
-    console.log("Accessories changed:", accessories);
-    // Implement the actual logic as needed
+  const handleAccessoriesChange = (accessories: BodyAccessory[]) => {
+    setBodyData(prev => ({
+      ...prev,
+      customAccessories: accessories
+    }));
   };
   
   const handleCreateBody = async () => {

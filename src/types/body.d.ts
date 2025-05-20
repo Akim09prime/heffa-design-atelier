@@ -14,24 +14,24 @@ export interface BodyPart {
   type: BodyPartType;
   materialId: string;
   thickness: number;
-  width: number;
-  height: number;
+  width: number;  // Added to match usage in components
+  height: number; // Added to match usage in components
   edge: {
     top: boolean;
     right: boolean;
     bottom: boolean;
     left: boolean;
   };
-  position: BodyPartPosition;
-  material?: string; // Temporary property for backward compatibility
+  position: BodyPartPosition; // Added to match usage in components
+  material?: string; // Keeping for backward compatibility
 }
 
 export interface BodyAccessory {
   id: string;
-  type: AccessoryType;
-  category?: string; // For backward compatibility
+  type: AccessoryType; // Using AccessoryType
   quantity: number;
   price: number;
+  category?: string; // For backward compatibility
 }
 
 export interface FurnitureBody {

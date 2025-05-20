@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -64,7 +63,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
       } catch (error) {
         console.error('Failed to load part types', error);
         // Set default part types if loading fails
-        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
+        setPartTypes((["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]));
       }
     };
     
@@ -75,7 +74,6 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
     onAddPart({
       type: data.type as BodyPartType,
       materialId: data.material,
-      material: data.material, // For backward compatibility
       thickness: data.thickness,
       width: data.width,
       height: data.height,
@@ -85,7 +83,8 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
         bottom: edgeBottom,
         left: edgeLeft
       },
-      position: data.position as BodyPartPosition
+      position: data.position as BodyPartPosition,
+      material: data.material, // For backward compatibility
     });
     
     // Reset form for next part
