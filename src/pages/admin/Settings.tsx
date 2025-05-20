@@ -10,18 +10,44 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Loader, UploadCloud, Download, Info, Plus, Settings, Save, Trash } from 'lucide-react';
+import { Loader, UploadCloud, Download, Info, Plus, Save, Trash, Settings as SettingsIcon } from 'lucide-react';
 import { ComboRulesService } from '@/services/comboRulesService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// Simulăm comboRules dacă nu există în ComboRulesService
+const defaultComboRules = [
+  {
+    id: 'rule-1',
+    name: 'Regula de bază pentru corpuri de bucătărie',
+    description: 'Aplică accesorii standard pentru corpuri de bucătărie',
+    if: { moduleType: 'base_cabinet' },
+    then: { suggest: { accessory: { type: 'default' } } },
+    enabled: true
+  },
+  {
+    id: 'rule-2',
+    name: 'Regula pentru corpuri suspendate',
+    description: 'Aplică sisteme de ridicare pentru corpuri suspendate',
+    if: { moduleType: 'wall_cabinet' },
+    then: { suggest: { accessory: { type: 'default' } } },
+    enabled: true
+  }
+];
 
 // Componenta principală Settings
 const Settings = () => {
   const { toast } = useToast();
   const { t, language, changeLanguage } = useTranslation();
   const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
-  const [comboRules, setComboRules] = useState(ComboRulesService.comboRules);
+  
+  // Verificăm dacă ComboRulesService are comboRules, dacă nu, folosim valorile implicite
+  const initialRules = Array.isArray(ComboRulesService.comboRules) 
+    ? ComboRulesService.comboRules 
+    : defaultComboRules;
+    
+  const [comboRules, setComboRules] = useState(initialRules);
   const [isRuleDialogOpen, setIsRuleDialogOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<any>(null);
   
@@ -60,7 +86,9 @@ const Settings = () => {
       rule.id === id ? { ...rule, enabled } : rule
     );
     setComboRules(updatedRules);
-    ComboRulesService.updateComboRules(updatedRules);
+    if (typeof ComboRulesService.updateComboRules === 'function') {
+      ComboRulesService.updateComboRules(updatedRules);
+    }
     
     toast({
       title: enabled ? t('settings.ruleEnabled') : t('settings.ruleDisabled'),
@@ -81,7 +109,9 @@ const Settings = () => {
   const handleDeleteRule = (id: string) => {
     const updatedRules = comboRules.filter(rule => rule.id !== id);
     setComboRules(updatedRules);
-    ComboRulesService.updateComboRules(updatedRules);
+    if (typeof ComboRulesService.updateComboRules === 'function') {
+      ComboRulesService.updateComboRules(updatedRules);
+    }
     
     toast({
       title: t('settings.ruleDeleted'),
@@ -102,7 +132,9 @@ const Settings = () => {
           : rule
       );
       setComboRules(updatedRules);
-      ComboRulesService.updateComboRules(updatedRules);
+      if (typeof ComboRulesService.updateComboRules === 'function') {
+        ComboRulesService.updateComboRules(updatedRules);
+      }
       toast({
         title: t('settings.ruleUpdated'),
         description: t('settings.ruleUpdatedSuccess')
@@ -127,7 +159,9 @@ const Settings = () => {
       };
       
       setComboRules([...comboRules, newRule]);
-      ComboRulesService.updateComboRules([...comboRules, newRule]);
+      if (typeof ComboRulesService.updateComboRules === 'function') {
+        ComboRulesService.updateComboRules([...comboRules, newRule]);
+      }
       toast({
         title: t('settings.ruleAdded'),
         description: t('settings.ruleAddedSuccess')
@@ -188,7 +222,7 @@ const Settings = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
+                  <SettingsIcon className="h-5 w-5" />
                   {t('settings.general')}
                 </CardTitle>
                 <CardDescription className="text-gray-400">{t('settings.generalDesc')}</CardDescription>
@@ -325,7 +359,7 @@ const Settings = () => {
                               size="icon"
                               onClick={() => handleEditRule(rule)}
                             >
-                              <Settings className="h-4 w-4 text-gray-400" />
+                              <SettingsIcon className="h-4 w-4 text-gray-400" />
                             </Button>
                             <Button 
                               variant="ghost" 
