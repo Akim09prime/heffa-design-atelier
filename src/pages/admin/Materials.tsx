@@ -1,20 +1,22 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Upload, Download } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { Material } from '@/types';
 import { MaterialForm } from '@/components/materials/MaterialForm';
 import { MaterialViewDialog } from '@/components/materials/MaterialViewDialog';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { useMaterialsManagement } from '@/hooks/useMaterialsManagement';
 import { MaterialsFilter } from '@/components/materials/MaterialsFilter';
 import { MaterialsGrid } from '@/components/materials/MaterialsGrid';
+import { MaterialCategoryTabs } from '@/components/materials/MaterialCategoryTabs';
+import { MaterialsAdvancedFilter } from '@/components/materials/MaterialsAdvancedFilter';
+import { useMaterialsFilters } from '@/hooks/useMaterialsFilters';
+import { MaterialService } from '@/services/materialService';
 
 // Create a wrapper component that uses the contexts
 const MaterialsContent = () => {
@@ -23,27 +25,56 @@ const MaterialsContent = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
+  // Fetch materials on component mount
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        setIsLoading(true);
+        const allMaterials = await MaterialService.getAllMaterials();
+        setMaterials(allMaterials);
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+        toast({
+          title: t('common.error'),
+          description: t('materials.fetchError'),
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchMaterials();
+  }, [toast, t]);
+  
+  // Use our custom hook for filtering
   const {
-    materialType,
-    filteredMaterials,
     searchQuery,
-    isLoading,
-    selectedMaterial,
-    filterAvailability,
+    categoryFilter,
+    manufacturerFilter,
+    thicknessFilter,
+    priceRangeFilter,
     showOnlyFavorites,
-    setSelectedMaterial,
+    availabilityFilter,
+    manufacturers,
+    thicknesses,
+    minPrice,
+    maxPrice,
+    filteredMaterials,
     setSearchQuery,
-    handleTabChange,
-    handleToggleFavoritesFilter,
-    handleFilterAvailability,
-    handleClearFilters,
-    handleAddMaterial,
-    handleUpdateMaterial,
-    handleDeleteMaterial,
-    handleToggleFavorite,
+    setCategoryFilter,
+    setManufacturerFilter,
+    setThicknessFilter,
+    setPriceRangeFilter,
+    setShowOnlyFavorites,
+    setAvailabilityFilter,
+    clearFilters,
     hasActiveFilters
-  } = useMaterialsManagement();
+  } = useMaterialsFilters(materials);
   
   const handleEditMaterial = (material: Material) => {
     setSelectedMaterial(material);
@@ -68,33 +99,110 @@ const MaterialsContent = () => {
       description: t('materials.exportFunctionality'),
     });
   };
-
-  // Function to render tab content for each material type
-  const renderTabContent = (type: string) => {
-    const typeName = type.toUpperCase();
+  
+  const handleAddMaterial = async (formData: Omit<Material, 'id'>) => {
+    try {
+      const newMaterial = await MaterialService.addMaterial({
+        ...formData,
+        type: categoryFilter as any
+      });
+      
+      setMaterials(prevMaterials => [...prevMaterials, newMaterial]);
+      
+      toast({
+        title: t('materials.addSuccess'),
+        description: t('materials.materialAddedSuccess')
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error adding material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.addError'),
+        variant: 'destructive'
+      });
+      return false;
+    }
+  };
+  
+  const handleUpdateMaterial = async (material: Material, formData: Partial<Material>) => {
+    try {
+      const updatedMaterial = await MaterialService.updateMaterial(material.id, formData);
+      
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => m.id === updatedMaterial.id ? updatedMaterial : m)
+      );
+      
+      if (selectedMaterial && selectedMaterial.id === updatedMaterial.id) {
+        setSelectedMaterial(updatedMaterial);
+      }
+      
+      toast({
+        title: t('materials.updateSuccess'),
+        description: t('materials.materialUpdatedSuccess')
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.updateError'),
+        variant: 'destructive'
+      });
+      return false;
+    }
+  };
+  
+  const handleDeleteMaterial = async (material: Material) => {
+    if (!window.confirm(t('materials.confirmDelete'))) return;
     
-    return (
-      <Card className="bg-gray-800 border-gray-700">
-        <CardHeader className="border-b border-gray-700">
-          <CardTitle className="text-white">{typeName} {t('materials.materials')}</CardTitle>
-          <CardDescription className="text-gray-400">
-            {typeName} {t('materials.materialsFrom')} {filteredMaterials.length} {t('materials.entries')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6">
-          <MaterialsGrid 
-            materials={filteredMaterials}
-            isLoading={isLoading}
-            onEdit={handleEditMaterial}
-            onDelete={handleDeleteMaterial}
-            onView={handleViewMaterial}
-            onToggleFavorite={handleToggleFavorite}
-            onClearFilters={handleClearFilters}
-            hasActiveFilters={hasActiveFilters}
-          />
-        </CardContent>
-      </Card>
-    );
+    try {
+      await MaterialService.deleteMaterial(material.id);
+      
+      setMaterials(prevMaterials => 
+        prevMaterials.filter(m => m.id !== material.id)
+      );
+      
+      toast({
+        title: t('materials.deleteSuccess'),
+        description: t('materials.materialDeletedSuccess')
+      });
+    } catch (error) {
+      console.error('Error deleting material:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.deleteError'),
+        variant: 'destructive'
+      });
+    }
+  };
+  
+  const handleToggleFavorite = async (material: Material) => {
+    try {
+      const updatedMaterial = await MaterialService.toggleFavorite(material.id);
+      
+      setMaterials(prevMaterials => 
+        prevMaterials.map(m => m.id === updatedMaterial.id ? updatedMaterial : m)
+      );
+      
+      if (selectedMaterial && selectedMaterial.id === updatedMaterial.id) {
+        setSelectedMaterial(updatedMaterial);
+      }
+      
+      toast({
+        title: updatedMaterial.isFavorite ? t('materials.addedToFavorites') : t('materials.removedFromFavorites'),
+        description: t('materials.favoritesUpdated')
+      });
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast({
+        title: t('common.error'),
+        description: t('materials.favoriteError'),
+        variant: 'destructive'
+      });
+    }
   };
 
   return (
@@ -105,15 +213,29 @@ const MaterialsContent = () => {
             <h1 className="text-3xl font-medium text-white">{t('materials.title')}</h1>
             <p className="text-gray-300">{t('materials.description')}</p>
           </div>
-          <div className="flex flex-wrap w-full lg:w-auto gap-2">
+          <div className="flex flex-wrap w-full lg:w-auto gap-2 items-center">
             <MaterialsFilter
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
-              filterAvailability={filterAvailability}
-              onFilterAvailability={handleFilterAvailability}
+              filterAvailability={availabilityFilter}
+              onFilterAvailability={setAvailabilityFilter}
               showOnlyFavorites={showOnlyFavorites}
-              onToggleFavorites={handleToggleFavoritesFilter}
-              onClearFilters={handleClearFilters}
+              onToggleFavorites={() => setShowOnlyFavorites(!showOnlyFavorites)}
+              onClearFilters={clearFilters}
+            />
+            
+            <MaterialsAdvancedFilter
+              manufacturers={manufacturers}
+              thicknesses={thicknesses}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              selectedManufacturer={manufacturerFilter}
+              selectedThickness={thicknessFilter}
+              priceRange={priceRangeFilter}
+              onManufacturerChange={setManufacturerFilter}
+              onThicknessChange={setThicknessFilter}
+              onPriceRangeChange={setPriceRangeFilter}
+              onClearFilters={clearFilters}
             />
             
             <Button variant="outline" onClick={handleImportMaterials} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
@@ -131,30 +253,38 @@ const MaterialsContent = () => {
           </div>
         </div>
 
-        <Tabs 
-          defaultValue="pal" 
-          onValueChange={handleTabChange}
-          className="w-full"
-        >
-          <TabsList className="mb-6 bg-gray-800">
-            <TabsTrigger value="pal">PAL</TabsTrigger>
-            <TabsTrigger value="mdf">MDF</TabsTrigger>
-            <TabsTrigger value="mdf-agt">MDF-AGT</TabsTrigger>
-            <TabsTrigger value="pfl">PFL</TabsTrigger>
-            <TabsTrigger value="glass">{t('materials.glass')}</TabsTrigger>
-            <TabsTrigger value="countertop">{t('materials.countertops')}</TabsTrigger>
-          </TabsList>
+        <MaterialCategoryTabs
+          currentCategory={categoryFilter}
+          onCategoryChange={setCategoryFilter}
+        />
           
-          <TabsContent value="pal" className="w-full">
-            {renderTabContent('pal')}
-          </TabsContent>
-          
-          {['mdf', 'mdf-agt', 'pfl', 'glass', 'countertop'].map((type) => (
-            <TabsContent key={type} value={type} className="w-full">
-              {renderTabContent(type)}
-            </TabsContent>
-          ))}
-        </Tabs>
+        <Card className="bg-gray-800 border-gray-700">
+          <CardHeader className="border-b border-gray-700">
+            <CardTitle className="text-white">
+              {categoryFilter} {t('materials.materials')}
+              {hasActiveFilters && (
+                <span className="text-sm text-gray-400 ml-2">
+                  ({filteredMaterials.length} {t('materials.filtered')})
+                </span>
+              )}
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              {categoryFilter} {t('materials.materialsDescription')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <MaterialsGrid 
+              materials={filteredMaterials}
+              isLoading={isLoading}
+              onEdit={handleEditMaterial}
+              onDelete={handleDeleteMaterial}
+              onView={handleViewMaterial}
+              onToggleFavorite={handleToggleFavorite}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Add Material Dialog */}
@@ -171,6 +301,7 @@ const MaterialsContent = () => {
               }
             }}
             onCancel={() => setIsAddDialogOpen(false)}
+            initialType={categoryFilter}
           />
         </DialogContent>
       </Dialog>
@@ -185,9 +316,11 @@ const MaterialsContent = () => {
             <MaterialForm 
               material={selectedMaterial}
               onSubmit={async (formData) => {
-                const success = await handleUpdateMaterial(selectedMaterial, formData);
-                if (success) {
-                  setIsEditDialogOpen(false);
+                if (selectedMaterial) {
+                  const success = await handleUpdateMaterial(selectedMaterial, formData);
+                  if (success) {
+                    setIsEditDialogOpen(false);
+                  }
                 }
               }}
               onCancel={() => setIsEditDialogOpen(false)}
