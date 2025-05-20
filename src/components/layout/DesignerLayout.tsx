@@ -1,221 +1,187 @@
+
 import React from 'react';
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarHeader, 
-  SidebarFooter,
-  SidebarProvider 
-} from '@/components/ui/sidebar';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Home, Box, Settings, LogOut, User, Users, 
-  FileSpreadsheet, FolderPlus, Folder, Palette, Download, Globe
+import { LogoutButton } from './LogoutButton';
+import {
+  Home,
+  FolderOpen,
+  Users,
+  Settings,
+  Package,
+  Grid,
+  FileText,
+  Import,
+  Export,
+  UserCog,
+  BrainCircuit,
+  Cube,
+  FlaskConical
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { AiAssistant } from '@/components/ai/AiAssistant';
-import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
-import { Badge } from '@/components/ui/badge';
 
-interface DesignerLayoutProps {
+type SidebarLinkProps = {
+  to: string;
+  icon: React.ElementType;
   children: React.ReactNode;
-}
-
-// This component uses hooks, so it needs to be within the TranslationProvider
-const DesignerLayoutContent: React.FC<DesignerLayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { t, language, changeLanguage } = useTranslation();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out",
-    });
-  };
-
-  const handleNavigation = (path: string, title: string) => {
-    toast({
-      title: `Navigating to ${title}`,
-      description: "Loading content...",
-    });
-    console.log(`Navigating to ${path}`);
-    navigate(path);
-  };
-  
-  const handleLanguageToggle = () => {
-    const newLanguage = language === 'en' ? 'ro' : 'en';
-    changeLanguage(newLanguage);
-    toast({
-      title: t('settings.languageChanged'),
-      description: language === 'en' 
-        ? t('settings.languageSetTo.ro') 
-        : t('settings.languageSetTo.en'),
-    });
-  };
-
-  return (
-    <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 to-white designer-theme">
-      <SidebarProvider>
-        <Sidebar className="glass border-r border-white/20 shadow-lg backdrop-blur-md">
-          <SidebarHeader>
-            <div className="flex items-center px-4 py-4 border-b border-white/10">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-designer-primary to-designer-accent flex items-center justify-center text-white mr-3 shadow-glow">
-                <span className="font-poppins text-lg font-bold">H</span>
-              </div>
-              <span className="font-poppins text-xl font-semibold designer-gradient-text">HeffaDesign</span>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <div className="px-3 py-3">
-              <Badge className="bg-designer-primary/20 text-designer-primary border border-designer-primary/30 mb-3 px-3 py-1 uppercase text-xs font-medium tracking-wider">Designer Platform</Badge>
-            </div>
-            <nav className="space-y-1 px-2">
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/dashboard", t('common.dashboard'))}
-              >
-                <Home size={18} />
-                <span className="font-medium">{t('common.dashboard')}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/projects", "Projects")}
-              >
-                <Folder size={18} />
-                <span>Projects</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/projects/new", "New Project")}
-              >
-                <FolderPlus size={18} />
-                <span>New Project</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/materials", t('common.materials'))}
-              >
-                <Palette size={18} />
-                <span>{t('common.materials')}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/accessories", t('common.accessories'))}
-              >
-                <Box size={18} />
-                <span>{t('common.accessories')}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/modules", "Modules")}
-              >
-                <FileSpreadsheet size={18} />
-                <span>Modules</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/clients", "Clients")}
-              >
-                <Users size={18} />
-                <span>Clients</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/exports", "Exports")}
-              >
-                <Download size={18} />
-                <span>Exports</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={() => handleNavigation("/designer/settings", t('common.settings'))}
-              >
-                <Settings size={18} />
-                <span>{t('common.settings')}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start gap-3 hover:bg-designer-primary/10 hover:text-designer-primary"
-                onClick={handleLanguageToggle}
-              >
-                <Globe size={18} />
-                <span className="font-medium">{language === 'en' ? 'English' : 'Română'}</span>
-              </Button>
-            </nav>
-          </SidebarContent>
-          <SidebarFooter>
-            <div className="px-4 py-4 border-t border-white/10">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border-2 border-designer-primary/20 ring-2 ring-white/50">
-                  <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-designer-primary to-designer-accent text-white">
-                    <User size={16} />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={handleLogout}
-                  className="hover:bg-red-50 hover:text-red-600 rounded-full"
-                >
-                  <LogOut size={18} />
-                </Button>
-              </div>
-            </div>
-          </SidebarFooter>
-        </Sidebar>
-        <main className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-gray-50 to-white">
-          {children}
-        </main>
-      </SidebarProvider>
-      
-      {/* Add AI Assistant */}
-      <AiAssistant />
-    </div>
-  );
+  isActive?: boolean;
 };
 
-// This wrapper component checks if we're already in a TranslationProvider context
-export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
-  // Try to use the translation context
-  let hasTranslationContext = false;
-  
-  try {
-    // This will throw an error if no TranslationProvider is present
-    useTranslation();
-    hasTranslationContext = true;
-  } catch (error) {
-    hasTranslationContext = false;
-  }
+const SidebarLink: React.FC<SidebarLinkProps> = ({
+  to,
+  icon: Icon,
+  children,
+  isActive = false,
+}) => (
+  <Link to={to}>
+    <Button
+      variant={isActive ? 'secondary' : 'ghost'}
+      className={`w-full justify-start ${
+        isActive ? 'bg-designer-primary/10 text-designer-primary' : ''
+      }`}
+    >
+      <Icon className="mr-2 h-4 w-4" />
+      {children}
+    </Button>
+  </Link>
+);
 
-  // If we're already in a TranslationProvider context, don't add another one
-  if (hasTranslationContext) {
-    return <DesignerLayoutContent>{children}</DesignerLayoutContent>;
-  }
-  
-  // Otherwise, provide a TranslationProvider
+type DesignerLayoutProps = {
+  children: React.ReactNode;
+};
+
+export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
+  const location = useLocation();
+  const path = location.pathname;
+
   return (
-    <TranslationProvider>
-      <DesignerLayoutContent>{children}</DesignerLayoutContent>
-    </TranslationProvider>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <div className="hidden md:flex w-64 flex-col bg-white border-r shadow-sm">
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold designer-gradient-text">Designer Portal</h2>
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto py-2">
+          <div className="space-y-1 px-3">
+            <SidebarLink
+              to="/designer"
+              icon={Home}
+              isActive={path === '/designer' || path === '/designer/'}
+            >
+              Panou de control
+            </SidebarLink>
+            <SidebarLink
+              to="/designer/projects"
+              icon={FolderOpen}
+              isActive={path.startsWith('/designer/projects')}
+            >
+              Proiecte
+            </SidebarLink>
+            <SidebarLink
+              to="/designer/modules"
+              icon={Package}
+              isActive={path === '/designer/modules'}
+            >
+              Module
+            </SidebarLink>
+            <SidebarLink
+              to="/designer/materials"
+              icon={Grid}
+              isActive={path === '/designer/materials'}
+            >
+              Materiale
+            </SidebarLink>
+            <SidebarLink
+              to="/designer/accessories"
+              icon={Package}
+              isActive={path === '/designer/accessories'}
+            >
+              Accesorii
+            </SidebarLink>
+            <SidebarLink
+              to="/designer/assistant"
+              icon={BrainCircuit}
+              isActive={path === '/designer/assistant'}
+            >
+              Asistent AI
+            </SidebarLink>
+          </div>
+          <div className="mt-6">
+            <div className="px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Management
+            </div>
+            <div className="mt-2 space-y-1 px-3">
+              <SidebarLink
+                to="/designer/clients"
+                icon={Users}
+                isActive={path === '/designer/clients'}
+              >
+                Clienți
+              </SidebarLink>
+              <SidebarLink
+                to="/designer/exports"
+                icon={Export}
+                isActive={path === '/designer/exports'}
+              >
+                Exporturi
+              </SidebarLink>
+              <SidebarLink
+                to="/designer/import"
+                icon={Import}
+                isActive={path === '/designer/import'}
+              >
+                Import
+              </SidebarLink>
+            </div>
+          </div>
+          <div className="mt-6">
+            <div className="px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Unelte
+            </div>
+            <div className="mt-2 space-y-1 px-3">
+              <SidebarLink
+                to="/designer/lab"
+                icon={FlaskConical}
+                isActive={path === '/designer/lab'}
+              >
+                Laborator
+              </SidebarLink>
+              <SidebarLink
+                to="#"
+                icon={FileText}
+                isActive={false}
+              >
+                Rapoarte
+              </SidebarLink>
+            </div>
+          </div>
+        </div>
+        <div className="border-t p-3">
+          <div className="space-y-1">
+            <SidebarLink
+              to="/designer/settings"
+              icon={Settings}
+              isActive={path === '/designer/settings'}
+            >
+              Setări
+            </SidebarLink>
+            <LogoutButton />
+          </div>
+        </div>
+      </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
+        {/* Mobile Header */}
+        <header className="md:hidden bg-white border-b shadow-sm p-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-bold">Designer Portal</h1>
+            {/* Mobile menu button would go here */}
+          </div>
+        </header>
+        {/* Page content */}
+        <main className="flex-1 overflow-auto">{children}</main>
+      </div>
+    </div>
   );
 };
