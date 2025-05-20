@@ -79,7 +79,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
-  // Default values for the form
+  // Default values for the form - explicitly cast compatibleOperations to string[]
   const defaultValues: Partial<FormValues> = {
     code: material?.code || '',
     name: material?.name || '',
@@ -92,9 +92,10 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
+    // Explicitly cast to string[] as expected by the form schema
     compatibleOperations: material?.compatibleOperations ? 
       (material.compatibleOperations as unknown as string[]) : 
-      [],
+      ([] as string[]),
   };
 
   // Set image preview if material has a textureUrl
