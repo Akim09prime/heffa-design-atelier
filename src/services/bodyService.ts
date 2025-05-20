@@ -1,6 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
-import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType, BodyPartPosition, BodyAccessoryType } from '@/types';
+import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType, BodyPartPosition, AccessoryType } from '@/types';
 
 // Mock database
 let bodies: FurnitureBody[] = [];
@@ -53,55 +53,55 @@ export const BodyService = {
       parts: [
         {
           id: uuidv4(),
-          type: "side",
+          type: "side" as BodyPartType,
           material: "PAL",
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: true, bottom: true, left: false },
-          position: "left",
+          position: "left" as BodyPartPosition,
         },
         {
           id: uuidv4(),
-          type: "side",
+          type: "side" as BodyPartType,
           material: "PAL",
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: false, bottom: true, left: true },
-          position: "right",
+          position: "right" as BodyPartPosition,
         },
         {
           id: uuidv4(),
-          type: "top",
+          type: "top" as BodyPartType,
           material: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
-          position: "top",
+          position: "top" as BodyPartPosition,
         },
         {
           id: uuidv4(),
-          type: "bottom",
+          type: "bottom" as BodyPartType,
           material: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
-          position: "bottom",
+          position: "bottom" as BodyPartPosition,
         }
       ],
       accessories: [
         {
           id: uuidv4(),
-          type: "hinge",
+          type: "hinge" as AccessoryType,
           quantity: 4,
           price: 10,
         },
         {
           id: uuidv4(),
-          type: "handle",
+          type: "handle" as AccessoryType,
           quantity: 2,
           price: 15,
         }

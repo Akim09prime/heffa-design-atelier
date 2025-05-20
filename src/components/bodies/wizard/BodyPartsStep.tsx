@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Grid2X2, Plus, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { BodyPart, BodyPartType } from '@/types';
+import { BodyPart, BodyPartType, BodyPartPosition } from '@/types';
 import { BodyService } from '@/services/bodyService';
 
 interface BodyPartsStepProps {
@@ -64,7 +64,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
       } catch (error) {
         console.error('Failed to load part types', error);
         // Set default part types if loading fails
-        setPartTypes(['side', 'top', 'bottom', 'shelf', 'door', 'drawer', 'back']);
+        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"]);
       }
     };
     
@@ -84,7 +84,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
         bottom: edgeBottom,
         left: edgeLeft
       },
-      position: data.position as any
+      position: data.position as BodyPartPosition
     });
     
     // Reset form for next part

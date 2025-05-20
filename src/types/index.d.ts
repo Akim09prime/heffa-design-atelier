@@ -36,8 +36,8 @@ import {
   BodyAccessory, 
   FurnitureBody, 
   BodyPartType, 
-  BodyPartPosition, 
-  BodyAccessoryType 
+  BodyPartPosition,
+  AccessoryType
 } from './body';
 
 // Re-export types from body.d.ts
@@ -46,6 +46,7 @@ export {
   BodyAccessory, 
   FurnitureBody, 
   BodyPartType, 
-  BodyPartPosition, 
-  BodyAccessoryType 
+  BodyPartPosition,
+  AccessoryType
 };
+

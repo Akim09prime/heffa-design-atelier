@@ -6,7 +6,7 @@ export type BodyPartType = "side" | "top" | "bottom" | "shelf" | "door" | "drawe
 export type BodyPartPosition = "left" | "right" | "top" | "bottom" | "front" | "back" | "middle";
 
 // Define the allowed accessory types
-export type BodyAccessoryType = "hinge" | "handle" | "drawer_slide" | "connector" | "support" | "other";
+export type AccessoryType = "hinge" | "handle" | "drawer_slide" | "connector" | "support" | "other";
 
 // Body types
 export interface BodyPart {
@@ -27,7 +27,7 @@ export interface BodyPart {
 
 export interface BodyAccessory {
   id: string;
-  type: BodyAccessoryType;
+  type: AccessoryType;
   quantity: number;
   price: number;
 }

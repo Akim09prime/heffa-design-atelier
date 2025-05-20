@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FurnitureBody } from '@/types';
+import { FurnitureBody, BodyPart, BodyAccessory } from '@/types';
 import { BodyDimensionsStep } from './wizard/BodyDimensionsStep';
 import { BodyPartsStep } from './wizard/BodyPartsStep';
 import { BodyAccessoriesStep } from './wizard/BodyAccessoriesStep';
@@ -35,8 +36,8 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
     materialId: 'mat-1',
     includeShelf: false,
     includeDrawer: false,
-    customParts: [] as any[],
-    customAccessories: [] as any[]
+    customParts: [] as BodyPart[],
+    customAccessories: [] as BodyAccessory[]
   });
   
   const { toast } = useToast();
@@ -61,12 +62,42 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
     setBodyData(prev => ({ ...prev, ...dimensions }));
   };
   
-  const handlePartsChange = (parts: any) => {
-    setBodyData(prev => ({ ...prev, ...parts }));
+  const handleAddPart = (part: Omit<BodyPart, 'id'>) => {
+    const newPart: BodyPart = {
+      ...part,
+      id: `temp-${Date.now()}`
+    };
+    
+    setBodyData(prev => ({
+      ...prev,
+      customParts: [...prev.customParts, newPart]
+    }));
   };
   
-  const handleAccessoriesChange = (accessories: any) => {
-    setBodyData(prev => ({ ...prev, ...accessories }));
+  const handleRemovePart = (id: string) => {
+    setBodyData(prev => ({
+      ...prev,
+      customParts: prev.customParts.filter(part => part.id !== id)
+    }));
+  };
+  
+  const handleAddAccessory = (accessory: Omit<BodyAccessory, 'id'>) => {
+    const newAccessory: BodyAccessory = {
+      ...accessory,
+      id: `temp-${Date.now()}`
+    };
+    
+    setBodyData(prev => ({
+      ...prev,
+      customAccessories: [...prev.customAccessories, newAccessory]
+    }));
+  };
+  
+  const handleRemoveAccessory = (id: string) => {
+    setBodyData(prev => ({
+      ...prev,
+      customAccessories: prev.customAccessories.filter(acc => acc.id !== id)
+    }));
   };
   
   const handleCreateBody = async () => {
@@ -104,7 +135,6 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
         toast({
           title: "Corp creat cu succes",
           description: `Corpul "${finalBody.name}" a fost creat și adăugat la spațiul curent.`,
-          variant: "default"
         });
         
         onBodyCreated(finalBody);
@@ -194,12 +224,11 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
           
           <TabsContent value="parts">
             <BodyPartsStep 
-              bodyDimensions={{
-                width: bodyData.width,
-                height: bodyData.height,
-                depth: bodyData.depth
-              }}
-              onDataChange={handlePartsChange} 
+              parts={bodyData.customParts}
+              onAddPart={handleAddPart}
+              onRemovePart={handleRemovePart}
+              onNext={handleNextStep}
+              onBack={handlePreviousStep}
             />
           </TabsContent>
           
