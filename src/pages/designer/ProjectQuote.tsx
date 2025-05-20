@@ -5,8 +5,8 @@ import { DesignerLayout } from '../../components/layout/DesignerLayout';
 import { ProjectQuoteForm } from '@/components/quotes/ProjectQuoteForm';
 import { QuoteDetails } from '@/services/quoteService';
 import { ProjectService } from '@/services/projectService';
-import { materialService } from '@/services/materialService';
-import { accessoryService } from '@/services/accessoryService';
+import { MaterialService } from '@/services/materialService';
+import { AccessoryService } from '@/services/accessoryService';
 import { Project, Material, AccessoryItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -42,10 +42,10 @@ const ProjectQuote = () => {
         }
         
         // Load materials and accessories for price calculations
-        const materialsData = await materialService.getAllMaterials();
+        const materialsData = await MaterialService.getAllMaterials();
         setMaterials(materialsData);
         
-        const accessoriesData = await accessoryService.getAllAccessories();
+        const accessoriesData = await AccessoryService.getAllAccessories();
         setAccessories(accessoriesData);
       } catch (error) {
         toast({
