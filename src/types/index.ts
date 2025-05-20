@@ -209,6 +209,78 @@ export interface ComboRule {
   enabled?: boolean;
 }
 
+// Space types
+export interface Space {
+  id: string;
+  projectId: string;
+  name: string;
+  width: number;
+  height: number;
+  depth: number;
+  includePipe: boolean;
+  includeFaucets: boolean;
+  includeCornice: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  bodies?: FurnitureBody[];
+}
+
+// Body types
+export interface FurnitureBody {
+  id: string;
+  spaceId: string;
+  name: string;
+  width: number;
+  height: number;
+  depth: number;
+  previewImgUrl?: string;
+  createdFromPreset: boolean;
+  exportDxfPath?: string;
+  status: 'draft' | 'finalized';
+  createdAt: Date;
+  updatedAt: Date;
+  parts: BodyPart[];
+  accessories: BodyAccessory[];
+}
+
+export type BodyPartType = 
+  'LatSt' | 'LatDr' | 'Inf' | 'Sup' | 'Fund' | 'Front' | 'Raft' | 'Sertar';
+
+export interface BodyPart {
+  id: string;
+  bodyId: string;
+  type: BodyPartType;
+  materialId: string;
+  thickness: number;
+  hasEdge: boolean;
+  edgeSides: ('top' | 'bottom' | 'left' | 'right')[];
+  finishType: 'raw' | 'painted';
+  cncModelId?: string;
+  pricePerPart: number;
+  faceCount: 1 | 2;
+}
+
+export interface BodyAccessory {
+  id: string;
+  bodyId: string;
+  category: 'hinge' | 'slide' | 'damper' | 'push' | 'handle' | 'other';
+  brand: string;
+  system: string;
+  sizeMm: number;
+  extraInfo?: string;
+  pricePerUnit: number;
+  quantity: number;
+}
+
+export interface BodyPreset {
+  id: string;
+  name: string;
+  previewUrl?: string;
+  structureJson: string; // JSON string with full structure for reuse
+  category: string;
+  tags: string[];
+}
+
 // Export Types
 export type ExportFormat = 'pdf' | 'excel' | 'dxf' | 'svg' | 'json';
 

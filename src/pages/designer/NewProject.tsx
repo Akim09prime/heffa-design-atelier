@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
@@ -9,7 +8,7 @@ import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Printer, ChevronRight, Save, Calculator, FileText } from 'lucide-react';
+import { Printer, ChevronRight, Save, Calculator, FileText, Edit } from 'lucide-react';
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -118,10 +117,11 @@ const NewProject = () => {
     }
   };
 
+  // Modified handler to navigate to the new edit page
   const handleEditProject = () => {
     if (projectId) {
       console.log(`Navigating to edit project ${projectId}`);
-      navigate(`/designer/projects/${projectId}`);
+      navigate(`/designer/projects/${projectId}/edit`);
     } else {
       toast({
         title: 'Error',
@@ -179,8 +179,8 @@ const NewProject = () => {
                   onClick={handleEditProject}
                   className="fancy-btn"
                 >
-                  <Save size={16} className="mr-2" />
-                  Edit Project
+                  <Edit size={16} className="mr-2" />
+                  Edit Project Spaces
                 </Button>
                 <Button 
                   variant="outline" 
