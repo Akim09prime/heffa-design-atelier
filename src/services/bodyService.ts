@@ -1,6 +1,6 @@
 
 import { v4 as uuidv4 } from 'uuid';
-import { FurnitureBody, BodyPart, BodyAccessory } from '@/types';
+import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType, BodyPartPosition, BodyAccessoryType } from '@/types';
 
 // Mock database
 let bodies: FurnitureBody[] = [];
@@ -34,7 +34,7 @@ export const BodyService = {
   },
   
   // Get available part types
-  getPartTypes: async (): Promise<string[]> => {
+  getPartTypes: async (): Promise<BodyPartType[]> => {
     return ["side", "top", "bottom", "shelf", "door", "drawer", "back"];
   },
 
