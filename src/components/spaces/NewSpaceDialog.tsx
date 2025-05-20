@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -49,7 +48,18 @@ export const NewSpaceDialog: React.FC<NewSpaceDialogProps> = ({
   });
 
   const onSubmit = (data: SpaceFormType) => {
-    onSpaceCreated(data);
+    // Make sure all required fields are explicitly included
+    const spaceData: Omit<Space, 'id' | 'projectId' | 'createdAt' | 'updatedAt'> = {
+      name: data.name,
+      width: data.width,
+      height: data.height,
+      depth: data.depth,
+      includePipe: data.includePipe,
+      includeFaucets: data.includeFaucets,
+      includeCornice: data.includeCornice,
+    };
+    
+    onSpaceCreated(spaceData);
     form.reset();
   };
 
