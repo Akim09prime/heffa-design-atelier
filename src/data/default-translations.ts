@@ -1,4 +1,3 @@
-
 import { Language } from '@/types/translations';
 
 // Definim tipul pentru structura traducerilor
@@ -741,6 +740,290 @@ export const defaultTranslations: TranslationsStructure = {
       ro: "Blaturi",
       en: "Countertops"
     }
+  },
+  reports: {
+    analytics: {
+      ro: "Analiză",
+      en: "Analytics"
+    },
+    sales: {
+      ro: "Vânzări",
+      en: "Sales"
+    },
+    materials: {
+      ro: "Materiale",
+      en: "Materials"
+    },
+    accessories: {
+      ro: "Accesorii",
+      en: "Accessories"
+    },
+    processing: {
+      ro: "Procesare",
+      en: "Processing"
+    },
+    custom: {
+      ro: "Personalizat",
+      en: "Custom"
+    },
+    generateReport: {
+      ro: "Generează raport",
+      en: "Generate Report"
+    },
+    generateNewReport: {
+      ro: "Generează raport nou",
+      en: "Generate New Report"
+    },
+    reportName: {
+      ro: "Nume raport",
+      en: "Report Name"
+    },
+    enterReportName: {
+      ro: "Introduceți numele raportului",
+      en: "Enter report name"
+    },
+    newReport: {
+      ro: "Raport nou",
+      en: "New Report"
+    },
+    type: {
+      ro: "Tip",
+      en: "Type"
+    },
+    selectType: {
+      ro: "Selectează tip",
+      en: "Select type"
+    },
+    dateRange: {
+      ro: "Interval de date",
+      en: "Date Range"
+    },
+    selectPeriod: {
+      ro: "Selectează perioada",
+      en: "Select Period"
+    },
+    lastWeek: {
+      ro: "Ultima săptămână",
+      en: "Last Week"
+    },
+    lastMonth: {
+      ro: "Ultima lună",
+      en: "Last Month"
+    },
+    lastQuarter: {
+      ro: "Ultimul trimestru",
+      en: "Last Quarter"
+    },
+    lastYear: {
+      ro: "Ultimul an",
+      en: "Last Year"
+    },
+    last30days: {
+      ro: "Ultimele 30 zile",
+      en: "Last 30 days"
+    },
+    format: {
+      ro: "Format",
+      en: "Format"
+    },
+    selectFormat: {
+      ro: "Selectează format",
+      en: "Select format"
+    },
+    excel: {
+      ro: "Excel",
+      en: "Excel"
+    },
+    pdf: {
+      ro: "PDF",
+      en: "PDF"
+    },
+    json: {
+      ro: "JSON",
+      en: "JSON"
+    },
+    recentReports: {
+      ro: "Rapoarte recente",
+      en: "Recent Reports"
+    },
+    recentReportsDescription: {
+      ro: "Lista rapoartelor generate recent",
+      en: "List of recently generated reports"
+    },
+    created: {
+      ro: "Creat",
+      en: "Created"
+    },
+    status: {
+      ro: "Status",
+      en: "Status"
+    },
+    actions: {
+      ro: "Acțiuni",
+      en: "Actions"
+    },
+    exportStarted: {
+      ro: "Export început",
+      en: "Export Started"
+    },
+    preparingExport: {
+      ro: "Se pregătește exportul pentru {type}",
+      en: "Preparing {type} export"
+    },
+    exportSuccess: {
+      ro: "Export reușit",
+      en: "Export Success"
+    },
+    exportCompleted: {
+      ro: "Exportul pentru {type} a fost completat",
+      en: "Export for {type} has been completed"
+    },
+    furniturePieces: {
+      ro: "Corpuri mobilier",
+      en: "Furniture Pieces"
+    }
+  },
+  months: {
+    january: {
+      ro: "Ianuarie",
+      en: "January"
+    },
+    february: {
+      ro: "Februarie",
+      en: "February"
+    },
+    march: {
+      ro: "Martie",
+      en: "March"
+    },
+    april: {
+      ro: "Aprilie",
+      en: "April"
+    },
+    may: {
+      ro: "Mai",
+      en: "May"
+    },
+    june: {
+      ro: "Iunie",
+      en: "June"
+    },
+    july: {
+      ro: "Iulie",
+      en: "July"
+    },
+    august: {
+      ro: "August",
+      en: "August"
+    },
+    september: {
+      ro: "Septembrie",
+      en: "September"
+    },
+    october: {
+      ro: "Octombrie",
+      en: "October"
+    },
+    november: {
+      ro: "Noiembrie",
+      en: "November"
+    },
+    december: {
+      ro: "Decembrie",
+      en: "December"
+    }
+  },
+  settings: {
+    title: {
+      ro: "Setări",
+      en: "Settings"
+    },
+    description: {
+      ro: "Gestionează setările aplicației",
+      en: "Manage application settings"
+    },
+    general: {
+      ro: "General",
+      en: "General"
+    },
+    generalDesc: {
+      ro: "Setări generale ale aplicației",
+      en: "General application settings"
+    },
+    pricing: {
+      ro: "Prețuri",
+      en: "Pricing"
+    },
+    pricingDesc: {
+      ro: "Setări de preț și costuri",
+      en: "Price and cost settings"
+    },
+    appearance: {
+      ro: "Aspect",
+      en: "Appearance"
+    },
+    appearanceDesc: {
+      ro: "Personalizează aspectul aplicației",
+      en: "Customize application appearance"
+    },
+    notifications: {
+      ro: "Notificări",
+      en: "Notifications"
+    },
+    notificationsDesc: {
+      ro: "Setări pentru notificări",
+      en: "Notification settings"
+    },
+    backups: {
+      ro: "Backup-uri",
+      en: "Backups"
+    },
+    backupsDesc: {
+      ro: "Gestionează backup-urile datelor",
+      en: "Manage data backups"
+    },
+    languages: {
+      ro: "Limbi",
+      en: "Languages"
+    },
+    languagesDesc: {
+      ro: "Setări de limbă și traduceri",
+      en: "Language and translation settings"
+    },
+    changeLanguage: {
+      ro: "Schimbă limba",
+      en: "Change Language"
+    },
+    languageChanged: {
+      ro: "Limba a fost schimbată",
+      en: "Language has been changed"
+    },
+    languageSetTo: {
+      ro: {
+        ro: "Limba a fost setată la Română",
+        en: "Language has been set to Romanian"
+      },
+      en: {
+        ro: "Limba a fost setată la Engleză",
+        en: "Language has been set to English"
+      }
+    },
+    saveChanges: {
+      ro: "Salvează modificările",
+      en: "Save Changes"
+    },
+    saving: {
+      ro: "Se salvează...",
+      en: "Saving..."
+    },
+    settingsSaved: {
+      ro: "Setări salvate",
+      en: "Settings Saved"
+    },
+    changesSavedSuccess: {
+      ro: "Modificările au fost salvate cu succes",
+      en: "Changes have been saved successfully"
+    }
   }
 };
 
@@ -768,4 +1051,3 @@ export const extractTranslationKeys = (
   
   return result;
 };
-

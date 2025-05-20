@@ -1,168 +1,166 @@
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Database, 
-  Package, 
+  PackageOpen, 
   Factory, 
   Users, 
-  FileText, 
-  Upload, 
+  FileBarChart2, 
+  FileInput, 
   BarChart3, 
   Settings,
-  ChevronRight,
-  Menu,
-  X
+  LogOut 
 } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import LogoutButton from './LogoutButton';
-
-type MenuItem = {
-  title: string;
-  icon: React.ElementType;
-  path: string;
-  translationKey: string;
-};
-
-const adminMenu: MenuItem[] = [
-  {
-    title: 'Dashboard',
-    icon: LayoutDashboard,
-    path: '/admin/dashboard',
-    translationKey: 'admin.menu.dashboard'
-  },
-  {
-    title: 'Baza de date materiale',
-    icon: Database,
-    path: '/admin/materials-database',
-    translationKey: 'admin.menu.materials'
-  },
-  {
-    title: 'Accesorii',
-    icon: Package,
-    path: '/admin/accessories',
-    translationKey: 'admin.menu.accessories'
-  },
-  {
-    title: 'Planificare producție',
-    icon: Factory,
-    path: '/admin/processing',
-    translationKey: 'admin.menu.production'
-  },
-  {
-    title: 'Utilizatori',
-    icon: Users,
-    path: '/admin/users',
-    translationKey: 'admin.menu.users'
-  },
-  {
-    title: 'Rapoarte',
-    icon: FileText,
-    path: '/admin/reports',
-    translationKey: 'admin.menu.reports'
-  },
-  {
-    title: 'Import date',
-    icon: Upload,
-    path: '/admin/import-data',
-    translationKey: 'admin.menu.importData'
-  },
-  {
-    title: 'Analiză',
-    icon: BarChart3,
-    path: '/admin/analytics',
-    translationKey: 'admin.menu.analytics'
-  },
-  {
-    title: 'Setări',
-    icon: Settings,
-    path: '/admin/settings',
-    translationKey: 'admin.menu.settings'
-  }
-];
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface AdminLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [collapsed, setCollapsed] = React.useState(false);
   const { t } = useTranslation();
-  const location = useLocation();
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = React.useState(false);
+  
+  const handleLogout = () => {
+    // Implementation of logout functionality would go here
+    // For now, just redirect to login
+    window.location.href = '/login';
+  };
+
+  const menuItems = [
+    { 
+      title: t('admin.menu.dashboard'), 
+      path: '/admin/dashboard', 
+      icon: <LayoutDashboard className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.materials'), 
+      path: '/admin/materials-database', 
+      icon: <Database className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.accessories'), 
+      path: '/admin/accessories', 
+      icon: <PackageOpen className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.production'), 
+      path: '/admin/production', 
+      icon: <Factory className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.users'), 
+      path: '/admin/users', 
+      icon: <Users className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.reports'), 
+      path: '/admin/reports', 
+      icon: <FileBarChart2 className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.importData'), 
+      path: '/admin/import-data', 
+      icon: <FileInput className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.analytics'), 
+      path: '/admin/analytics', 
+      icon: <BarChart3 className="w-5 h-5" /> 
+    },
+    { 
+      title: t('admin.menu.settings'), 
+      path: '/admin/settings', 
+      icon: <Settings className="w-5 h-5" /> 
+    },
+  ];
 
   return (
-    <div className="admin-theme flex min-h-screen bg-admin-bg-primary">
+    <div className="admin-theme flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <div 
-        className={cn(
-          "bg-admin-bg-secondary border-r border-admin-border-light transition-all duration-300 ease-in-out overflow-hidden",
-          collapsed ? "w-16" : "w-64"
-        )}
-      >
-        {/* Sidebar header */}
-        <div className="h-16 flex items-center px-4 border-b border-admin-border-light">
-          <div className={cn("flex items-center", collapsed ? "justify-center w-full" : "")}>
-            {!collapsed && (
-              <span className="text-xl font-bold text-white">Admin Panel</span>
-            )}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setCollapsed(!collapsed)}
-              className={cn(
-                "p-1 ml-auto text-admin-text-muted hover:text-white",
-                collapsed && "mx-auto"
-              )}
+      <div className="admin-sidebar w-64 flex-shrink-0 hidden md:block">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="px-6 py-4 flex items-center h-16 border-b border-gray-700">
+            <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+          </div>
+          
+          {/* Navigation */}
+          <nav className="flex-1 px-2 py-4 overflow-y-auto">
+            <ul className="space-y-1">
+              {menuItems.map((item, index) => (
+                <li key={index}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center px-4 py-3 text-white hover:bg-gray-700 rounded-md group transition-all duration-200 ${
+                      window.location.pathname === item.path ? 'bg-gray-700' : ''
+                    }`}
+                  >
+                    <span className="animate-icon mr-3">{item.icon}</span>
+                    <span className="font-medium">{item.title}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          
+          {/* Logout button */}
+          <div className="px-4 py-4 border-t border-gray-700">
+            <button
+              onClick={() => setIsLogoutDialogOpen(true)}
+              className="flex items-center px-4 py-2 w-full text-white hover:bg-gray-700 rounded-md transition-all duration-200"
             >
-              {collapsed ? <ChevronRight size={18} /> : <Menu size={18} />}
-            </Button>
+              <LogOut className="w-5 h-5 mr-3" />
+              <span className="font-medium">{t('common.logout')}</span>
+            </button>
           </div>
         </div>
-
-        {/* Sidebar menu */}
-        <div className="py-4">
-          {adminMenu.map((item) => (
-            <Link 
-              key={item.path} 
-              to={item.path}
-              className={cn(
-                "flex items-center px-4 py-2 mb-1 mx-2 rounded-lg transition-all",
-                location.pathname === item.path 
-                  ? "bg-admin-accent-blue/20 text-admin-accent-blue" 
-                  : "text-admin-text-secondary hover:bg-admin-bg-tertiary hover:text-white",
-                collapsed && "justify-center px-2"
-              )}
-            >
-              <item.icon className={cn("animate-icon h-5 w-5", collapsed ? "" : "mr-3")} />
-              {!collapsed && <span>{t(item.translationKey)}</span>}
-            </Link>
-          ))}
-        </div>
-
-        {/* Logout button at bottom */}
-        <div className="absolute bottom-0 left-0 w-full p-4 border-t border-admin-border-light">
-          {collapsed ? (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="w-full flex justify-center hover:bg-admin-accent-blue/10 text-admin-text-muted hover:text-white"
-              onClick={() => setCollapsed(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          ) : (
-            <LogoutButton />
-          )}
-        </div>
       </div>
-
-      {/* Main content */}
-      <div className="flex-1 overflow-auto">
-        {children}
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile Header */}
+        <div className="md:hidden bg-admin-bg-secondary text-white p-4 flex justify-between items-center">
+          <h1 className="text-lg font-bold">Admin Panel</h1>
+          <button className="block text-white focus:outline-none">
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        
+        {/* Content Area */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900">
+          {children}
+        </main>
       </div>
+      
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('auth.logoutConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('auth.logoutConfirmMessage')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout}>{t('common.logout')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

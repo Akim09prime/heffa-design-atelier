@@ -3,13 +3,16 @@
 
 /* Admin Theme */
 .admin-theme {
-  --bg-primary: #F7F9FC;
-  --bg-card: #FFFFFF;
-  --menu-bg: #1F2937;
-  --text-primary: #111827;
-  --accent-primary: #10B981;
-  --border-ui: #E5E7EB;
-  --hover-button: #34D399;
+  --bg-primary: var(--bg-general);
+  --bg-card: var(--bg-cards);
+  --menu-bg: var(--menu-sidebar);
+  --text-primary: var(--text-main);
+  --accent-primary: var(--accent-main);
+  --border-ui: var(--border-ui);
+  --hover-button: var(--hover-button);
+  
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Admin specific elements */
@@ -35,6 +38,35 @@
   transition: width 0.5s ease-in-out;
 }
 
+.admin-theme .admin-sidebar {
+  background-color: var(--menu-bg);
+  color: white;
+}
+
+.admin-theme .admin-card {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-ui);
+  transition: all 0.3s ease;
+}
+
+.admin-theme .admin-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.admin-theme .admin-button {
+  background-color: var(--accent-primary);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.admin-theme .admin-button:hover {
+  background-color: var(--hover-button);
+  transform: translateY(-2px);
+}
+
 /* Designer Theme */
 .designer-theme {
   --bg-primary: #EBF5FF;
@@ -44,6 +76,14 @@
   --accent-primary: #3B82F6;
   --border-ui: #DBEAFE;
   --hover-button: #60A5FA;
+  
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.designer-theme .designer-sidebar {
+  background-color: var(--menu-bg);
+  color: white;
 }
 
 .designer-theme .designer-pulse {
@@ -103,6 +143,14 @@
   --accent-primary: #10B981;
   --border-ui: #D1FAE5;
   --hover-button: #34D399;
+  
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.client-theme .client-sidebar {
+  background-color: var(--menu-bg);
+  color: white;
 }
 
 .client-theme .big-icon {

@@ -7,13 +7,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
-import { Search, Download, FileSpreadsheet, File, BarChart, Calendar } from 'lucide-react';
+import { Search, Download, FileSpreadsheet, File, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Report } from '@/types';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { 
+  ChartContainer, 
+  ChartTooltip,
+  ChartTooltipContent
+} from '@/components/ui/chart';
+import { Bar, BarChart, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis, Legend, Tooltip, Cell } from 'recharts';
 
 const Reports = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
+  
   const [reports, setReports] = useState<Report[]>([
     {
       id: '1',
@@ -90,6 +99,7 @@ const Reports = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [isNewReportDialogOpen, setIsNewReportDialogOpen] = useState(false);
+  const [dateRange, setDateRange] = useState('month'); // 'week', 'month', 'quarter', 'year'
   
   const filteredReports = reports.filter((report) => {
     const matchesSearch = searchQuery === '' || 
@@ -97,6 +107,34 @@ const Reports = () => {
     const matchesType = typeFilter === 'all' || report.type === typeFilter;
     return matchesSearch && matchesType;
   });
+  
+  // Mock data for charts
+  const monthlySalesData = [
+    { name: t('months.january'), sales: 12400 },
+    { name: t('months.february'), sales: 15600 },
+    { name: t('months.march'), sales: 16200 },
+    { name: t('months.april'), sales: 18100 },
+    { name: t('months.may'), sales: 17800 },
+    { name: t('months.june'), sales: 19200 },
+  ];
+  
+  const furnitureProducedData = [
+    { name: t('months.january'), count: 85 },
+    { name: t('months.february'), count: 93 },
+    { name: t('months.march'), count: 102 },
+    { name: t('months.april'), count: 110 },
+    { name: t('months.may'), count: 105 },
+    { name: t('months.june'), count: 120 },
+  ];
+  
+  const materialsConsumedData = [
+    { name: 'PAL', value: 45 },
+    { name: 'MDF', value: 25 },
+    { name: 'Accesorii', value: 20 },
+    { name: 'Sticlă', value: 10 },
+  ];
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
   
   const handleGenerateReport = () => {
     const newReport: Report = {
@@ -153,6 +191,21 @@ const Reports = () => {
     });
   };
 
+  const handleExportChart = (chartType: string) => {
+    toast({
+      title: t('reports.exportStarted'),
+      description: t('reports.preparingExport', { type: chartType }),
+    });
+    
+    // Simulate export process
+    setTimeout(() => {
+      toast({
+        title: t('reports.exportSuccess'),
+        description: t('reports.exportCompleted', { type: chartType }),
+      });
+    }, 1500);
+  };
+
   const getReportIcon = (reportType: string) => {
     switch(reportType) {
       case 'sales':
@@ -182,15 +235,15 @@ const Reports = () => {
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-medium text-white mb-2">Reports</h1>
-            <p className="text-gray-300">Generate and manage system reports</p>
+            <h1 className="text-3xl font-medium text-white mb-2">{t('admin.reports')}</h1>
+            <p className="text-gray-300">{t('admin.reports.description')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <div className="relative min-w-[200px]">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search reports..."
+                placeholder={t('common.search')}
                 className="w-full pl-9 bg-gray-800 border-gray-700 text-white"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -198,88 +251,165 @@ const Reports = () => {
             </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700 text-white">
-                <SelectValue placeholder="Report type" />
+                <SelectValue placeholder={t('common.filter')} />
               </SelectTrigger>
               <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="sales">Sales</SelectItem>
-                <SelectItem value="materials">Materials</SelectItem>
-                <SelectItem value="accessories">Accessories</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="custom">Custom</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="sales">{t('reports.sales')}</SelectItem>
+                <SelectItem value="materials">{t('reports.materials')}</SelectItem>
+                <SelectItem value="accessories">{t('reports.accessories')}</SelectItem>
+                <SelectItem value="processing">{t('reports.processing')}</SelectItem>
+                <SelectItem value="custom">{t('reports.custom')}</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={() => setIsNewReportDialogOpen(true)}>Generate Report</Button>
+            <Button onClick={() => setIsNewReportDialogOpen(true)}>{t('reports.generateReport')}</Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-lg">Sales Reports</CardTitle>
-              <CardDescription className="text-gray-400">Revenue analysis and orders</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-white">24</div>
-            </CardContent>
-          </Card>
+        {/* Charts section */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-medium text-white">{t('reports.analytics')}</h2>
+            <div className="flex gap-2">
+              <Select value={dateRange} onValueChange={setDateRange}>
+                <SelectTrigger className="w-[150px] bg-gray-800 border-gray-700 text-white">
+                  <SelectValue placeholder={t('reports.selectPeriod')} />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="week">{t('reports.lastWeek')}</SelectItem>
+                  <SelectItem value="month">{t('reports.lastMonth')}</SelectItem>
+                  <SelectItem value="quarter">{t('reports.lastQuarter')}</SelectItem>
+                  <SelectItem value="year">{t('reports.lastYear')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-lg">Inventory Reports</CardTitle>
-              <CardDescription className="text-gray-400">Materials and accessories</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-white">18</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-lg">Generated This Month</CardTitle>
-              <CardDescription className="text-gray-400">May 2025</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-white">7</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-white text-lg">Average Generation Time</CardTitle>
-              <CardDescription className="text-gray-400">Processing duration</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="text-2xl font-bold text-white">42s</div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Monthly Sales Chart */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-white text-lg">{t('admin.reports.monthlySales')}</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={() => handleExportChart('sales')}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={monthlySalesData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <XAxis dataKey="name" stroke="#94a3b8" />
+                      <YAxis stroke="#94a3b8" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#f8fafc' }}
+                      />
+                      <Bar dataKey="sales" fill="#10b981" name={t('reports.sales')} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Furniture Produced Chart */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-white text-lg">{t('admin.reports.furnitureProduced')}</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={() => handleExportChart('furniture')}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={furnitureProducedData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <XAxis dataKey="name" stroke="#94a3b8" />
+                      <YAxis stroke="#94a3b8" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#f8fafc' }}
+                      />
+                      <Line type="monotone" dataKey="count" stroke="#60a5fa" name={t('reports.furniturePieces')} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Materials Consumed Chart */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-white text-lg">{t('admin.reports.materialsConsumed')}</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={() => handleExportChart('materials')}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={materialsConsumedData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {materialsConsumedData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#f8fafc' }}
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
+        {/* Reports list */}
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Recent Reports</CardTitle>
+            <CardTitle className="text-white">{t('reports.recentReports')}</CardTitle>
             <CardDescription className="text-gray-400">
-              List of recently generated reports
+              {t('reports.recentReportsDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow className="border-gray-700 hover:bg-gray-800">
-                  <TableHead className="text-gray-400">Report</TableHead>
-                  <TableHead className="text-gray-400">Type</TableHead>
-                  <TableHead className="text-gray-400">Date Range</TableHead>
-                  <TableHead className="text-gray-400">Created</TableHead>
-                  <TableHead className="text-gray-400">Format</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="text-gray-400">Actions</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.reportName')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.type')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.dateRange')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.created')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.format')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.status')}</TableHead>
+                  <TableHead className="text-gray-400">{t('reports.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredReports.length === 0 ? (
                   <TableRow className="border-gray-700">
                     <TableCell colSpan={7} className="text-center py-8 text-gray-400">
-                      No reports found matching your criteria
+                      {t('common.noData')}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -331,61 +461,61 @@ const Reports = () => {
       <Dialog open={isNewReportDialogOpen} onOpenChange={setIsNewReportDialogOpen}>
         <DialogContent className="bg-gray-800 border-gray-700 text-white">
           <DialogHeader>
-            <DialogTitle>Generate New Report</DialogTitle>
+            <DialogTitle>{t('reports.generateNewReport')}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="report-name" className="text-right">Report Name</Label>
+              <Label htmlFor="report-name" className="text-right">{t('reports.reportName')}</Label>
               <Input
                 id="report-name"
-                placeholder="Enter report name"
+                placeholder={t('reports.enterReportName')}
                 className="col-span-3 bg-gray-700 border-gray-600"
-                defaultValue="New Report"
+                defaultValue={t('reports.newReport')}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="report-type" className="text-right">Report Type</Label>
+              <Label htmlFor="report-type" className="text-right">{t('reports.type')}</Label>
               <Select defaultValue="sales">
                 <SelectTrigger id="report-type" className="col-span-3 bg-gray-700 border-gray-600">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t('reports.selectType')} />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="materials">Materials</SelectItem>
-                  <SelectItem value="accessories">Accessories</SelectItem>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="custom">Custom</SelectItem>
+                  <SelectItem value="sales">{t('reports.sales')}</SelectItem>
+                  <SelectItem value="materials">{t('reports.materials')}</SelectItem>
+                  <SelectItem value="accessories">{t('reports.accessories')}</SelectItem>
+                  <SelectItem value="processing">{t('reports.processing')}</SelectItem>
+                  <SelectItem value="custom">{t('reports.custom')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date-range" className="text-right">Date Range</Label>
+              <Label htmlFor="date-range" className="text-right">{t('reports.dateRange')}</Label>
               <div className="col-span-3 flex items-center gap-2">
                 <div className="flex items-center bg-gray-700 border border-gray-600 rounded-md px-3 py-1 flex-grow">
                   <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                  <span className="text-sm">Last 30 days</span>
+                  <span className="text-sm">{t('reports.last30days')}</span>
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="report-format" className="text-right">Format</Label>
+              <Label htmlFor="report-format" className="text-right">{t('reports.format')}</Label>
               <Select defaultValue="excel">
                 <SelectTrigger id="report-format" className="col-span-3 bg-gray-700 border-gray-600">
-                  <SelectValue placeholder="Select format" />
+                  <SelectValue placeholder={t('reports.selectFormat')} />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="excel">Excel</SelectItem>
-                  <SelectItem value="pdf">PDF</SelectItem>
-                  <SelectItem value="json">JSON</SelectItem>
+                  <SelectItem value="excel">{t('reports.excel')}</SelectItem>
+                  <SelectItem value="pdf">{t('reports.pdf')}</SelectItem>
+                  <SelectItem value="json">{t('reports.json')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsNewReportDialogOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button onClick={handleGenerateReport}>Generate</Button>
+            <Button onClick={handleGenerateReport}>{t('common.generate')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

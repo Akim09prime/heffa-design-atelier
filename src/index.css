@@ -30,30 +30,39 @@
   --ring: 221 83% 53%;
   --radius: 0.75rem;
 
+  /* New color palette from requirements */
+  --bg-general: #F7F9FC;
+  --bg-cards: #FFFFFF;
+  --menu-sidebar: #1F2937;
+  --text-main: #111827;
+  --accent-main: #10B981;
+  --border-ui: #E5E7EB;
+  --hover-button: #34D399;
+  
   /* Admin-specific theme variables */
-  --admin-primary: #38bdf8;
-  --admin-primary-light: #7dd3fc;
-  --admin-secondary: #1e293b;
-  --admin-accent: #0ea5e9;
+  --admin-primary: var(--accent-main);
+  --admin-primary-light: var(--hover-button);
+  --admin-secondary: var(--menu-sidebar);
+  --admin-accent: var(--accent-main);
   --admin-text: #f8fafc;
   --admin-text-secondary: #cbd5e1;
   --admin-text-muted: #94a3b8;
   --admin-border: #334155;
   --admin-bg-dark: #0f172a;
-  --admin-bg-card: #1e293b;
+  --admin-bg-card: var(--bg-cards);
   
   /* Admin theme colors */
-  --admin-bg-primary: #0f172a;
-  --admin-bg-secondary: #1e293b;
+  --admin-bg-primary: var(--bg-general);
+  --admin-bg-secondary: var(--menu-sidebar);
   --admin-bg-tertiary: #243044;
   --admin-bg-highlight: #2a3a53;
-  --admin-text-primary: #f8fafc;
-  --admin-text-secondary: #cbd5e1;
+  --admin-text-primary: var(--text-main);
+  --admin-text-secondary: #4B5563;
   --admin-text-muted: #94a3b8;
   --admin-text-link: #60a5fa;
-  --admin-border-light: #334155;
+  --admin-border-light: var(--border-ui);
   --admin-border-mid: #1e293b;
-  --admin-accent-blue: #0ea5e9;
+  --admin-accent-blue: var(--accent-main);
   --admin-accent-purple: #8b5cf6;
   --admin-accent-pink: #f472b6;
   --admin-status-success: #10b981;
@@ -61,15 +70,21 @@
   --admin-status-error: #ef4444;
   --admin-status-info: #3b82f6;
 
-  /* Designer theme colors */
-  --designer-primary: #3dd5f3;
-  --designer-primary-light: #a5f3ff;
-  --designer-secondary: #edf2ff;
-  --designer-accent: #5c7cfa;
+  /* Designer theme colors - blue accents */
+  --designer-primary: #3B82F6;
+  --designer-primary-light: #60A5FA;
+  --designer-secondary: #EBF5FF;
+  --designer-accent: #2563EB;
+  --designer-bg-primary: #EBF5FF;
+  --designer-bg-card: #FFFFFF;
+  --designer-text-primary: #1E3A8A;
   
-  /* Client theme colors */
-  --client-primary: #0d9488;
-  --client-primary-light: #14b8a6;
-  --client-secondary: #e0f2f1;
-  --client-accent: #0f766e;
+  /* Client theme colors - green accents */
+  --client-primary: #10B981;
+  --client-primary-light: #34D399;
+  --client-secondary: #FFFAF0;
+  --client-accent: #065F46;
+  --client-bg-primary: #FFFAF0;
+  --client-bg-card: #FFFFFF;
+  --client-text-primary: #065F46;
 }
