@@ -17,7 +17,15 @@ export type ProcessingType =
   | 'painting'
   | 'glass_processing'
   | 'assembly'
-  | 'other';
+  | 'other'
+  // Adding conversion support for the string values coming from form
+  | 'cnc_classic' 
+  | 'cnc_rifled' 
+  | 'glass_cut' 
+  | 'glass_sandblast' 
+  | 'glass_drill' 
+  | 'glass_cnc'
+  | 'edge_banding';
 
 // Define material model
 export interface Material {
@@ -54,3 +62,9 @@ export interface MaterialFilterOptions {
   maxPrice: number;
   processingTypes: ProcessingType[];
 }
+
+// Form value helper type
+export type MaterialFormValues = Omit<Material, 'id' | 'inStock'> & {
+  availability: boolean;
+  compatibleOperations: ProcessingType[];
+};

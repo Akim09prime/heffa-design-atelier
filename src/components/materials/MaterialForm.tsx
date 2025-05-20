@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -79,7 +78,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
-  // Default values for the form - explicitly cast compatibleOperations to string[]
+  // Default values for the form - explicitly handle the compatibleOperations as ProcessingType[]
   const defaultValues: Partial<FormValues> = {
     code: material?.code || '',
     name: material?.name || '',
@@ -92,10 +91,8 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
-    // Explicitly cast to string[] as expected by the form schema
-    compatibleOperations: material?.compatibleOperations ? 
-      (material.compatibleOperations as unknown as string[]) : 
-      ([] as string[]),
+    // Explicitly cast to ProcessingType[] as expected by the form schema
+    compatibleOperations: material?.compatibleOperations as ProcessingType[] || [] as ProcessingType[],
   };
 
   // Set image preview if material has a textureUrl
