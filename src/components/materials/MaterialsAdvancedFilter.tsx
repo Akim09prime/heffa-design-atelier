@@ -90,7 +90,7 @@ export const MaterialsAdvancedFilter: React.FC<MaterialsAdvancedFilterProps> = (
                 <SelectValue placeholder={t('materials.allManufacturers')} />
               </SelectTrigger>
               <SelectContent className="bg-gray-700 border-gray-600 text-white">
-                <SelectItem value="">
+                <SelectItem value="all">
                   {t('materials.allManufacturers')}
                 </SelectItem>
                 {manufacturers.map((manufacturer) => (
@@ -126,7 +126,7 @@ export const MaterialsAdvancedFilter: React.FC<MaterialsAdvancedFilterProps> = (
                 <SelectValue placeholder={t('materials.allThicknesses')} />
               </SelectTrigger>
               <SelectContent className="bg-gray-700 border-gray-600 text-white">
-                <SelectItem value="">
+                <SelectItem value="all">
                   {t('materials.allThicknesses')}
                 </SelectItem>
                 {thicknesses.map((thickness) => (
