@@ -18,6 +18,7 @@ import NewProject from './pages/designer/NewProject';
 import ProjectEditor3D from './pages/designer/ProjectEditor3D';
 import ImportProject from './pages/designer/ImportProject';
 import ExportProject from './pages/designer/ExportProject';
+import ProjectQuote from './pages/designer/ProjectQuote';
 import Materials from './pages/designer/Materials';
 import Accessories from './pages/designer/Accessories';
 import Modules from './pages/designer/Modules';
@@ -63,6 +64,7 @@ function App() {
           <Route path="/designer/projects" element={<Projects />} />
           <Route path="/designer/projects/new" element={<NewProject />} />
           <Route path="/designer/projects/:projectId/3d-editor" element={<ProjectEditor3D />} />
+          <Route path="/designer/projects/:projectId/quote" element={<ProjectQuote />} />
           <Route path="/designer/projects/import" element={<ImportProject />} />
           <Route path="/designer/projects/:projectId/export" element={<ExportProject />} />
           <Route path="/designer/materials" element={<Materials />} />

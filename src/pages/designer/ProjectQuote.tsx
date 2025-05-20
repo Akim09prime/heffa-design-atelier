@@ -1,15 +1,16 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DesignerLayout } from '../../components/layout/DesignerLayout';
-import { QuoteGenerator } from '@/components/quotes/QuoteGenerator';
+import { ProjectQuoteForm } from '@/components/quotes/ProjectQuoteForm';
+import { QuoteDetails } from '@/services/quoteService';
 import { ProjectService } from '@/services/projectService';
-import { MaterialService } from '@/services/materialService';
-import { AccessoryService } from '@/services/accessoryService';
+import { materialService } from '@/services/materialService';
+import { accessoryService } from '@/services/accessoryService';
 import { Project, Material, AccessoryItem } from '@/types';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { ChevronLeft } from 'lucide-react';
 
 const ProjectQuote = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -18,101 +19,113 @@ const ProjectQuote = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [accessories, setAccessories] = useState<AccessoryItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
+    const loadData = async () => {
       try {
-        if (!projectId) {
-          throw new Error('No project ID provided');
+        setIsLoading(true);
+        
+        // Load project
+        if (projectId) {
+          const projectData = await ProjectService.getProjectById(projectId);
+          if (!projectData) {
+            toast({
+              title: "Error",
+              description: "Proiectul nu a fost găsit",
+              variant: "destructive"
+            });
+            navigate('/designer/projects');
+            return;
+          }
+          setProject(projectData);
         }
         
-        // Fetch project details
-        const projectData = await ProjectService.getProjectById(projectId);
-        if (!projectData) {
-          throw new Error(`Project with ID ${projectId} not found`);
-        }
+        // Load materials and accessories for price calculations
+        const materialsData = await materialService.getAllMaterials();
+        setMaterials(materialsData);
         
-        setProject(projectData);
-        
-        // Fetch materials and accessories in parallel
-        const [fetchedMaterials, fetchedAccessories] = await Promise.all([
-          MaterialService.getAllMaterials(),
-          AccessoryService.getAllAccessories()
-        ]);
-        
-        setMaterials(fetchedMaterials);
-        setAccessories(fetchedAccessories);
+        const accessoriesData = await accessoryService.getAllAccessories();
+        setAccessories(accessoriesData);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(error instanceof Error ? error.message : 'Unknown error occurred');
         toast({
-          title: 'Error',
-          description: error instanceof Error ? error.message : 'Failed to load project data',
-          variant: 'destructive'
+          title: "Error",
+          description: "A apărut o eroare la încărcarea datelor",
+          variant: "destructive"
         });
+        console.error("Error loading data:", error);
       } finally {
         setIsLoading(false);
       }
     };
     
-    fetchData();
-  }, [projectId, toast]);
+    loadData();
+  }, [projectId, navigate, toast]);
 
-  const handleBackToProject = () => {
-    if (projectId) {
-      navigate(`/designer/projects/${projectId}`);
-    } else {
-      navigate('/designer/projects');
-    }
+  const handleQuoteGenerated = (quote: QuoteDetails) => {
+    console.log("Quote generated:", quote);
+    // In a real app, you might want to save the quote to the database
   };
+
+  const handleBack = () => {
+    navigate(`/designer/projects/${projectId}/3d-editor`);
+  };
+
+  if (isLoading) {
+    return (
+      <DesignerLayout>
+        <div className="p-8 flex justify-center items-center h-[calc(100vh-200px)]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-designer-primary mx-auto"></div>
+            <p className="mt-4 text-designer-primary font-medium">Se încarcă datele proiectului...</p>
+          </div>
+        </div>
+      </DesignerLayout>
+    );
+  }
+
+  if (!project) {
+    return (
+      <DesignerLayout>
+        <div className="p-8">
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold mb-2">Proiect negăsit</h2>
+            <p className="text-gray-500 mb-6">Proiectul solicitat nu a fost găsit sau a fost șters.</p>
+            <Button onClick={() => navigate('/designer/projects')}>
+              Înapoi la proiecte
+            </Button>
+          </div>
+        </div>
+      </DesignerLayout>
+    );
+  }
 
   return (
     <DesignerLayout>
       <div className="p-6">
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" onClick={handleBackToProject} className="mr-4">
-            <ArrowLeft size={18} />
-          </Button>
+        <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-medium">Generate Quote</h1>
-            <p className="text-muted-foreground">
-              {project ? `Project: ${project.name}` : 'Loading project...'}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="mb-2"
+            >
+              <ChevronLeft size={16} className="mr-1" /> Înapoi la proiect
+            </Button>
+            <h1 className="text-2xl font-medium designer-gradient-text">Generare ofertă: {project.name}</h1>
+            <p className="text-gray-500 text-sm">
+              Proiect {project.type}{project.subType ? ` (${project.subType})` : ''} | {project.modules.length} corpuri
             </p>
           </div>
         </div>
 
-        {isLoading && (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
-            <h3 className="text-lg font-medium">Error Loading Data</h3>
-            <p>{error}</p>
-            <Button 
-              onClick={handleBackToProject} 
-              variant="outline" 
-              className="mt-4 border-red-300"
-            >
-              Back to Projects
-            </Button>
-          </div>
-        )}
-
-        {!isLoading && !error && project && (
-          <QuoteGenerator 
-            project={project}
-            materials={materials}
-            accessories={accessories}
-          />
-        )}
+        <ProjectQuoteForm
+          project={project}
+          materials={materials}
+          accessories={accessories}
+          onQuoteGenerated={handleQuoteGenerated}
+        />
       </div>
     </DesignerLayout>
   );

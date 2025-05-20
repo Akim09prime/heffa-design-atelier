@@ -9,7 +9,7 @@ import { ProjectService } from '@/services/projectService';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Printer, ChevronRight, Save, Calculator } from 'lucide-react';
+import { Printer, ChevronRight, Save, Calculator, FileText } from 'lucide-react';
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -160,7 +160,7 @@ const NewProject = () => {
   return (
     <DesignerLayout>
       <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100">
-        <h1 className="text-3xl font-medium mb-6 gradient-text">Create New Project</h1>
+        <h1 className="text-3xl font-medium mb-6 designer-gradient-text">Create New Project</h1>
         <Card className="shadow-lg border-gray-200 overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
             <CardTitle>Select Project Type</CardTitle>
@@ -194,7 +194,7 @@ const NewProject = () => {
                   onClick={handleCreateQuote}
                   className="fancy-btn"
                 >
-                  <Calculator size={16} className="mr-2" />
+                  <FileText size={16} className="mr-2" />
                   Create Quote
                 </Button>
               </div>

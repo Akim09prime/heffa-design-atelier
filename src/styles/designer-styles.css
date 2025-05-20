@@ -17,19 +17,28 @@
   --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
-  --primary: 192 80% 60%;
+  --primary: 217 91% 40%;  /* Updated to #1E40AF */
   --primary-foreground: 210 40% 98%;
   --secondary: 210 40% 96%;
   --secondary-foreground: 222 47% 11%;
   --muted: 215 25% 27%;
   --muted-foreground: 215 16% 47%;
-  --accent: 230 83% 67%;
+  --accent: 222 89% 60%;  /* Updated to #3B82F6 */
   --accent-foreground: 210 40% 98%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 192 80% 60%;
+  --ring: 217 91% 40%;  /* Updated to match primary */
+  
+  /* Custom colors */
+  --designer-primary: #1E40AF;
+  --designer-accent: #3B82F6;
+  --designer-background: #F0F4F8;
+  --designer-card: #FFFFFF;
+  --designer-border: rgba(203, 213, 225, 0.4);
+  --designer-text: #1E293B;
+  --designer-text-muted: #64748B;
 }
 
 @layer components {
@@ -56,6 +65,51 @@
     color: #3dd5f3;
     border: 1px solid rgba(61, 213, 243, 0.3);
   }
+  
+  /* Project cards */
+  .project-card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-lg border border-designer-border transition-all duration-300;
+  }
+  
+  .project-card:hover {
+    @apply transform -translate-y-1;
+  }
+  
+  /* Module cards */
+  .module-card {
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md border border-designer-border transition-all duration-300 overflow-hidden;
+  }
+  
+  /* Glass effect elements */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-sm;
+  }
+  
+  .glass-dark {
+    @apply bg-gray-900/70 backdrop-blur-sm border border-white/10 shadow-md;
+  }
+  
+  /* Breadcrumbs */
+  .designer-breadcrumb {
+    @apply flex items-center text-sm text-gray-500;
+  }
+  
+  .designer-breadcrumb-item {
+    @apply flex items-center hover:text-designer-primary transition-colors;
+  }
+  
+  .designer-breadcrumb-separator {
+    @apply mx-2 text-gray-400;
+  }
+  
+  /* Progress bar */
+  .progress-designer {
+    @apply h-2 rounded-full bg-gray-200 overflow-hidden;
+  }
+  
+  .progress-designer-fill {
+    @apply h-full bg-gradient-to-r from-designer-primary to-designer-accent rounded-full transition-all duration-500;
+  }
 }
 
 /* Glow effect for designer theme */
@@ -65,4 +119,100 @@
 
 .glow-hover:hover {
   box-shadow: 0 0 15px rgba(61, 213, 243, 0.5);
+}
+
+/* Common Animations */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Button with animated glow */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-glow:hover::after {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* Shadow styles */
+.shadow-soft {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-glow {
+  box-shadow: 0 5px 15px rgba(30, 64, 175, 0.2);
+}
+
+/* Fancy gradient border */
+.fancy-border {
+  position: relative;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: linear-gradient(45deg, #3B82F6, #1E40AF);
+}
+
+.fancy-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0.75rem;
+  padding: 1px;
+  background: white;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* Fancy buttons */
+.fancy-btn {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.fancy-btn::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(30, 64, 175, 0.1));
+  left: -100%;
+  top: 0;
+  z-index: -1;
+  transition: all 0.3s ease;
+}
+
+.fancy-btn:hover::before {
+  left: 0;
 }

@@ -16,11 +16,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
 import { UiProvider, useUi } from '@/contexts/UiContext';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Loader } from 'lucide-react';
+import { Loader, Calculator, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 // Editor content component that uses contexts
 const ProjectEditorContent = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { showSuccessToast, isLoading, setLoading } = useUi();
   
@@ -72,6 +75,13 @@ const ProjectEditorContent = () => {
       });
     } finally {
       setLoading('save-project', false); 
+    }
+  };
+
+  const handleCreateQuote = () => {
+    if (projectId) {
+      console.log(`Navigating to quote creation for project ${projectId}`);
+      navigate(`/designer/projects/${projectId}/quote`);
     }
   };
 
@@ -138,6 +148,18 @@ const ProjectEditorContent = () => {
 
           {/* 3D Scene */}
           <div className="flex-1 flex flex-col overflow-hidden p-4">
+            {/* Action buttons - New Quote button */}
+            <div className="z-10 flex justify-end mb-2">
+              <Button 
+                onClick={handleCreateQuote} 
+                variant="outline" 
+                className="bg-white/70 hover:bg-white/90 hover:text-designer-primary transition-all shadow-sm hover:shadow-md"
+              >
+                <FileText size={16} className="mr-2" />
+                Create Quote
+              </Button>
+            </div>
+            
             <div className="rounded-2xl overflow-hidden shadow-lg flex-1 glass-dark border border-gray-100/10 backdrop-blur-md">
               <ProjectSceneView
                 modules={project.modules || []}
