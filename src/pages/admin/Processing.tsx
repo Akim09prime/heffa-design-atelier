@@ -169,6 +169,18 @@ const productionProjects = [
     completedPieces: 28,
     startDate: '2023-05-28',
     estimatedCompletion: '2023-06-08'
+  },
+  {
+    id: 'PRJ-005',
+    name: 'Retail Store Shelving',
+    client: 'Magazin Central SRL',
+    status: 'În producție',
+    currentSection: 'Cant',
+    nextSection: 'CNC',
+    totalPieces: 42,
+    completedPieces: 18,
+    startDate: '2023-06-12',
+    estimatedCompletion: '2023-06-25'
   }
 ];
 

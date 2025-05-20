@@ -122,6 +122,9 @@ export const ProcessingGanttChart: React.FC<ProcessingGanttChartProps> = ({ proj
     return date;
   });
   
+  // Calculate today's position for the marker
+  const todayPosition = 200; // base position in pixels
+  
   return (
     <div className="bg-admin-bg-tertiary border border-admin-border-light rounded-md overflow-x-auto">
       <div className="min-w-[1000px]">
@@ -155,7 +158,10 @@ export const ProcessingGanttChart: React.FC<ProcessingGanttChartProps> = ({ proj
         {/* Chart body */}
         <div className="relative">
           {/* Today marker */}
-          <div className="absolute top-0 bottom-0 w-px bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] z-10" style={{ left: '200px' }}>
+          <div 
+            className="absolute top-0 bottom-0 w-px bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] z-10" 
+            style={{ left: `${todayPosition}px` }}
+          >
             <div className="absolute -top-1 -left-[9px] bg-blue-500 text-xs text-white px-1 rounded">
               Azi
             </div>
