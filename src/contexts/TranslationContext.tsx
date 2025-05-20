@@ -19,61 +19,40 @@ interface TranslationProviderProps {
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
   const { language, changeLanguage } = useTranslationProvider();
   
-  // Translation function
+  // Translation function - updated to handle deeply nested keys
   const t = (key: string): string => {
     try {
-      const [section, translationKey] = key.includes('.') ? key.split('.') : ['common', key];
+      const keys = key.split('.');
       
-      // Handle nested keys (like settings.languageSetTo.en)
-      if (key.split('.').length > 2) {
-        const [section, parentKey, childKey] = key.split('.');
+      // Start from the root of translations object
+      let result: any = mergedTranslations;
+      
+      // Navigate through the keys until the second last one
+      for (let i = 0; i < keys.length - 1; i++) {
+        result = result[keys[i]];
         
-        if (
-          mergedTranslations[section] && 
-          mergedTranslations[section][parentKey] && 
-          typeof mergedTranslations[section][parentKey] === 'object' &&
-          (mergedTranslations[section][parentKey] as any)[childKey] &&
-          (mergedTranslations[section][parentKey] as any)[childKey][language]
-        ) {
-          return (mergedTranslations[section][parentKey] as any)[childKey][language];
+        // If at any point the path doesn't exist, return the key
+        if (!result) {
+          console.warn(`Missing translation path: ${key}`);
+          return key;
+        }
+      }
+      
+      // Get the final value using the last key
+      const finalKey = keys[keys.length - 1];
+      
+      // Check if the final value is a translation object
+      if (result[finalKey] && typeof result[finalKey] === 'object') {
+        // It's a translation object, get value for current language
+        if (result[finalKey][language]) {
+          return result[finalKey][language];
         }
         
-        // Fallback to other language if translation not found in current language
+        // Fallback to other language
         const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
-        if (
-          mergedTranslations[section] && 
-          mergedTranslations[section][parentKey] && 
-          typeof mergedTranslations[section][parentKey] === 'object' &&
-          (mergedTranslations[section][parentKey] as any)[childKey] &&
-          (mergedTranslations[section][parentKey] as any)[childKey][fallbackLang]
-        ) {
-          return (mergedTranslations[section][parentKey] as any)[childKey][fallbackLang];
+        if (result[finalKey][fallbackLang]) {
+          return result[finalKey][fallbackLang];
         }
-        
-        // Return the key if no translation found
-        console.warn(`Missing translation: ${key}`);
-        return key;
-      }
-      
-      // Handle regular keys
-      if (
-        mergedTranslations[section] && 
-        mergedTranslations[section][translationKey] && 
-        typeof mergedTranslations[section][translationKey] === 'object' &&
-        (mergedTranslations[section][translationKey] as any)[language]
-      ) {
-        return (mergedTranslations[section][translationKey] as any)[language];
-      }
-      
-      // Fallback to other language if translation not found in current language
-      const fallbackLang: Language = language === 'ro' ? 'en' : 'ro';
-      if (
-        mergedTranslations[section] && 
-        mergedTranslations[section][translationKey] && 
-        typeof mergedTranslations[section][translationKey] === 'object' &&
-        (mergedTranslations[section][translationKey] as any)[fallbackLang]
-      ) {
-        return (mergedTranslations[section][translationKey] as any)[fallbackLang];
       }
       
       // Return key if no translation found

@@ -7,11 +7,14 @@ export interface TranslationEntry {
   [language: string]: string;
 }
 
+// Modificarea este aici: Am adăugat tipul recursiv pentru a permite structuri nestuite
+export interface NestedTranslationEntry {
+  [key: string]: TranslationEntry | NestedTranslationEntry;
+}
+
 export interface Translations {
   [key: string]: {
-    [key: string]: TranslationEntry | {
-      [nestedKey: string]: TranslationEntry;
-    };
+    [key: string]: TranslationEntry | NestedTranslationEntry;
   };
 }
 
