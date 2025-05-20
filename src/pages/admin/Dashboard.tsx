@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowRight, Plus, Upload, Users, Database, Box, FileText, BarChart3, AlertTriangle } from 'lucide-react';
+import { Search, ArrowRight, Plus, Upload, Users, Database, Box, FileText, BarChart3, Filter, CheckCircle, Clock } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { Separator } from '@/components/ui/separator';
@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 // Sample data for activity chart
 const activityData = [
@@ -72,9 +74,94 @@ const systemAlerts = [
   }
 ];
 
+// Sample project data
+const projectsData = [
+  {
+    id: '1',
+    name: 'Modern Kitchen Set',
+    client: 'John Smith',
+    designer: 'Maria Popescu',
+    progress: 75,
+    status: 'În lucru',
+    lastUpdate: '2 ore în urmă',
+    isNew: true
+  },
+  {
+    id: '2',
+    name: 'Office Furniture Set',
+    client: 'Tech Solutions SRL',
+    designer: 'Alex Ionescu',
+    progress: 90,
+    status: 'În lucru',
+    lastUpdate: '1 zi în urmă',
+    isNew: false
+  },
+  {
+    id: '3',
+    name: 'Living Room Remodel',
+    client: 'Elena Dumitru',
+    designer: 'Maria Popescu',
+    progress: 30,
+    status: 'În lucru',
+    lastUpdate: '3 ore în urmă',
+    isNew: true
+  },
+  {
+    id: '4',
+    name: 'Master Bedroom Closets',
+    client: 'Daniel Popa',
+    designer: 'Mihai Stanescu',
+    progress: 100,
+    status: 'Finalizat',
+    lastUpdate: '2 zile în urmă',
+    isNew: false
+  },
+  {
+    id: '5',
+    name: 'Kid Room Furniture',
+    client: 'Ana Marin',
+    designer: 'Alex Ionescu',
+    progress: 100,
+    status: 'Finalizat',
+    lastUpdate: '4 zile în urmă',
+    isNew: false
+  }
+];
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [clientFilter, setClientFilter] = useState('');
+  const [designerFilter, setDesignerFilter] = useState('all');
+  const [filteredProjects, setFilteredProjects] = useState(projectsData);
+
+  // Filter projects based on selected filters
+  React.useEffect(() => {
+    let result = projectsData;
+    
+    if (statusFilter !== 'all') {
+      result = result.filter(project => 
+        statusFilter === 'active' 
+          ? project.status === 'În lucru' 
+          : project.status === 'Finalizat'
+      );
+    }
+    
+    if (clientFilter) {
+      result = result.filter(project => 
+        project.client.toLowerCase().includes(clientFilter.toLowerCase())
+      );
+    }
+    
+    if (designerFilter !== 'all') {
+      result = result.filter(project => 
+        project.designer === designerFilter
+      );
+    }
+    
+    setFilteredProjects(result);
+  }, [statusFilter, clientFilter, designerFilter]);
 
   const handleNavigation = (path: string, title: string) => {
     toast({
@@ -109,89 +196,264 @@ const Dashboard = () => {
     }
   };
 
+  // Count active and completed projects
+  const activeProjects = projectsData.filter(p => p.status === 'În lucru').length;
+  const completedProjects = projectsData.filter(p => p.status === 'Finalizat').length;
+  const totalClients = [...new Set(projectsData.map(p => p.client))].length;
+  const totalFurniturePieces = 127; // Exemplu static
+
+  // Get unique designers for filter
+  const designers = ['all', ...new Set(projectsData.map(p => p.designer))];
+
   return (
     <AdminLayout>
       <div className="p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-8">
           <div>
             <h1 className="text-3xl font-medium text-white">Admin Dashboard</h1>
-            <p className="text-admin-text-secondary">System overview and management</p>
+            <p className="text-admin-text-secondary">Vizualizare generală a sistemului</p>
           </div>
           <div className="flex gap-3">
             <Button 
               onClick={() => handleNavigation("/admin/reports/new", "Create Report")}
               className="bg-admin-accent-purple hover:bg-admin-accent-purple/80 text-white"
             >
-              <FileText size={18} className="mr-2" /> Generate Report
+              <FileText size={18} className="mr-2" /> Generează raport
             </Button>
             <Button 
               variant="outline"
               className="border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight hover:text-admin-text-primary"
               onClick={() => handleNavigation("/admin/import-data", "Import Data")}
             >
-              <Upload size={18} className="mr-2" /> Import Data
+              <Upload size={18} className="mr-2" /> Importă date
             </Button>
           </div>
+        </div>
+        
+        {/* Filters */}
+        <div className="bg-admin-bg-secondary border border-admin-border-light rounded-lg p-4 mb-8 flex flex-wrap gap-4 items-center">
+          <div className="flex items-center">
+            <span className="text-white mr-2">Status:</span>
+            <Select defaultValue="all" onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[140px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light">
+                <SelectValue placeholder="Toate" />
+              </SelectTrigger>
+              <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                <SelectItem value="all">Toate</SelectItem>
+                <SelectItem value="active">În lucru</SelectItem>
+                <SelectItem value="completed">Finalizat</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center">
+            <span className="text-white mr-2">Client:</span>
+            <Input 
+              type="text" 
+              placeholder="Caută client..." 
+              className="w-[200px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light"
+              value={clientFilter}
+              onChange={(e) => setClientFilter(e.target.value)}
+            />
+          </div>
+          
+          <div className="flex items-center">
+            <span className="text-white mr-2">Designer:</span>
+            <Select defaultValue="all" onValueChange={setDesignerFilter}>
+              <SelectTrigger className="w-[180px] bg-admin-bg-tertiary text-admin-text-secondary border-admin-border-light">
+                <SelectValue placeholder="Toți designerii" />
+              </SelectTrigger>
+              <SelectContent className="bg-admin-bg-secondary border-admin-border-light">
+                {designers.map((designer, index) => (
+                  <SelectItem key={index} value={designer}>
+                    {designer === 'all' ? 'Toți designerii' : designer}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            className="ml-auto border-admin-border-light text-admin-text-secondary hover:bg-admin-bg-highlight"
+          >
+            <Filter size={16} className="mr-2" /> Filtre avansate
+          </Button>
         </div>
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium text-white">Total Users</CardTitle>
+              <div className="flex items-center">
+                <div className="p-2 rounded-md bg-blue-500/20 mr-3">
+                  <Clock size={20} className="text-blue-500" />
+                </div>
+                <CardTitle className="text-lg font-medium text-white">Proiecte active</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">248</div>
+              <div className="text-3xl font-bold text-white">{activeProjects}</div>
               <p className="text-sm text-admin-status-success font-medium">
-                +12% <span className="text-admin-text-secondary font-normal">vs. last month</span>
+                {activeProjects > 3 ? '+12% ' : '+3% '}
+                <span className="text-admin-text-secondary font-normal">vs. luna trecută</span>
               </p>
             </CardContent>
           </Card>
           
           <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium text-white">Materials</CardTitle>
+              <div className="flex items-center">
+                <div className="p-2 rounded-md bg-green-500/20 mr-3">
+                  <CheckCircle size={20} className="text-green-500" />
+                </div>
+                <CardTitle className="text-lg font-medium text-white">Proiecte finalizate</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">542</div>
+              <div className="text-3xl font-bold text-white">{completedProjects}</div>
               <p className="text-sm text-admin-status-success font-medium">
-                +8 <span className="text-admin-text-secondary font-normal">new items added</span>
+                +5 <span className="text-admin-text-secondary font-normal">luna aceasta</span>
               </p>
             </CardContent>
           </Card>
           
           <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium text-white">Accessories</CardTitle>
+              <div className="flex items-center">
+                <div className="p-2 rounded-md bg-purple-500/20 mr-3">
+                  <Users size={20} className="text-purple-500" />
+                </div>
+                <CardTitle className="text-lg font-medium text-white">Clienți</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">324</div>
+              <div className="text-3xl font-bold text-white">{totalClients}</div>
               <p className="text-sm text-admin-status-success font-medium">
-                +4% <span className="text-admin-text-secondary font-normal">inventory value</span>
+                +2 <span className="text-admin-text-secondary font-normal">noi săptămâna asta</span>
               </p>
             </CardContent>
           </Card>
           
           <Card className="bg-gradient-to-br from-admin-bg-secondary to-admin-bg-tertiary border-admin-border-light text-white">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium text-white">Projects</CardTitle>
+              <div className="flex items-center">
+                <div className="p-2 rounded-md bg-amber-500/20 mr-3">
+                  <Box size={20} className="text-amber-500" />
+                </div>
+                <CardTitle className="text-lg font-medium text-white">Corpuri produse</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">157</div>
+              <div className="text-3xl font-bold text-white">{totalFurniturePieces}</div>
               <p className="text-sm text-admin-status-info font-medium">
-                +24 <span className="text-admin-text-secondary font-normal">active projects</span>
+                +17 <span className="text-admin-text-secondary font-normal">luna aceasta</span>
               </p>
             </CardContent>
           </Card>
         </div>
         
+        {/* Projects Cards */}
+        <h2 className="text-xl font-semibold text-white mb-4">Proiecte recente</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {filteredProjects.map((project) => (
+            <Card 
+              key={project.id} 
+              className="bg-admin-bg-secondary border-admin-border-light overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+            >
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      {project.name}
+                      {project.isNew && (
+                        <Badge className="bg-admin-accent-blue text-white ml-2">Nou</Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription className="text-admin-text-secondary">
+                      Client: {project.client}
+                    </CardDescription>
+                  </div>
+                  <Badge className={project.status === 'Finalizat' 
+                    ? "bg-green-500/20 text-green-400 border border-green-500/30" 
+                    : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                  }>
+                    {project.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-admin-text-secondary">Designer:</span>
+                      <span className="text-white">{project.designer}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-admin-text-secondary">Ultima actualizare:</span>
+                      <span className="text-white">{project.lastUpdate}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-admin-text-secondary">Progres:</span>
+                      <span className="text-white">{project.progress}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-admin-bg-tertiary rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${
+                          project.progress >= 100 ? 'bg-green-500' : 
+                          project.progress > 50 ? 'bg-blue-500' : 
+                          project.progress > 25 ? 'bg-amber-500' : 'bg-red-500'
+                        }`}
+                        style={{ width: `${project.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="pt-2 border-t border-admin-border-mid">
+                <Button 
+                  variant="default"
+                  size="sm"
+                  className="bg-admin-accent-blue hover:bg-admin-accent-blue/80 text-white w-full"
+                  onClick={() => handleNavigation(`/admin/projects/${project.id}`, project.name)}
+                >
+                  Vezi detalii
+                  <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+        
+        {/* No results message */}
+        {filteredProjects.length === 0 && (
+          <Card className="bg-admin-bg-secondary border-admin-border-light py-8 text-center">
+            <CardContent>
+              <p className="text-admin-text-secondary">Nu s-au găsit proiecte care să corespundă filtrelor selectate.</p>
+              <Button 
+                variant="link" 
+                className="text-admin-accent-blue mt-2"
+                onClick={() => {
+                  setStatusFilter('all');
+                  setClientFilter('');
+                  setDesignerFilter('all');
+                }}
+              >
+                Resetează filtrele
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+        
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          <div className="lg:col-span-2">
             <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader>
-                <CardTitle className="text-white">System Activity</CardTitle>
-                <CardDescription className="text-admin-text-muted">Monthly data overview</CardDescription>
+                <CardTitle className="text-white">Activitatea sistemului</CardTitle>
+                <CardDescription className="text-admin-text-muted">Vizualizare lunară</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
@@ -205,70 +467,20 @@ const Dashboard = () => {
                         color: '#FFFFFF' 
                       }} 
                     />
-                    <Bar dataKey="projects" fill="#8B5CF6" name="Projects" />
-                    <Bar dataKey="materials" fill="#0EA5E9" name="Materials" />
-                    <Bar dataKey="accessories" fill="#D946EF" name="Accessories" />
+                    <Bar dataKey="projects" fill="#8B5CF6" name="Proiecte" />
+                    <Bar dataKey="materials" fill="#0EA5E9" name="Materiale" />
+                    <Bar dataKey="accessories" fill="#D946EF" name="Accesorii" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-            
-            <Card className="bg-admin-bg-secondary border-admin-border-light">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Recently Added Materials</CardTitle>
-                  <CardDescription className="text-admin-text-muted">Latest additions to your materials database</CardDescription>
-                </div>
-                <Button 
-                  variant="link" 
-                  size="sm"
-                  className="text-admin-text-link"
-                  onClick={() => handleNavigation("/admin/materials-database", "Materials Database")}
-                >
-                  View All
-                </Button>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-admin-border-mid">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Code</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Type</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-admin-text-muted uppercase tracking-wider">Price</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-admin-border-light">
-                      {materials.map((material, i) => (
-                        <tr key={i} className="hover:bg-admin-bg-highlight">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{material.code}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.type}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-admin-text-secondary">{material.price}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-              <CardFooter className="border-t border-admin-border-mid px-6 py-4">
-                <Button 
-                  className="ml-auto bg-admin-accent-purple hover:bg-admin-accent-purple/80 text-white"
-                  onClick={() => handleNavigation("/admin/materials-database/new", "Add Material")}
-                >
-                  <Plus size={16} className="mr-2" />
-                  Add New Material
-                </Button>
-              </CardFooter>
-            </Card>
           </div>
           
-          <div className="space-y-6">
+          <div>
             <Card className="bg-admin-bg-secondary border-admin-border-light">
               <CardHeader>
-                <CardTitle className="text-white">System Alerts</CardTitle>
-                <CardDescription className="text-admin-text-muted">Important notifications</CardDescription>
+                <CardTitle className="text-white">Alerte sistem</CardTitle>
+                <CardDescription className="text-admin-text-muted">Notificări importante</CardDescription>
               </CardHeader>
               <CardContent className="px-0 py-0">
                 <ul className="divide-y divide-admin-border-light">
@@ -278,20 +490,20 @@ const Dashboard = () => {
                         <div className="flex justify-between items-center">
                           <p className="font-medium text-white flex items-center">
                             {alert.severity === 'error' && (
-                              <AlertTriangle size={16} className="text-admin-status-error mr-2" />
+                              <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
                             )}
                             {alert.severity === 'warning' && (
-                              <AlertTriangle size={16} className="text-admin-status-warning mr-2" />
+                              <div className="w-2 h-2 rounded-full bg-amber-500 mr-2"></div>
                             )}
                             {alert.severity === 'info' && (
-                              <AlertTriangle size={16} className="text-admin-status-info mr-2" />
+                              <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                             )}
                             {alert.title}
                             {alert.severity === 'error' && (
-                              <Badge className="ml-2 bg-admin-status-error text-white">Error</Badge>
+                              <Badge className="ml-2 bg-red-500/20 text-red-400 border border-red-500/30">Eroare</Badge>
                             )}
                             {alert.severity === 'warning' && (
-                              <Badge className="ml-2 bg-admin-status-warning text-white">Warning</Badge>
+                              <Badge className="ml-2 bg-amber-500/20 text-amber-400 border border-amber-500/30">Atenție</Badge>
                             )}
                           </p>
                         </div>
@@ -307,45 +519,9 @@ const Dashboard = () => {
                   className="ml-auto text-admin-text-link"
                   onClick={() => handleNavigation("/admin/alerts", "All Alerts")}
                 >
-                  View All Alerts
+                  Vezi toate alertele
                 </Button>
               </CardFooter>
-            </Card>
-            
-            <Card className="bg-admin-bg-secondary border-admin-border-light">
-              <CardHeader>
-                <CardTitle className="text-white">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-3">
-                <Button 
-                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
-                  onClick={() => handleQuickAction("Import Materials")}
-                >
-                  <Database size={16} className="mr-2" />
-                  Import Materials
-                </Button>
-                <Button 
-                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
-                  onClick={() => handleQuickAction("Add User")}
-                >
-                  <Users size={16} className="mr-2" />
-                  Add User
-                </Button>
-                <Button 
-                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
-                  onClick={() => handleQuickAction("Add Accessory")}
-                >
-                  <Box size={16} className="mr-2" />
-                  Add Accessory
-                </Button>
-                <Button 
-                  className="w-full sm:w-auto flex-grow bg-admin-bg-tertiary hover:bg-admin-bg-highlight text-admin-text-secondary border border-admin-border-light"
-                  onClick={() => handleQuickAction("Generate Report")}
-                >
-                  <FileText size={16} className="mr-2" />
-                  Generate Report
-                </Button>
-              </CardContent>
             </Card>
           </div>
         </div>
