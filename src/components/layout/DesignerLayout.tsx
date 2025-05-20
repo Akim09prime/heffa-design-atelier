@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogoutButton } from './LogoutButton';
+import LogoutButton from './LogoutButton';
 import {
   Home,
   FolderOpen,
@@ -11,11 +11,11 @@ import {
   Package,
   Grid,
   FileText,
-  Import,
-  Export,
+  FileUp,
+  FileDown,
   UserCog,
   BrainCircuit,
-  Cube,
+  Box,
   FlaskConical
 } from 'lucide-react';
 
@@ -121,14 +121,14 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               </SidebarLink>
               <SidebarLink
                 to="/designer/exports"
-                icon={Export}
+                icon={FileDown}
                 isActive={path === '/designer/exports'}
               >
                 Exporturi
               </SidebarLink>
               <SidebarLink
                 to="/designer/import"
-                icon={Import}
+                icon={FileUp}
                 isActive={path === '/designer/import'}
               >
                 Import

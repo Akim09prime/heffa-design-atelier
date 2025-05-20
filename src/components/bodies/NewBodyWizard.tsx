@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -105,7 +104,7 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
         toast({
           title: "Corp creat cu succes",
           description: `Corpul "${finalBody.name}" a fost creat și adăugat la spațiul curent.`,
-          variant: "success"
+          variant: "default"
         });
         
         onBodyCreated(finalBody);

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DesignerLayout } from '@/components/layout/DesignerLayout';
@@ -16,8 +15,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { UiProvider, useUi } from '@/contexts/UiContext';
 import { 
   Calculator, 
-  Cube, 
-  FileExport, 
+  Box, 
+  FileText, 
   FlaskConical, 
   Loader, 
   Plus, 
@@ -43,7 +42,7 @@ const BodiesGrid = ({
             {body.previewImgUrl ? (
               <img src={body.previewImgUrl} alt={body.name} className="object-contain max-h-full" />
             ) : (
-              <Cube className="h-16 w-16 text-gray-400" />
+              <Box className="h-16 w-16 text-gray-400" />
             )}
             <div className="absolute bottom-0 right-0 p-2 bg-white/90 text-xs font-medium">
               {body.width}×{body.height}×{body.depth} mm
@@ -65,7 +64,7 @@ const BodiesGrid = ({
                 variant="outline"
                 onClick={() => onExportBody(body.id)}
               >
-                <FileExport className="h-4 w-4 mr-2" />
+                <FileText className="h-4 w-4 mr-2" />
                 Export
               </Button>
               
@@ -296,7 +295,7 @@ const DesignerLabContent = () => {
               Spațiu nou
             </Button>
             <Button onClick={() => setBodyWizardOpen(true)} disabled={!selectedSpace}>
-              <Cube className="h-4 w-4 mr-2" />
+              <Box className="h-4 w-4 mr-2" />
               Corp nou
             </Button>
           </div>
@@ -316,7 +315,7 @@ const DesignerLabContent = () => {
                 value="bodies"
                 className="data-[state=active]:bg-designer-primary/20 data-[state=active]:text-designer-primary"
               >
-                <Cube className="h-4 w-4 mr-2" />
+                <Box className="h-4 w-4 mr-2" />
                 Corpuri
               </TabsTrigger>
               <TabsTrigger 
@@ -330,7 +329,7 @@ const DesignerLabContent = () => {
                 value="export"
                 className="data-[state=active]:bg-designer-primary/20 data-[state=active]:text-designer-primary"
               >
-                <FileExport className="h-4 w-4 mr-2" />
+                <FileText className="h-4 w-4 mr-2" />
                 Export
               </TabsTrigger>
               <TabsTrigger 
@@ -407,7 +406,7 @@ const DesignerLabContent = () => {
           
           <TabsContent value="export" className="mt-4">
             <div className="text-center py-12">
-              <FileExport className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+              <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
               <h3 className="text-xl font-medium mb-2">Export date</h3>
               <p className="text-gray-500 mb-4">Funcționalitate în dezvoltare</p>
             </div>

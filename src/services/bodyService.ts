@@ -1,405 +1,231 @@
 
-import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
+import { FurnitureBody, BodyPart, BodyAccessory } from '@/types';
 
-// Sample data for body presets
-const sampleBodies: FurnitureBody[] = [
-  {
-    id: 'body-1',
-    spaceId: 'space-1',
-    name: 'Corp bucătărie inferior',
-    width: 600,
-    height: 720,
-    depth: 560,
-    previewImgUrl: '/assets/bodies/kitchen-base.png',
-    createdFromPreset: true,
-    status: 'draft',
-    createdAt: new Date('2023-06-15'),
-    updatedAt: new Date('2023-06-15'),
-    parts: [
-      {
-        id: 'part-1',
-        bodyId: 'body-1',
-        type: 'LatSt',
-        materialId: 'mat-1',
-        thickness: 18,
-        hasEdge: true,
-        edgeSides: ['top', 'bottom', 'front'],
-        finishType: 'raw',
-        pricePerPart: 45,
-        faceCount: 2
-      },
-      {
-        id: 'part-2',
-        bodyId: 'body-1',
-        type: 'LatDr',
-        materialId: 'mat-1',
-        thickness: 18,
-        hasEdge: true,
-        edgeSides: ['top', 'bottom', 'front'],
-        finishType: 'raw',
-        pricePerPart: 45,
-        faceCount: 2
-      },
-      {
-        id: 'part-3',
-        bodyId: 'body-1',
-        type: 'Sup',
-        materialId: 'mat-1',
-        thickness: 18,
-        hasEdge: true,
-        edgeSides: ['front', 'left', 'right'],
-        finishType: 'raw',
-        pricePerPart: 38,
-        faceCount: 1
-      },
-      {
-        id: 'part-4',
-        bodyId: 'body-1',
-        type: 'Inf',
-        materialId: 'mat-1',
-        thickness: 18,
-        hasEdge: true,
-        edgeSides: ['front', 'left', 'right'],
-        finishType: 'raw',
-        pricePerPart: 38,
-        faceCount: 1
-      },
-      {
-        id: 'part-5',
-        bodyId: 'body-1',
-        type: 'Fund',
-        materialId: 'mat-2',
-        thickness: 5,
-        hasEdge: false,
-        edgeSides: [],
-        finishType: 'raw',
-        pricePerPart: 25,
-        faceCount: 1
-      },
-      {
-        id: 'part-6',
-        bodyId: 'body-1',
-        type: 'Front',
-        materialId: 'mat-3',
-        thickness: 18,
-        hasEdge: true,
-        edgeSides: ['top', 'bottom', 'left', 'right'],
-        finishType: 'raw',
-        pricePerPart: 65,
-        faceCount: 2
-      }
-    ],
-    accessories: [
-      {
-        id: 'acc-1',
-        bodyId: 'body-1',
-        category: 'hinge',
-        brand: 'Blum',
-        system: 'Clip Top',
-        sizeMm: 110,
-        pricePerUnit: 15,
-        quantity: 2
-      },
-      {
-        id: 'acc-2',
-        bodyId: 'body-1',
-        category: 'handle',
-        brand: 'Hafele',
-        system: 'Modern',
-        sizeMm: 192,
-        pricePerUnit: 12,
-        quantity: 1
-      }
-    ]
-  }
-];
-
-// Body part template generators
-const generateSidePart = (bodyId: string, materialId: string, height: number, depth: number, isLeft = true): BodyPart => {
-  return {
-    id: `part-${Math.random().toString(36).substring(2, 9)}`,
-    bodyId,
-    type: isLeft ? 'LatSt' : 'LatDr',
-    materialId,
-    thickness: 18,
-    hasEdge: true,
-    edgeSides: ['top', 'bottom', 'front'],
-    finishType: 'raw',
-    pricePerPart: 45,
-    faceCount: 2
-  };
-};
-
-const generateHorizontalPart = (bodyId: string, materialId: string, width: number, depth: number, type: 'Sup' | 'Inf'): BodyPart => {
-  return {
-    id: `part-${Math.random().toString(36).substring(2, 9)}`,
-    bodyId,
-    type,
-    materialId,
-    thickness: 18,
-    hasEdge: true,
-    edgeSides: ['front', 'left', 'right'],
-    finishType: 'raw',
-    pricePerPart: 38,
-    faceCount: 1
-  };
-};
-
-const generateBackPanel = (bodyId: string, materialId: string, width: number, height: number): BodyPart => {
-  return {
-    id: `part-${Math.random().toString(36).substring(2, 9)}`,
-    bodyId,
-    type: 'Fund',
-    materialId,
-    thickness: 5, // Typically thinner
-    hasEdge: false,
-    edgeSides: [],
-    finishType: 'raw',
-    pricePerPart: 25,
-    faceCount: 1
-  };
-};
-
-const generateFront = (bodyId: string, materialId: string, width: number, height: number): BodyPart => {
-  return {
-    id: `part-${Math.random().toString(36).substring(2, 9)}`,
-    bodyId,
-    type: 'Front',
-    materialId,
-    thickness: 18,
-    hasEdge: true,
-    edgeSides: ['top', 'bottom', 'left', 'right'],
-    finishType: 'raw',
-    pricePerPart: 65,
-    faceCount: 2
-  };
-};
-
-const generateShelf = (bodyId: string, materialId: string, width: number, depth: number): BodyPart => {
-  return {
-    id: `part-${Math.random().toString(36).substring(2, 9)}`,
-    bodyId,
-    type: 'Raft',
-    materialId,
-    thickness: 18,
-    hasEdge: true,
-    edgeSides: ['front'],
-    finishType: 'raw',
-    pricePerPart: 35,
-    faceCount: 1
-  };
-};
-
-// Body templates
-const generateBasicBodyParts = (
-  bodyId: string, 
-  materialId: string, 
-  width: number, 
-  height: number, 
-  depth: number
-): BodyPart[] => {
-  return [
-    // Left side
-    generateSidePart(bodyId, materialId, height, depth, true),
-    // Right side
-    generateSidePart(bodyId, materialId, height, depth, false),
-    // Top
-    generateHorizontalPart(bodyId, materialId, width, depth, 'Sup'),
-    // Bottom
-    generateHorizontalPart(bodyId, materialId, width, depth, 'Inf'),
-    // Back panel
-    generateBackPanel(bodyId, materialId, width, height),
-    // Front door
-    generateFront(bodyId, materialId, width, height)
-  ];
-};
-
-// Standard accessories for a body
-const generateStandardAccessories = (bodyId: string): BodyAccessory[] => {
-  return [
-    {
-      id: `acc-${Math.random().toString(36).substring(2, 9)}`,
-      bodyId,
-      category: 'hinge',
-      brand: 'Blum',
-      system: 'Clip Top',
-      sizeMm: 110,
-      pricePerUnit: 15,
-      quantity: 2
-    },
-    {
-      id: `acc-${Math.random().toString(36).substring(2, 9)}`,
-      bodyId,
-      category: 'handle',
-      brand: 'Hafele',
-      system: 'Modern',
-      sizeMm: 192,
-      pricePerUnit: 12,
-      quantity: 1
-    }
-  ];
-};
+// Mock database
+let bodies: FurnitureBody[] = [];
 
 export const BodyService = {
-  // Get all bodies for a space
+  // Get all bodies
+  getAllBodies: async (): Promise<FurnitureBody[]> => {
+    return [...bodies];
+  },
+
+  // Get bodies by space ID
   getBodiesBySpaceId: async (spaceId: string): Promise<FurnitureBody[]> => {
-    return Promise.resolve(sampleBodies.filter(body => body.spaceId === spaceId));
+    return bodies.filter(body => body.spaceId === spaceId);
   },
-  
-  // Get a specific body by ID
-  getBodyById: async (bodyId: string): Promise<FurnitureBody | null> => {
-    const body = sampleBodies.find(b => b.id === bodyId);
-    return Promise.resolve(body || null);
+
+  // Get body by ID
+  getBodyById: async (id: string): Promise<FurnitureBody | undefined> => {
+    return bodies.find(body => body.id === id);
   },
-  
-  // Create a new body
-  createBody: async (body: Omit<FurnitureBody, 'id' | 'createdAt' | 'updatedAt'>): Promise<FurnitureBody> => {
+
+  // Create standard wardrobe body
+  createStandardWardrobe: async (spaceId: string, width: number, height: number, depth: number): Promise<FurnitureBody> => {
     const newBody: FurnitureBody = {
-      ...body,
-      id: `body-${Math.random().toString(36).substring(2, 9)}`,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    // In a real application, this would save to a database
-    sampleBodies.push(newBody);
-    
-    return Promise.resolve(newBody);
-  },
-  
-  // Update an existing body
-  updateBody: async (bodyId: string, updates: Partial<FurnitureBody>): Promise<FurnitureBody> => {
-    const index = sampleBodies.findIndex(b => b.id === bodyId);
-    
-    if (index === -1) {
-      throw new Error(`Body with ID ${bodyId} not found`);
-    }
-    
-    const updatedBody = {
-      ...sampleBodies[index],
-      ...updates,
-      updatedAt: new Date()
-    };
-    
-    sampleBodies[index] = updatedBody;
-    
-    return Promise.resolve(updatedBody);
-  },
-  
-  // Delete a body
-  deleteBody: async (bodyId: string): Promise<void> => {
-    const index = sampleBodies.findIndex(b => b.id === bodyId);
-    
-    if (index === -1) {
-      throw new Error(`Body with ID ${bodyId} not found`);
-    }
-    
-    sampleBodies.splice(index, 1);
-    
-    return Promise.resolve();
-  },
-  
-  // Generate a new body from a template
-  generateFromTemplate: async (
-    spaceId: string, 
-    name: string,
-    width: number, 
-    height: number, 
-    depth: number,
-    materialId: string = 'mat-1'
-  ): Promise<FurnitureBody> => {
-    const bodyId = `body-${Math.random().toString(36).substring(2, 9)}`;
-    
-    const newBody: FurnitureBody = {
-      id: bodyId,
+      id: uuidv4(),
       spaceId,
-      name,
+      name: "Dulap standard",
+      type: "wardrobe",
       width,
       height,
       depth,
-      createdFromPreset: false,
-      status: 'draft',
+      position: { x: 0, y: 0, z: 0 },
+      rotation: 0,
+      parts: [
+        {
+          id: uuidv4(),
+          name: "Laterală stânga",
+          material: "PAL",
+          thickness: 18,
+          width: depth,
+          height,
+          position: "left", // Changed from "front" to "left"
+          edge: { top: true, right: true, bottom: true, left: false },
+        },
+        {
+          id: uuidv4(),
+          name: "Laterală dreapta",
+          material: "PAL",
+          thickness: 18,
+          width: depth,
+          height,
+          position: "right", // Changed from "front" to "right"
+          edge: { top: true, right: false, bottom: true, left: true },
+        },
+        {
+          id: uuidv4(),
+          name: "Blat superior",
+          material: "PAL",
+          thickness: 18,
+          width: width - 36,
+          height: depth,
+          position: "top", // Changed from "front" to "top"
+          edge: { top: true, right: false, bottom: true, left: false },
+        },
+        {
+          id: uuidv4(),
+          name: "Blat inferior",
+          material: "PAL",
+          thickness: 18,
+          width: width - 36,
+          height: depth,
+          position: "bottom", // Changed from "front" to "bottom"
+          edge: { top: true, right: false, bottom: true, left: false },
+        }
+      ],
+      accessories: [
+        {
+          id: uuidv4(),
+          name: "Balama standard",
+          type: "hinge",
+          quantity: 4,
+          price: 10,
+        },
+        {
+          id: uuidv4(),
+          name: "Mâner mobilier",
+          type: "handle",
+          quantity: 2,
+          price: 15,
+        }
+      ],
       createdAt: new Date(),
       updatedAt: new Date(),
-      parts: generateBasicBodyParts(bodyId, materialId, width, height, depth),
-      accessories: generateStandardAccessories(bodyId)
+      previewImgUrl: null,
     };
     
-    // In a real application, this would save to a database
-    sampleBodies.push(newBody);
-    
-    return Promise.resolve(newBody);
+    bodies.push(newBody);
+    return newBody;
   },
   
-  // Add a part to a body
-  addPartToBody: async (
-    bodyId: string, 
-    part: Omit<BodyPart, 'id' | 'bodyId'>
-  ): Promise<BodyPart> => {
-    const body = sampleBodies.find(b => b.id === bodyId);
+  // Create custom body
+  createCustomBody: async (body: Omit<FurnitureBody, 'id' | 'createdAt' | 'updatedAt'>): Promise<FurnitureBody> => {
+    const newBody: FurnitureBody = {
+      ...body,
+      id: uuidv4(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      parts: body.parts.map(part => ({
+        ...part,
+        id: part.id || uuidv4(),
+        position: part.position as "left" | "right" | "top" | "bottom", // Ensure position is valid
+      })),
+      accessories: body.accessories.map(acc => ({
+        ...acc,
+        id: acc.id || uuidv4(),
+      })),
+    };
     
-    if (!body) {
-      throw new Error(`Body with ID ${bodyId} not found`);
+    bodies.push(newBody);
+    return newBody;
+  },
+  
+  // Update body
+  updateBody: async (id: string, bodyUpdates: Partial<FurnitureBody>): Promise<FurnitureBody> => {
+    const index = bodies.findIndex(body => body.id === id);
+    if (index === -1) {
+      throw new Error(`Body with id ${id} not found`);
     }
+    
+    // Convert any "front" position to "left" for compatibility
+    if (bodyUpdates.parts) {
+      bodyUpdates.parts = bodyUpdates.parts.map(part => ({
+        ...part,
+        position: (part.position === "front" ? "left" : part.position) as "left" | "right" | "top" | "bottom",
+      }));
+    }
+    
+    bodies[index] = {
+      ...bodies[index],
+      ...bodyUpdates,
+      updatedAt: new Date(),
+    };
+    
+    return bodies[index];
+  },
+  
+  // Delete body
+  deleteBody: async (id: string): Promise<void> => {
+    const index = bodies.findIndex(body => body.id === id);
+    if (index !== -1) {
+      bodies.splice(index, 1);
+    }
+  },
+  
+  // Add part to body
+  addPartToBody: async (bodyId: string, part: Omit<BodyPart, 'id'>): Promise<BodyPart> => {
+    const body = bodies.find(b => b.id === bodyId);
+    if (!body) {
+      throw new Error(`Body with id ${bodyId} not found`);
+    }
+    
+    // Convert "front" position to "left" for compatibility
+    const position = part.position === "front" ? "left" : part.position;
     
     const newPart: BodyPart = {
       ...part,
-      id: `part-${Math.random().toString(36).substring(2, 9)}`,
-      bodyId
+      id: uuidv4(),
+      position: position as "left" | "right" | "top" | "bottom",
     };
     
     body.parts.push(newPart);
     body.updatedAt = new Date();
     
-    return Promise.resolve(newPart);
+    return newPart;
   },
   
-  // Add an accessory to a body
-  addAccessoryToBody: async (
-    bodyId: string, 
-    accessory: Omit<BodyAccessory, 'id' | 'bodyId'>
-  ): Promise<BodyAccessory> => {
-    const body = sampleBodies.find(b => b.id === bodyId);
-    
+  // Remove part from body
+  removePartFromBody: async (bodyId: string, partId: string): Promise<void> => {
+    const body = bodies.find(b => b.id === bodyId);
     if (!body) {
-      throw new Error(`Body with ID ${bodyId} not found`);
+      throw new Error(`Body with id ${bodyId} not found`);
+    }
+    
+    const partIndex = body.parts.findIndex(p => p.id === partId);
+    if (partIndex !== -1) {
+      body.parts.splice(partIndex, 1);
+      body.updatedAt = new Date();
+    }
+  },
+  
+  // Add accessory to body
+  addAccessoryToBody: async (bodyId: string, accessory: Omit<BodyAccessory, 'id'>): Promise<BodyAccessory> => {
+    const body = bodies.find(b => b.id === bodyId);
+    if (!body) {
+      throw new Error(`Body with id ${bodyId} not found`);
     }
     
     const newAccessory: BodyAccessory = {
       ...accessory,
-      id: `acc-${Math.random().toString(36).substring(2, 9)}`,
-      bodyId
+      id: uuidv4(),
     };
     
     body.accessories.push(newAccessory);
     body.updatedAt = new Date();
     
-    return Promise.resolve(newAccessory);
+    return newAccessory;
   },
   
-  // Get available part types with translations
-  getPartTypes: () => {
-    return [
-      { value: 'LatSt', label: 'Laterala Stanga' },
-      { value: 'LatDr', label: 'Laterala Dreapta' },
-      { value: 'Inf', label: 'Blat Inferior' },
-      { value: 'Sup', label: 'Blat Superior' },
-      { value: 'Fund', label: 'Panou Spate' },
-      { value: 'Front', label: 'Front/Usa' },
-      { value: 'Raft', label: 'Raft' },
-      { value: 'Sertar', label: 'Sertar' }
-    ];
+  // Remove accessory from body
+  removeAccessoryFromBody: async (bodyId: string, accessoryId: string): Promise<void> => {
+    const body = bodies.find(b => b.id === bodyId);
+    if (!body) {
+      throw new Error(`Body with id ${bodyId} not found`);
+    }
+    
+    const accessoryIndex = body.accessories.findIndex(a => a.id === accessoryId);
+    if (accessoryIndex !== -1) {
+      body.accessories.splice(accessoryIndex, 1);
+      body.updatedAt = new Date();
+    }
   },
   
-  // Export body as DXF
+  // Export body to DXF
   exportBodyToDxf: async (bodyId: string): Promise<string> => {
-    // In a real app, this would generate a DXF file
-    return Promise.resolve(`/exports/dxf/body_${bodyId}_${Date.now()}.dxf`);
-  },
-  
-  // Export cutting list to CSV
-  exportCuttingListToCsv: async (bodyId: string): Promise<string> => {
-    // In a real app, this would generate a CSV file
-    return Promise.resolve(`/exports/csv/cutting_${bodyId}_${Date.now()}.csv`);
+    // In a real implementation, this would generate a DXF file
+    // Here we just return a mock URL
+    return `/exports/body_${bodyId}.dxf`;
   }
 };
