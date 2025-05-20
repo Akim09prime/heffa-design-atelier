@@ -6,7 +6,15 @@ type TranslationsStructure = {
   [section: string]: {
     [key: string]: {
       [lang in Language]: string;
-    };
+    } | {
+      [nestedKey: string]: {
+        [lang in Language]: string;
+      } | {
+        [deepNestedKey: string]: {
+          [lang in Language]: string;
+        }
+      }
+    }
   };
 };
 
@@ -686,21 +694,21 @@ export const defaultTranslations: TranslationsStructure = {
 
 // Funcție pentru a extrage toate cheile de traducere într-un format plat
 export const extractTranslationKeys = (
-  translationsObj: TranslationsStructure, 
+  translationsObj: any, 
   prefix = ''
 ): Record<string, string> => {
   const result: Record<string, string> = {};
   
-  Object.entries(translationsObj).forEach(([section, sectionData]) => {
+  Object.entries(translationsObj).forEach(([section, sectionData]: [string, any]) => {
     const sectionPrefix = prefix ? `${prefix}.${section}` : section;
     
-    Object.entries(sectionData).forEach(([key, translations]) => {
+    Object.entries(sectionData).forEach(([key, translations]: [string, any]) => {
       // Pentru cheile simple care conțin direct traducerile
-      if ('ro' in translations || 'en' in translations) {
+      if (translations.ro !== undefined || translations.en !== undefined) {
         result[`${sectionPrefix}.${key}`] = translations.ro || translations.en || key;
       } else {
         // Pentru structuri nested, apelăm recursiv
-        const nestedKeys = extractTranslationKeys({[key]: translations} as any, sectionPrefix);
+        const nestedKeys = extractTranslationKeys(translations, `${sectionPrefix}.${key}`);
         Object.assign(result, nestedKeys);
       }
     });
