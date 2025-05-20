@@ -40,6 +40,7 @@ const formSchema = z.object({
   supplier: z.enum(["Egger", "AGT", "SticlaExpert", "Hafele", "Blum", "GTV", "Other"]),
   availability: z.boolean().default(true),
   textureUrl: z.string().optional(),
+  compatibleOperations: z.array(z.string()).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -63,12 +64,14 @@ interface MaterialFormProps {
   };
   onSubmit: (values: FormValues) => void;
   onCancel: () => void;
+  defaultType?: MaterialType | string; // Added defaultType prop
 }
 
 export const MaterialForm: React.FC<MaterialFormProps> = ({
   material,
   onSubmit,
-  onCancel
+  onCancel,
+  defaultType = 'PAL' // Default value for defaultType
 }) => {
   const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -77,7 +80,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
   const defaultValues: Partial<FormValues> = {
     code: material?.code || '',
     name: material?.name || '',
-    type: material?.type || 'PAL',
+    type: material?.type || defaultType as MaterialType,
     thickness: material?.thickness || 18,
     paintable: material?.paintable || false,
     cantable: material?.cantable || false,
@@ -86,6 +89,7 @@ export const MaterialForm: React.FC<MaterialFormProps> = ({
     supplier: material?.supplier || 'Egger',
     availability: material?.availability || true,
     textureUrl: material?.textureUrl || '',
+    compatibleOperations: material?.compatibleOperations || [],
   };
 
   // Set image preview if material has a textureUrl

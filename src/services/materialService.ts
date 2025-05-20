@@ -175,7 +175,9 @@ export const MaterialService = {
     const newMaterial = {
       ...material,
       id: Math.random().toString(36).substring(2, 9),
-      isFavorite: material.isFavorite || false
+      isFavorite: material.isFavorite || false,
+      // Ensure compatibleOperations is set
+      compatibleOperations: material.compatibleOperations || []
     };
     
     // Set default image if none provided

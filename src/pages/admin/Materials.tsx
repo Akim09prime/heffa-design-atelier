@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Upload, Download } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from '@/hooks/use-toast';
-import { Material } from '@/types';
+import { Material, ProcessingType } from '@/types';
 import { MaterialForm } from '@/components/materials/MaterialForm';
 import { MaterialViewDialog } from '@/components/materials/MaterialViewDialog';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
@@ -100,12 +100,25 @@ const MaterialsContent = () => {
     });
   };
   
-  const handleAddMaterial = async (formData: Omit<Material, 'id'>) => {
+  const handleAddMaterial = async (formData: Partial<Material>) => {
     try {
-      const newMaterial = await MaterialService.addMaterial({
+      // Fix: Adding compatibleOperations to match the Material type
+      const materialData: Omit<Material, 'id'> = {
         ...formData,
-        type: categoryFilter as any
-      });
+        type: (formData.type || categoryFilter) as any,
+        code: formData.code || '',
+        name: formData.name || '',
+        manufacturer: formData.manufacturer || '',
+        thickness: formData.thickness || 18,
+        pricePerSqm: formData.pricePerSqm || 0,
+        paintable: formData.paintable || false,
+        cantable: formData.cantable || false,
+        supplier: formData.supplier || 'Other',
+        availability: formData.availability !== undefined ? formData.availability : true,
+        compatibleOperations: formData.compatibleOperations || [] as ProcessingType[]
+      };
+      
+      const newMaterial = await MaterialService.addMaterial(materialData);
       
       setMaterials(prevMaterials => [...prevMaterials, newMaterial]);
       
@@ -301,7 +314,7 @@ const MaterialsContent = () => {
               }
             }}
             onCancel={() => setIsAddDialogOpen(false)}
-            initialType={categoryFilter}
+            defaultType={categoryFilter}
           />
         </DialogContent>
       </Dialog>
