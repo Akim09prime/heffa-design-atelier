@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -155,7 +156,7 @@ const Reports = () => {
     setReports([...reports, newReport]);
     setIsNewReportDialogOpen(false);
     
-    // Simulate report generation
+    // Simulare generare raport
     toast({
       title: "Report Generation Started",
       description: "Your report is being generated. This may take a few minutes."
