@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -64,7 +63,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
       } catch (error) {
         console.error('Failed to load part types', error);
         // Set default part types if loading fails
-        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"]);
+        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
       }
     };
     
@@ -74,7 +73,8 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
   const onSubmit = (data: PartFormData) => {
     onAddPart({
       type: data.type as BodyPartType,
-      material: data.material,
+      materialId: data.material,
+      material: data.material, // For backward compatibility
       thickness: data.thickness,
       width: data.width,
       height: data.height,
@@ -320,7 +320,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
                       {part.type.charAt(0).toUpperCase() + part.type.slice(1)} ({part.position})
                     </div>
                     <div className="text-sm text-gray-600">
-                      Material: {part.material}, {part.thickness}mm
+                      Material: {part.material || part.materialId}, {part.thickness}mm
                     </div>
                     <div className="text-sm text-gray-600">
                       Dimensiuni: {part.width}×{part.height}mm

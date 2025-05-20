@@ -54,7 +54,8 @@ export const BodyService = {
         {
           id: uuidv4(),
           type: "side" as BodyPartType,
-          material: "PAL",
+          materialId: "PAL",
+          material: "PAL", // For backward compatibility
           thickness: 18,
           width: depth,
           height,
@@ -64,7 +65,8 @@ export const BodyService = {
         {
           id: uuidv4(),
           type: "side" as BodyPartType,
-          material: "PAL",
+          materialId: "PAL",
+          material: "PAL", // For backward compatibility
           thickness: 18,
           width: depth,
           height,
@@ -74,7 +76,8 @@ export const BodyService = {
         {
           id: uuidv4(),
           type: "top" as BodyPartType,
-          material: "PAL",
+          materialId: "PAL",
+          material: "PAL", // For backward compatibility
           thickness: 18,
           width: width - 36,
           height: depth,
@@ -84,7 +87,8 @@ export const BodyService = {
         {
           id: uuidv4(),
           type: "bottom" as BodyPartType,
-          material: "PAL",
+          materialId: "PAL",
+          material: "PAL", // For backward compatibility
           thickness: 18,
           width: width - 36,
           height: depth,

@@ -100,6 +100,13 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
     }));
   };
   
+  // Add the missing handleAccessoriesChange function
+  const handleAccessoriesChange = (accessories: any) => {
+    // This function would typically handle changes to accessories data
+    console.log("Accessories changed:", accessories);
+    // Implement the actual logic as needed
+  };
+  
   const handleCreateBody = async () => {
     setIsLoading(true);
     

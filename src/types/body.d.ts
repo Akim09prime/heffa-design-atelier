@@ -12,7 +12,7 @@ export type AccessoryType = "hinge" | "handle" | "drawer_slide" | "connector" | 
 export interface BodyPart {
   id: string;
   type: BodyPartType;
-  material: string;
+  materialId: string;
   thickness: number;
   width: number;
   height: number;
@@ -23,11 +23,13 @@ export interface BodyPart {
     left: boolean;
   };
   position: BodyPartPosition;
+  material?: string; // Temporary property for backward compatibility
 }
 
 export interface BodyAccessory {
   id: string;
   type: AccessoryType;
+  category?: string; // For backward compatibility
   quantity: number;
   price: number;
 }
