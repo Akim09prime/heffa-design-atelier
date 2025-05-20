@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Upload, Download } from 'lucide-react';
+import { Search, Plus, Upload, Download, Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from '@/hooks/use-toast';
@@ -11,8 +12,17 @@ import { MaterialType, Material } from '@/types';
 import { MaterialService } from '@/services/materialService';
 import { MaterialCard } from '@/components/materials/MaterialCard';
 import { MaterialForm } from '@/components/materials/MaterialForm';
+import { MaterialViewDialog } from '@/components/materials/MaterialViewDialog';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Create a wrapper component that uses the contexts
 const MaterialsContent = () => {
@@ -26,6 +36,8 @@ const MaterialsContent = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [filterAvailability, setFilterAvailability] = useState<boolean | null>(null);
   
   // Load materials when component mounts or material type changes
   useEffect(() => {
@@ -56,19 +68,26 @@ const MaterialsContent = () => {
     console.log("Language changed to:", language);
   }, [language]);
   
-  // Filter materials when search query changes
+  // Filter materials when search query or availability filter changes
   useEffect(() => {
+    let filtered = materials;
+    
+    // Apply search filter
     if (searchQuery) {
-      const filtered = materials.filter(material => 
+      filtered = filtered.filter(material => 
         material.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         material.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
         material.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredMaterials(filtered);
-    } else {
-      setFilteredMaterials(materials);
     }
-  }, [searchQuery, materials]);
+    
+    // Apply availability filter
+    if (filterAvailability !== null) {
+      filtered = filtered.filter(material => material.availability === filterAvailability);
+    }
+    
+    setFilteredMaterials(filtered);
+  }, [searchQuery, materials, filterAvailability]);
   
   const handleTabChange = (value: string) => {
     setMaterialType(value.toUpperCase() as MaterialType);
@@ -110,6 +129,11 @@ const MaterialsContent = () => {
   const handleEditMaterial = (material: Material) => {
     setSelectedMaterial(material);
     setIsEditDialogOpen(true);
+  };
+
+  const handleViewMaterial = (material: Material) => {
+    setSelectedMaterial(material);
+    setViewDialogOpen(true);
   };
   
   const handleUpdateMaterial = async (formData: any) => {
@@ -184,6 +208,11 @@ const MaterialsContent = () => {
     });
   };
 
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setFilterAvailability(null);
+  };
+
   // Function to render tab content for each material type
   const renderTabContent = (type: string) => {
     const typeName = type.toUpperCase();
@@ -202,8 +231,17 @@ const MaterialsContent = () => {
               <p className="text-gray-400">{t('materials.loading')}</p>
             </div>
           ) : filteredMaterials.length === 0 ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-gray-400">{t('materials.noMaterialsFound')}</p>
+            <div className="flex justify-center items-center h-64 flex-col">
+              <p className="text-gray-400 mb-4">{t('materials.noMaterialsFound')}</p>
+              {(searchQuery || filterAvailability !== null) && (
+                <Button 
+                  variant="outline"
+                  onClick={handleClearFilters}
+                  className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600"
+                >
+                  {t('materials.clearFilters')}
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -213,6 +251,7 @@ const MaterialsContent = () => {
                   material={material}
                   onEdit={handleEditMaterial}
                   onDelete={handleDeleteMaterial}
+                  onView={handleViewMaterial}
                 />
               ))}
             </div>
@@ -241,6 +280,39 @@ const MaterialsContent = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
+                  <Filter className="h-4 w-4 mr-2" />
+                  {t('materials.filter')}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-gray-800 border-gray-700 text-white">
+                <DropdownMenuLabel>{t('materials.filterBy')}</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem 
+                  className={`${filterAvailability === true ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
+                  onClick={() => setFilterAvailability(true)}
+                >
+                  {t('common.inStock')}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className={`${filterAvailability === false ? 'bg-blue-800' : ''} cursor-pointer hover:bg-gray-700`}
+                  onClick={() => setFilterAvailability(false)}
+                >
+                  {t('materials.outOfStock')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem 
+                  className="text-gray-300 cursor-pointer hover:bg-gray-700"
+                  onClick={() => setFilterAvailability(null)}
+                >
+                  {t('materials.clearFilters')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button variant="outline" onClick={handleImportMaterials} className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600">
               <Upload className="h-4 w-4 mr-2" />
               {t('common.import')}
@@ -310,6 +382,13 @@ const MaterialsContent = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* View Material Dialog */}
+      <MaterialViewDialog 
+        material={selectedMaterial}
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+      />
     </AdminLayout>
   );
 };

@@ -1,4 +1,3 @@
-
 /* Admin area - dark theme with blue accents */
 .admin-area {
   --admin-primary: #38bdf8;
@@ -271,4 +270,69 @@
   left: 0;
   top: 0;
   border-radius: 10px;
+}
+
+/* Material card styling */
+.material-card {
+  transition: all 0.3s ease;
+}
+
+.material-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+.material-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.material-image::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.material-card:hover .material-image::after {
+  opacity: 1;
+}
+
+/* Material chips/tags styling */
+.material-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.material-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* Material action buttons */
+.material-action-button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background-color: rgba(31, 41, 55, 0.8);
+  color: white;
+}
+
+.material-action-button:hover {
+  background-color: rgba(31, 41, 55, 1);
+  transform: scale(1.05);
 }
