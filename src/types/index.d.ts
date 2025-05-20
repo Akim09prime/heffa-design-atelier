@@ -49,4 +49,3 @@ export {
   BodyPartPosition,
   AccessoryType
 };
-

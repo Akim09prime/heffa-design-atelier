@@ -35,7 +35,7 @@ export const BodyService = {
   
   // Get available part types
   getPartTypes: async (): Promise<BodyPartType[]> => {
-    return ["side", "top", "bottom", "shelf", "door", "drawer", "back"];
+    return ["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[];
   },
 
   // Create standard wardrobe body
