@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AdminLayout } from '../../components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -137,6 +136,13 @@ const Reports = () => {
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
   
+  const showToastMessage = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+    });
+  };
+  
   const handleGenerateReport = () => {
     const newReport: Report = {
       id: `${Date.now()}`,
@@ -157,10 +163,10 @@ const Reports = () => {
     setIsNewReportDialogOpen(false);
     
     // Simulare generare raport
-    toast({
-      title: "Report Generation Started",
-      description: "Your report is being generated. This may take a few minutes."
-    });
+    showToastMessage(
+      "Report Generation Started",
+      "Your report is being generated. This may take a few minutes."
+    );
     
     setTimeout(() => {
       setReports(prev => prev.map(r => 
@@ -169,10 +175,10 @@ const Reports = () => {
           : r
       ));
       
-      toast({
-        title: "Report Ready",
-        description: "Your report has been generated successfully."
-      });
+      showToastMessage(
+        "Report Ready",
+        "Your report has been generated successfully."
+      );
     }, 3000);
   };
   
@@ -186,24 +192,24 @@ const Reports = () => {
       return;
     }
     
-    toast({
-      title: "Downloading Report",
-      description: `${report.name} is being downloaded.`
-    });
+    showToastMessage(
+      "Downloading Report",
+      `${report.name} is being downloaded.`
+    );
   };
 
   const handleExportChart = (chartType: string) => {
-    toast({
-      title: t('reports.exportStarted'),
-      description: t('reports.preparingExport', { type: chartType }),
-    });
+    showToastMessage(
+      t('reports.exportStarted'),
+      t('reports.preparingExport', { type: chartType })
+    );
     
     // Simulate export process
     setTimeout(() => {
-      toast({
-        title: t('reports.exportSuccess'),
-        description: t('reports.exportCompleted', { type: chartType }),
-      });
+      showToastMessage(
+        t('reports.exportSuccess'),
+        t('reports.exportCompleted', { type: chartType })
+      );
     }, 1500);
   };
 

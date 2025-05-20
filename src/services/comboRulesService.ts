@@ -117,6 +117,9 @@ export const comboRules: ComboRule[] = [
 ];
 
 export const ComboRulesService = {
+  // Expunem comboRules ca proprietate a serviciului
+  comboRules,
+  
   // Generate suggestions for a module based on combo rules
   generateSuggestions: (
     module: FurnitureModule, 
@@ -337,6 +340,12 @@ export const ComboRulesService = {
 
   // Method to update combo rules
   updateComboRules: (updatedRules: ComboRule[]) => {
+    // În implementarea reală, aceasta ar persista regulile într-o bază de date
+    // Pentru moment, vom actualiza și array-ul comboRules exportat
+    
+    // Actualizăm referința globală
+    (ComboRulesService.comboRules as ComboRule[]) = updatedRules;
+    
     // In a real implementation, this would persist rules to a database
     // For now, let's just log that we received updated rules
     console.log('Updated combo rules:', updatedRules);
