@@ -71,24 +71,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       // Demo authentication - in a real app this would validate against a backend
-      const lowerEmail = email.toLowerCase();
-      
-      let role: UserRole | undefined;
-      if (lowerEmail.includes('client')) role = 'client';
-      else if (lowerEmail.includes('designer')) role = 'designer';
-      else if (lowerEmail.includes('admin')) role = 'admin';
-      
-      if (!role) {
-        throw new Error('Invalid credentials');
-      }
-      
-      const demoUser = demoUsers[role];
+      // For demo purposes, we'll allow any email to log in, and the role will be set separately
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setUser(demoUser);
-      localStorage.setItem('heffaUser', JSON.stringify(demoUser));
+      // For now, we'll use client as default user
+      // The actual role will be set by the setUserRole function after login
+      setUser(demoUsers.client);
+      localStorage.setItem('heffaUser', JSON.stringify(demoUsers.client));
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -133,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Do not reset app mode on logout to maintain user preference
   };
 
-  // For demo purposes only - allows switching between user roles
+  // Set user role function - now properly updates the user object with the selected role
   const setUserRole = (role: UserRole) => {
     const demoUser = demoUsers[role];
     setUser(demoUser);

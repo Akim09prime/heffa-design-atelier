@@ -7,12 +7,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader } from 'lucide-react';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { UserRole } from '@/types';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("client");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { login } = useAuth();
+  const { login, setUserRole } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -40,8 +49,26 @@ const Login = () => {
     setIsLoggingIn(true);
     try {
       await login(email, password);
+      
+      // After successful login, set the user role to the selected role
+      setUserRole(selectedRole);
+      
       showToast("Autentificare reușită ✅", "success");
-      navigate("/designer/dashboard");
+      
+      // Navigate based on the selected role
+      switch (selectedRole) {
+        case 'admin':
+          navigate("/admin/dashboard");
+          break;
+        case 'designer':
+          navigate("/designer/dashboard");
+          break;
+        case 'client':
+          navigate("/client/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
     } catch (err: any) {
       console.error(err);
       showToast(err.message || "Autentificare eșuată ❌", "error");
@@ -85,6 +112,23 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="role">Rol utilizator</Label>
+              <Select
+                value={selectedRole}
+                onValueChange={(value) => setSelectedRole(value as UserRole)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selectează rolul" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">Client</SelectItem>
+                  <SelectItem value="designer">Designer</SelectItem>
+                  <SelectItem value="admin">Administrator</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <button
