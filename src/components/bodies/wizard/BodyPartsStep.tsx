@@ -21,7 +21,7 @@ interface BodyPartsStepProps {
 
 const partSchema = z.object({
   type: z.string(),
-  material: z.string(),
+  materialId: z.string(),
   thickness: z.coerce.number().min(1),
   width: z.coerce.number().min(1),
   height: z.coerce.number().min(1),
@@ -47,7 +47,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PartFormData>({
     defaultValues: {
       type: 'side',
-      material: 'PAL',
+      materialId: 'PAL',
       thickness: 18,
       width: 600,
       height: 800,
@@ -63,7 +63,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
       } catch (error) {
         console.error('Failed to load part types', error);
         // Set default part types if loading fails
-        setPartTypes((["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]));
+        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
       }
     };
     
@@ -73,7 +73,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
   const onSubmit = (data: PartFormData) => {
     onAddPart({
       type: data.type as BodyPartType,
-      materialId: data.material,
+      materialId: data.materialId,
       thickness: data.thickness,
       width: data.width,
       height: data.height,
@@ -84,7 +84,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
         left: edgeLeft
       },
       position: data.position as BodyPartPosition,
-      material: data.material, // For backward compatibility
+      material: data.materialId, // For backward compatibility
     });
     
     // Reset form for next part
@@ -171,7 +171,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
                 />
 
                 <FormField
-                  name="material"
+                  name="materialId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Material</FormLabel>
@@ -320,7 +320,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
                       {part.type.charAt(0).toUpperCase() + part.type.slice(1)} ({part.position})
                     </div>
                     <div className="text-sm text-gray-600">
-                      Material: {part.material || part.materialId}, {part.thickness}mm
+                      Material: {part.materialId}, {part.thickness}mm
                     </div>
                     <div className="text-sm text-gray-600">
                       Dimensiuni: {part.width}×{part.height}mm

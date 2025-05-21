@@ -99,11 +99,11 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
     }));
   };
   
-  // Add the missing handleAccessoriesChange function
-  const handleAccessoriesChange = (accessories: BodyAccessory[]) => {
+  // Fixed the handleAccessoriesChange function to match the expected type
+  const handleAccessoriesChange = (data: { customAccessories: BodyAccessory[] }) => {
     setBodyData(prev => ({
       ...prev,
-      customAccessories: accessories
+      customAccessories: data.customAccessories
     }));
   };
   

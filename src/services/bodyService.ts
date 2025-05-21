@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { FurnitureBody, BodyPart, BodyAccessory, BodyPartType, BodyPartPosition, AccessoryType } from '@/types';
 
@@ -34,7 +35,7 @@ export const BodyService = {
   
   // Get available part types
   getPartTypes: async (): Promise<BodyPartType[]> => {
-    return (["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
+    return ["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[];
   },
 
   // Create standard wardrobe body
@@ -52,59 +53,55 @@ export const BodyService = {
       parts: [
         {
           id: uuidv4(),
-          type: "side" as BodyPartType,
+          type: "side",
           materialId: "PAL",
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: true, bottom: true, left: false },
-          position: "left" as BodyPartPosition,
-          material: "PAL", // For backward compatibility
+          position: "left",
         },
         {
           id: uuidv4(),
-          type: "side" as BodyPartType,
+          type: "side",
           materialId: "PAL",
           thickness: 18,
           width: depth,
           height,
           edge: { top: true, right: false, bottom: true, left: true },
-          position: "right" as BodyPartPosition,
-          material: "PAL", // For backward compatibility
+          position: "right",
         },
         {
           id: uuidv4(),
-          type: "top" as BodyPartType,
+          type: "top",
           materialId: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
-          position: "top" as BodyPartPosition,
-          material: "PAL", // For backward compatibility
+          position: "top",
         },
         {
           id: uuidv4(),
-          type: "bottom" as BodyPartType,
+          type: "bottom",
           materialId: "PAL",
           thickness: 18,
           width: width - 36,
           height: depth,
           edge: { top: true, right: false, bottom: true, left: false },
-          position: "bottom" as BodyPartPosition,
-          material: "PAL", // For backward compatibility
+          position: "bottom",
         }
       ],
       accessories: [
         {
           id: uuidv4(),
-          type: "hinge" as AccessoryType,
+          type: "hinge",
           quantity: 4,
           price: 10,
         },
         {
           id: uuidv4(),
-          type: "handle" as AccessoryType,
+          type: "handle",
           quantity: 2,
           price: 15,
         }

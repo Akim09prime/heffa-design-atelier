@@ -1,5 +1,4 @@
 
-
 // Add these declarations to your types
 declare module 'jspdf-autotable' {
   import jsPDF from 'jspdf';

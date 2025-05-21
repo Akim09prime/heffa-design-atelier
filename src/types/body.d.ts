@@ -28,7 +28,7 @@ export interface BodyPart {
 
 export interface BodyAccessory {
   id: string;
-  type: AccessoryType; // Using AccessoryType
+  type: AccessoryType;
   quantity: number;
   price: number;
   category?: string; // For backward compatibility
