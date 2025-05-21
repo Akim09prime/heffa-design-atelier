@@ -213,7 +213,7 @@ const Dashboard = () => {
         onImportDesign={handleImportFromUrl}
       />
 
-      <style jsx>{`
+      <style>{`
         .btn-nav {
           @apply flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-3 py-2 rounded-lg transition hover:scale-105 shadow-sm;
         }
