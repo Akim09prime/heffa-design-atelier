@@ -2,10 +2,10 @@
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from '@/contexts/TranslationContext';
-import { ColumnMapping } from './useImportData';
+import { type ColumnMapping as ColumnMappingType } from './useImportData';
 
 interface ColumnMappingProps {
-  mappings: ColumnMapping[];
+  mappings: ColumnMappingType[];
   onUpdateMapping: (index: number, targetColumn: string) => void;
   availableColumns: string[];
 }

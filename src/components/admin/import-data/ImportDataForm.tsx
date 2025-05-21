@@ -21,7 +21,7 @@ const ImportDataForm = () => {
     dataType,
     setDataType,
     columnMappings,
-    setColumnMappings,
+    updateColumnMapping,
     previewData,
     validationIssues,
     handleImport,
@@ -83,7 +83,7 @@ const ImportDataForm = () => {
                   <h3 className="text-lg font-medium text-[#1F2937] mb-4">{t('importExport.columnMapping')}</h3>
                   <ColumnMapping 
                     mappings={columnMappings}
-                    onUpdateMapping={setColumnMappings}
+                    onUpdateMapping={updateColumnMapping}
                     availableColumns={getTargetColumns()}
                   />
                 </div>

@@ -59,14 +59,7 @@ export const useImportData = () => {
     ]);
   };
   
-  const handleRemoveFile = () => {
-    setFile(null);
-    setPreviewData([]);
-    setColumnMappings([]);
-    setValidationIssues([]);
-  };
-  
-  const setColumnMapping = (index: number, targetColumn: string) => {
+  const updateColumnMapping = (index: number, targetColumn: string) => {
     const updatedMappings = [...columnMappings];
     updatedMappings[index].targetColumn = targetColumn;
     setColumnMappings(updatedMappings);
@@ -83,13 +76,13 @@ export const useImportData = () => {
         toast({
           title: t('importExport.importCompletedWithWarnings'),
           description: t('importExport.checkValidationIssues'),
-          variant: "warning"
+          variant: "default"
         });
       } else {
         toast({
           title: t('importExport.importSuccessful'),
           description: t('importExport.dataImportedSuccessfully'),
-          variant: "success"
+          variant: "default"
         });
       }
       
@@ -139,10 +132,9 @@ export const useImportData = () => {
     previewData,
     columnMappings,
     setColumnMappings,
+    updateColumnMapping,
     validationIssues,
     handleFileSelect,
-    handleRemoveFile,
-    setColumnMapping,
     handleImport,
     getTargetColumns
   };
