@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
@@ -35,6 +36,7 @@ import DesignerAiAssistant from './pages/designer/AiAssistant';
 import DesignerModules from './pages/designer/Modules';
 import SpaceView from './pages/designer/SpaceView';
 import DesignerLab from './pages/designer/DesignerLab';
+import DesignerReports from './pages/designer/Reports';
 
 // Client routes
 import ClientProjects from './pages/client/Projects';
@@ -86,6 +88,7 @@ const AppRoutes: React.FC = () => {
         <Route path="assistant" element={<DesignerAiAssistant />} />
         <Route path="modules" element={<DesignerModules />} />
         <Route path="lab" element={<DesignerLab />} />
+        <Route path="reports" element={<DesignerReports />} />
       </Route>
       
       {/* Client routes */}

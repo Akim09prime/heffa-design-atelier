@@ -54,7 +54,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
   const path = location.pathname;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="designer-theme flex h-screen overflow-hidden">
       {/* Sidebar */}
       <div className="hidden md:flex w-64 flex-col bg-white border-r shadow-sm">
         <div className="px-4 py-4">
@@ -88,21 +88,21 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
             <SidebarLink
               to="/designer/materials"
               icon={Grid}
-              isActive={path === '/designer/materials'}
+              isActive={path.startsWith('/designer/materials')}
             >
               Materiale
             </SidebarLink>
             <SidebarLink
               to="/designer/accessories"
               icon={Package}
-              isActive={path === '/designer/accessories'}
+              isActive={path.startsWith('/designer/accessories')}
             >
               Accesorii
             </SidebarLink>
             <SidebarLink
               to="/designer/assistant"
               icon={BrainCircuit}
-              isActive={path === '/designer/assistant'}
+              isActive={path.startsWith('/designer/assistant')}
             >
               Asistent AI
             </SidebarLink>
@@ -115,21 +115,21 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <SidebarLink
                 to="/designer/clients"
                 icon={Users}
-                isActive={path === '/designer/clients'}
+                isActive={path.startsWith('/designer/clients')}
               >
                 Clienți
               </SidebarLink>
               <SidebarLink
                 to="/designer/exports"
                 icon={FileDown}
-                isActive={path === '/designer/exports'}
+                isActive={path.startsWith('/designer/exports')}
               >
                 Exporturi
               </SidebarLink>
               <SidebarLink
                 to="/designer/import"
                 icon={FileUp}
-                isActive={path === '/designer/import'}
+                isActive={path.startsWith('/designer/import')}
               >
                 Import
               </SidebarLink>
@@ -143,14 +143,14 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
               <SidebarLink
                 to="/designer/lab"
                 icon={FlaskConical}
-                isActive={path === '/designer/lab'}
+                isActive={path.startsWith('/designer/lab')}
               >
                 Laborator
               </SidebarLink>
               <SidebarLink
-                to="#"
+                to="/designer/reports"
                 icon={FileText}
-                isActive={false}
+                isActive={path.startsWith('/designer/reports')}
               >
                 Rapoarte
               </SidebarLink>
@@ -162,7 +162,7 @@ export const DesignerLayout: React.FC<DesignerLayoutProps> = ({ children }) => {
             <SidebarLink
               to="/designer/settings"
               icon={Settings}
-              isActive={path === '/designer/settings'}
+              isActive={path.startsWith('/designer/settings')}
             >
               Setări
             </SidebarLink>

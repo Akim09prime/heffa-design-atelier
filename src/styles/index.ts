@@ -7,6 +7,7 @@ import './designer-styles.css';
 import './client-styles.css';
 import './glassmorphism.css';
 import './animations.css';
+import './role-specific-theme.css';
 
 // Export theme values (optional)
 export * from './admin-theme';

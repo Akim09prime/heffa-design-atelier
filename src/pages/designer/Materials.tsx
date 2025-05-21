@@ -1,20 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
-import { DesignerLayout } from '../../components/layout/DesignerLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { MaterialService } from '@/services/materialService';
 import { Material, MaterialType } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { showSuccessToast } from '@/utils/toast';
-import { UiProvider } from '@/contexts/UiContext';
+import { DesignerLayout } from '@/components/layout/DesignerLayout';
 
 // Create a MaterialsContent component that uses hooks
-const MaterialsContent = () => {
+const Materials = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [materialType, setMaterialType] = useState<MaterialType>('PAL');
@@ -179,17 +178,6 @@ const MaterialsContent = () => {
         </Tabs>
       </div>
     </DesignerLayout>
-  );
-};
-
-// Main Materials component wrapped with providers
-const Materials = () => {
-  return (
-    <UiProvider>
-      <TranslationProvider>
-        <MaterialsContent />
-      </TranslationProvider>
-    </UiProvider>
   );
 };
 
