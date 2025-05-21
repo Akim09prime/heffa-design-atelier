@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
@@ -57,6 +56,7 @@ const AppRoutes: React.FC = () => {
       {/* Admin routes */}
       <Route path="/admin" element={<AdminDashboard />}>
         <Route index element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="materials" element={<Materials />} />
         <Route path="processing" element={<Processing />} />
         <Route path="accessories" element={<Accessories />} />

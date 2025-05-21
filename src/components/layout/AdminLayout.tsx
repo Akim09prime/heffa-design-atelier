@@ -1,6 +1,6 @@
 
 import React, { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Database, 
@@ -33,6 +33,7 @@ interface AdminLayoutProps {
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const { t } = useTranslation();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = React.useState(false);
+  const location = useLocation();
   
   const handleLogout = () => {
     // Implementation of logout functionality would go here
@@ -48,7 +49,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     { 
       title: t('admin.menu.materials'), 
-      path: '/admin/materials-database', 
+      path: '/admin/materials', 
       icon: <Database className="w-5 h-5" /> 
     },
     { 
@@ -58,7 +59,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     { 
       title: t('admin.menu.production'), 
-      path: '/admin/production', 
+      path: '/admin/processing', 
       icon: <Factory className="w-5 h-5" /> 
     },
     { 
@@ -73,7 +74,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     { 
       title: t('admin.menu.importData'), 
-      path: '/admin/import-data', 
+      path: '/admin/import', 
       icon: <FileInput className="w-5 h-5" /> 
     },
     { 
@@ -106,7 +107,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   <Link
                     to={item.path}
                     className={`flex items-center px-4 py-3 text-white hover:bg-gray-700 rounded-md group transition-all duration-200 ${
-                      window.location.pathname === item.path ? 'bg-gray-700' : ''
+                      location.pathname === item.path ? 'bg-gray-700' : ''
                     }`}
                   >
                     <span className="animate-icon mr-3">{item.icon}</span>

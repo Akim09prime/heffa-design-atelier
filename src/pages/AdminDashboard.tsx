@@ -1,9 +1,10 @@
 
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
-import Dashboard from './admin/Dashboard';
 import { TranslationProvider } from '@/contexts/TranslationContext';
 import { UiProvider } from '@/contexts/UiContext';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 
 const AdminDashboard = () => {
   return (
@@ -11,7 +12,9 @@ const AdminDashboard = () => {
       <TranslationProvider>
         <UiProvider>
           <div className="admin-theme min-h-screen w-full">
-            <Dashboard />
+            <AdminLayout>
+              <Outlet />
+            </AdminLayout>
           </div>
         </UiProvider>
       </TranslationProvider>
