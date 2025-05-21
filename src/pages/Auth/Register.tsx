@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader } from 'lucide-react';
+import { Loader, UserPlus } from 'lucide-react';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -110,7 +110,7 @@ const Register = () => {
             >
               {isRegistering
                 ? <Loader className="h-5 w-5 animate-spin" />
-                : <span className="h-5 w-5" />}
+                : <UserPlus className="h-5 w-5" />}
               {isRegistering ? "Se înregistrează..." : "Register"}
             </button>
 

@@ -25,6 +25,9 @@ import AdminAnalytics from './pages/admin/Analytics';
 import AdminImportData from './pages/admin/ImportData';
 import AdminSettings from './pages/admin/Settings';
 
+// Define client routes (placeholders for now)
+const ClientDashboard = () => <div>Client Dashboard</div>;
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -59,48 +62,51 @@ const router = createBrowserRouter([
     path: '/designer/ai-assistant',
     element: <AiAssistant />
   },
-  // Admin routes with layout
+  // Client routes
+  {
+    path: '/client/dashboard',
+    element: <ClientDashboard />
+  },
+  // Admin routes
   {
     path: '/admin',
-    element: <AdminDashboard />,
-    children: [
-      {
-        path: 'dashboard',
-        element: <AdminDashboard />
-      },
-      {
-        path: 'materials',
-        element: <AdminMaterials />
-      },
-      {
-        path: 'accessories',
-        element: <AdminAccessories />
-      },
-      {
-        path: 'users',
-        element: <AdminUsers />
-      },
-      {
-        path: 'processing',
-        element: <AdminProcessing />
-      },
-      {
-        path: 'reports',
-        element: <AdminReports />
-      },
-      {
-        path: 'analytics',
-        element: <AdminAnalytics />
-      },
-      {
-        path: 'import',
-        element: <AdminImportData />
-      },
-      {
-        path: 'settings',
-        element: <AdminSettings />
-      }
-    ]
+    element: <AdminDashboard />
+  },
+  {
+    path: '/admin/dashboard',
+    element: <AdminDashboard />
+  },
+  {
+    path: '/admin/materials',
+    element: <AdminMaterials />
+  },
+  {
+    path: '/admin/accessories',
+    element: <AdminAccessories />
+  },
+  {
+    path: '/admin/users',
+    element: <AdminUsers />
+  },
+  {
+    path: '/admin/processing',
+    element: <AdminProcessing />
+  },
+  {
+    path: '/admin/reports',
+    element: <AdminReports />
+  },
+  {
+    path: '/admin/analytics',
+    element: <AdminAnalytics />
+  },
+  {
+    path: '/admin/import',
+    element: <AdminImportData />
+  },
+  {
+    path: '/admin/settings',
+    element: <AdminSettings />
   },
   {
     path: '*',
