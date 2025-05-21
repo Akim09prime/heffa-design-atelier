@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Upload, File, X, Check, AlertCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUi } from '@/contexts/UiContext';

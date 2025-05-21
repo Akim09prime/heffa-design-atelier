@@ -92,7 +92,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* Sidebar */}
-      <div className="admin-sidebar w-64 flex-shrink-0 hidden md:block">
+      <div className="bg-gray-800 w-64 flex-shrink-0 hidden md:block">
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="px-6 py-4 flex items-center h-16 border-b border-gray-700">
@@ -134,7 +134,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <div className="md:hidden bg-admin-bg-secondary text-white p-4 flex justify-between items-center">
+        <div className="md:hidden bg-gray-800 text-white p-4 flex justify-between items-center">
           <h1 className="text-lg font-bold">Admin Panel</h1>
           <button className="block text-white focus:outline-none">
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

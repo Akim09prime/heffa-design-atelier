@@ -18,7 +18,6 @@ import Reports from './pages/admin/Reports';
 import Analytics from './pages/admin/Analytics';
 import ImportData from './pages/admin/ImportData';
 import Settings from './pages/admin/Settings';
-import { AdminLayout } from './components/layout/AdminLayout';
 
 // Designer routes
 import DesignerProjects from './pages/designer/Projects';
