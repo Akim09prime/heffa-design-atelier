@@ -1,4 +1,3 @@
-
 /* Role-specific themes with differentiated styles */
 
 /* Admin Theme */
@@ -11,8 +10,19 @@
   --border-ui: var(--border-ui);
   --hover-button: var(--hover-button);
   
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  /* More specific color mapping */
+  --admin-bg-primary: var(--bg-general);
+  --admin-bg-secondary: var(--menu-sidebar);
+  --admin-bg-tertiary: #243044;
+  --admin-bg-highlight: #2a3a53;
+  --admin-text-primary: var(--text-main);
+  --admin-text: #f8fafc;
+  --admin-text-secondary: #cbd5e1;
+  --admin-text-muted: #94a3b8;
+  --admin-border: #334155;
+  
+  background-color: var(--admin-bg-primary);
+  color: var(--admin-text-primary);
 }
 
 /* Admin specific elements */
@@ -39,8 +49,8 @@
 }
 
 .admin-theme .admin-sidebar {
-  background-color: var(--menu-bg);
-  color: white;
+  background-color: var(--admin-bg-secondary);
+  color: var(--admin-text);
 }
 
 .admin-theme .admin-card {
@@ -69,20 +79,21 @@
 
 /* Designer Theme */
 .designer-theme {
-  --bg-primary: #EBF5FF;
-  --bg-card: #FFFFFF;
-  --menu-bg: #2563EB;
-  --text-primary: #1E3A8A;
-  --accent-primary: #3B82F6;
-  --border-ui: #DBEAFE;
-  --hover-button: #60A5FA;
+  --designer-primary: #3B82F6;
+  --designer-primary-light: #60A5FA;
+  --designer-secondary: #EBF5FF;
+  --designer-accent: #2563EB;
+  --designer-bg-primary: #EBF5FF;
+  --designer-bg-card: #FFFFFF;
+  --designer-text-primary: #1E3A8A;
+  --designer-border: #DBEAFE;
   
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--designer-bg-primary);
+  color: var(--designer-text-primary);
 }
 
 .designer-theme .designer-sidebar {
-  background-color: var(--menu-bg);
+  background-color: var(--designer-accent);
   color: white;
 }
 
@@ -136,20 +147,21 @@
 
 /* Client Theme */
 .client-theme {
-  --bg-primary: #FFFAF0;
-  --bg-card: #FFFFFF;
-  --menu-bg: #10B981;
-  --text-primary: #065F46;
-  --accent-primary: #10B981;
-  --border-ui: #D1FAE5;
-  --hover-button: #34D399;
+  --client-primary: #10B981;
+  --client-primary-light: #34D399;
+  --client-secondary: #FFFAF0;
+  --client-accent: #065F46;
+  --client-bg-primary: #FFFAF0;
+  --client-bg-card: #FFFFFF;
+  --client-text-primary: #065F46;
+  --client-border: #D1FAE5;
   
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--client-bg-primary);
+  color: var(--client-text-primary);
 }
 
 .client-theme .client-sidebar {
-  background-color: var(--menu-bg);
+  background-color: var(--client-primary);
   color: white;
 }
 

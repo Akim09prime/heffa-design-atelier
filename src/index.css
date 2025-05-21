@@ -1,4 +1,5 @@
 
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -11,7 +12,7 @@
   --primary-foreground: 210 40% 98%;
   
   /* Default theme */
-  --background: 0 0% 100%;
+  --background: 210 40% 98%;
   --foreground: 222 47% 11%;
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
@@ -78,6 +79,10 @@
   --designer-bg-primary: #EBF5FF;
   --designer-bg-card: #FFFFFF;
   --designer-text-primary: #1E3A8A;
+  --designer-border: #DBEAFE;
+  --designer-text-muted: #64748b;
+  --designer-text-light: #f8fafc;
+  --designer-highlight: #dbeafe;
   
   /* Client theme colors - green accents */
   --client-primary: #10B981;
@@ -87,4 +92,38 @@
   --client-bg-primary: #FFFAF0;
   --client-bg-card: #FFFFFF;
   --client-text-primary: #065F46;
+  --client-border: #D1FAE5;
+}
+
+/* Add some styles for better text contrast */
+@layer base {
+  body {
+    @apply text-gray-800 bg-gray-50;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium text-gray-900;
+  }
+  
+  .designer-theme {
+    @apply bg-blue-50;
+  }
+  
+  .designer-theme h1, 
+  .designer-theme h2, 
+  .designer-theme h3, 
+  .designer-theme h4 {
+    @apply text-blue-900;
+  }
+  
+  .admin-theme {
+    @apply bg-gray-50;
+  }
+  
+  .admin-theme h1, 
+  .admin-theme h2, 
+  .admin-theme h3, 
+  .admin-theme h4 {
+    @apply text-gray-900;
+  }
 }

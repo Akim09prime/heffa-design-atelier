@@ -1,12 +1,11 @@
-
 @tailwind components;
 
 /* Designer area - blue theme */
 .designer-area {
-  --designer-primary: #3dd5f3;
-  --designer-primary-light: #a5f3ff;
-  --designer-secondary: #edf2ff;
-  --designer-accent: #5c7cfa;
+  --designer-primary: #3B82F6;
+  --designer-primary-light: #60A5FA;
+  --designer-secondary: #EBF5FF;
+  --designer-accent: #2563EB;
 }
 
 /* Designer theme - Electric blue creativity */
@@ -39,6 +38,9 @@
   --designer-border: rgba(203, 213, 225, 0.4);
   --designer-text: #1E293B;
   --designer-text-muted: #64748B;
+  
+  background-color: var(--designer-background);
+  color: var(--designer-text);
 }
 
 @layer components {
@@ -109,6 +111,15 @@
   
   .progress-designer-fill {
     @apply h-full bg-gradient-to-r from-designer-primary to-designer-accent rounded-full transition-all duration-500;
+  }
+  
+  /* Update sidebar button styling */
+  .designer-theme .sidebar-button {
+    @apply text-gray-700 hover:text-designer-primary hover:bg-blue-50 transition-colors;
+  }
+  
+  .designer-theme .sidebar-button.active {
+    @apply bg-blue-100 text-designer-primary font-medium;
   }
 }
 

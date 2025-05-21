@@ -11,7 +11,8 @@ import {
   FileInput, 
   BarChart3, 
   Settings,
-  LogOut 
+  LogOut,
+  Menu
 } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Button } from '@/components/ui/button';
@@ -91,13 +92,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#1F2937]">
+    <div className="admin-theme flex h-screen overflow-hidden bg-admin-bg-primary text-admin-text-primary">
       {/* Sidebar - Desktop */}
-      <div className="bg-[#1F2937] w-64 flex-shrink-0 hidden md:block">
+      <div className="bg-admin-bg-secondary w-64 flex-shrink-0 hidden md:block">
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="px-6 py-4 flex items-center h-16 border-b border-gray-700">
-            <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+          <div className="px-6 py-4 flex items-center h-16 border-b border-admin-border">
+            <h1 className="text-xl font-bold text-admin-text">Admin Panel</h1>
           </div>
           
           {/* Navigation */}
@@ -107,8 +108,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <li key={index}>
                   <Link
                     to={item.path}
-                    className={`flex items-center px-4 py-3 text-white hover:bg-gray-700 rounded-md group transition-all duration-200 ${
-                      location.pathname === item.path ? 'bg-gray-700' : ''
+                    className={`flex items-center px-4 py-3 text-admin-text hover:bg-admin-bg-highlight rounded-md group transition-all duration-200 ${
+                      location.pathname === item.path ? 'bg-admin-bg-tertiary' : ''
                     }`}
                   >
                     <span className="animate-icon mr-3">{item.icon}</span>
@@ -120,10 +121,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </nav>
           
           {/* Logout button */}
-          <div className="px-4 py-4 border-t border-gray-700">
+          <div className="px-4 py-4 border-t border-admin-border">
             <button
               onClick={() => setIsLogoutDialogOpen(true)}
-              className="flex items-center px-4 py-2 w-full text-white hover:bg-gray-700 rounded-md transition-all duration-200"
+              className="flex items-center px-4 py-2 w-full text-admin-text hover:bg-admin-bg-highlight rounded-md transition-all duration-200"
             >
               <LogOut className="w-5 h-5 mr-3" />
               <span className="font-medium">Logout</span>
@@ -135,29 +136,27 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <div className="md:hidden bg-[#1F2937] text-white p-4 flex justify-between items-center">
+        <div className="md:hidden bg-admin-bg-secondary text-admin-text p-4 flex justify-between items-center">
           <h1 className="text-lg font-bold">Admin Panel</h1>
           <button 
-            className="block text-white focus:outline-none"
+            className="block text-admin-text focus:outline-none"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-6 w-6" />
           </button>
         </div>
         
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-[#1F2937] text-white">
+          <div className="md:hidden bg-admin-bg-secondary text-admin-text">
             <nav className="px-2 pt-2 pb-4">
               <ul className="space-y-1">
                 {menuItems.map((item, index) => (
                   <li key={index}>
                     <Link
                       to={item.path}
-                      className={`flex items-center px-4 py-3 hover:bg-gray-700 rounded-md ${
-                        location.pathname === item.path ? 'bg-gray-700' : ''
+                      className={`flex items-center px-4 py-3 hover:bg-admin-bg-highlight rounded-md ${
+                        location.pathname === item.path ? 'bg-admin-bg-tertiary' : ''
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -172,7 +171,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                       setIsMobileMenuOpen(false);
                       setIsLogoutDialogOpen(true);
                     }}
-                    className="flex items-center px-4 py-3 w-full text-left hover:bg-gray-700 rounded-md"
+                    className="flex items-center px-4 py-3 w-full text-left hover:bg-admin-bg-highlight rounded-md"
                   >
                     <LogOut className="w-5 h-5 mr-3" />
                     <span>Logout</span>
@@ -184,7 +183,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         )}
         
         {/* Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#F7F9FC]">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-admin-bg-primary">
           {children}
         </main>
       </div>
