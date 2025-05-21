@@ -1,88 +1,117 @@
 
-import React from 'react';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import FileUploader from './FileUploader';
-import FilePreview from './FilePreview';
-import DataPreview from './DataPreview';
-import ColumnMapping from './ColumnMapping';
-import ValidationIssues from './ValidationIssues';
-import DataTypeSelector from './DataTypeSelector';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useToast } from "@/components/ui/use-toast";
+import { FileUploader } from './FileUploader';
+import { DataTypeSelector } from './DataTypeSelector';
+import { ColumnMapping } from './ColumnMapping';
+import { DataPreview } from './DataPreview';
+import { ValidationIssues } from './ValidationIssues';
 import { useImportData } from './useImportData';
 
 const ImportDataForm = () => {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  
   const {
     file,
+    setFile,
     dataType,
-    isUploading,
-    previewData,
-    columnMappings,
-    validationIssues,
     setDataType,
-    handleFileSelect,
-    handleRemoveFile,
-    updateColumnMapping,
+    columnMapping,
+    setColumnMapping,
+    previewData,
+    validationIssues,
     handleImport,
-    getTargetColumns
+    isImporting,
+    isProcessing
   } = useImportData();
-  
+
+  const handleFileUpload = (uploadedFile: File | null) => {
+    setFile(uploadedFile);
+  };
+
+  const handleImportClick = async () => {
+    const success = await handleImport();
+    if (success) {
+      toast({
+        title: t('importExport.importSuccess'),
+        description: t('importExport.dataImportedSuccessfully'),
+      });
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-[#1F2937]">{t('importExport.importData')}</h1>
+        <p className="text-gray-600 mt-2">{t('importExport.importDescription')}</p>
+      </div>
+
+      <Card className="border border-gray-200">
         <CardHeader>
-          <CardTitle className="text-gray-800">{t('importExport.importData')}</CardTitle>
-          <CardDescription className="text-gray-600">{t('importExport.uploadCsvOrExcel')}</CardDescription>
+          <CardTitle className="text-xl font-semibold text-[#1F2937]">{t('importExport.uploadFile')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <DataTypeSelector value={dataType} onChange={setDataType} />
-            
-            {!file ? (
-              <FileUploader onFileSelect={handleFileSelect} />
-            ) : (
-              <div className="space-y-4">
-                <FilePreview file={file} onRemove={handleRemoveFile} />
-                
-                {previewData.length > 0 && (
-                  <DataPreview data={previewData} />
-                )}
-                
-                <ColumnMapping 
-                  mappings={columnMappings} 
-                  onUpdateMapping={updateColumnMapping} 
-                  availableColumns={getTargetColumns()}
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <DataTypeSelector 
+                  value={dataType} 
+                  onChange={setDataType}
                 />
-                
-                <ValidationIssues issues={validationIssues} />
+              </div>
+              <div>
+                <FileUploader 
+                  file={file} 
+                  onFileUpload={handleFileUpload}
+                />
+              </div>
+            </div>
+
+            {validationIssues.length > 0 && (
+              <ValidationIssues issues={validationIssues} />
+            )}
+
+            {previewData.length > 0 && (
+              <div className="space-y-6">
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-medium text-[#1F2937] mb-4">{t('importExport.columnMapping')}</h3>
+                  <ColumnMapping 
+                    headers={previewData[0]}
+                    mapping={columnMapping}
+                    onChange={setColumnMapping}
+                    dataType={dataType}
+                  />
+                </div>
+
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-medium text-[#1F2937] mb-4">{t('importExport.dataPreview')}</h3>
+                  <DataPreview 
+                    data={previewData}
+                    mapping={columnMapping}
+                  />
+                </div>
               </div>
             )}
           </div>
         </CardContent>
-        <CardFooter>
-          <div className="flex justify-end space-x-2">
-            {file && (
-              <Button 
-                onClick={handleImport} 
-                disabled={isUploading}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isUploading ? (
-                  <>
-                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-opacity-20 border-t-white rounded-full" />
-                    {t('importExport.importing')}
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4 mr-2" />
-                    {t('importExport.importData')}
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
+        <CardFooter className="flex justify-end gap-4 border-t border-gray-200 p-4">
+          <Button 
+            variant="outline"
+            disabled={isImporting || isProcessing}
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button 
+            onClick={handleImportClick}
+            disabled={!file || validationIssues.length > 0 || isImporting || isProcessing}
+            className="bg-[#10B981] hover:bg-[#34D399] text-white"
+          >
+            {isImporting ? t('importExport.importing') : t('importExport.import')}
+          </Button>
         </CardFooter>
       </Card>
     </div>

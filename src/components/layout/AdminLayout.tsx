@@ -1,5 +1,5 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -32,7 +32,8 @@ interface AdminLayoutProps {
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const { t } = useTranslation();
-  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = React.useState(false);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   
   const handleLogout = () => {
@@ -90,9 +91,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-100">
-      {/* Sidebar */}
-      <div className="bg-gray-800 w-64 flex-shrink-0 hidden md:block">
+    <div className="flex h-screen overflow-hidden bg-[#1F2937]">
+      {/* Sidebar - Desktop */}
+      <div className="bg-[#1F2937] w-64 flex-shrink-0 hidden md:block">
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="px-6 py-4 flex items-center h-16 border-b border-gray-700">
@@ -134,17 +135,56 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <div className="md:hidden bg-gray-800 text-white p-4 flex justify-between items-center">
+        <div className="md:hidden bg-[#1F2937] text-white p-4 flex justify-between items-center">
           <h1 className="text-lg font-bold">Admin Panel</h1>
-          <button className="block text-white focus:outline-none">
+          <button 
+            className="block text-white focus:outline-none"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
         
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-[#1F2937] text-white">
+            <nav className="px-2 pt-2 pb-4">
+              <ul className="space-y-1">
+                {menuItems.map((item, index) => (
+                  <li key={index}>
+                    <Link
+                      to={item.path}
+                      className={`flex items-center px-4 py-3 hover:bg-gray-700 rounded-md ${
+                        location.pathname === item.path ? 'bg-gray-700' : ''
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="mr-3">{item.icon}</span>
+                      <span>{item.title}</span>
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsLogoutDialogOpen(true);
+                    }}
+                    className="flex items-center px-4 py-3 w-full text-left hover:bg-gray-700 rounded-md"
+                  >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    <span>Logout</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        )}
+        
         {/* Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#F7F9FC]">
           {children}
         </main>
       </div>

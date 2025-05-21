@@ -11,11 +11,9 @@ const AdminDashboard = () => {
     <AuthProvider>
       <TranslationProvider>
         <UiProvider>
-          <div className="admin-theme min-h-screen w-full">
-            <AdminLayout>
-              <Outlet />
-            </AdminLayout>
-          </div>
+          <AdminLayout>
+            <Outlet />
+          </AdminLayout>
         </UiProvider>
       </TranslationProvider>
     </AuthProvider>
