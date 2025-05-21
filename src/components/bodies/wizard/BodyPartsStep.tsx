@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Grid2X2, Plus, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { BodyPart, BodyPartType, BodyPartPosition } from '@/types';
+import { BodyPart, BodyPartType, BodyPartPosition } from '@/types/body';
 import { BodyService } from '@/services/bodyService';
 
 interface BodyPartsStepProps {
@@ -63,7 +64,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
       } catch (error) {
         console.error('Failed to load part types', error);
         // Set default part types if loading fails
-        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"] as BodyPartType[]);
+        setPartTypes(["side", "top", "bottom", "shelf", "door", "drawer", "back"]);
       }
     };
     
@@ -83,8 +84,7 @@ export const BodyPartsStep: React.FC<BodyPartsStepProps> = ({
         bottom: edgeBottom,
         left: edgeLeft
       },
-      position: data.position as BodyPartPosition,
-      material: data.materialId, // For backward compatibility
+      position: data.position as BodyPartPosition
     });
     
     // Reset form for next part

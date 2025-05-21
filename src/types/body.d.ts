@@ -14,15 +14,15 @@ export interface BodyPart {
   type: BodyPartType;
   materialId: string;
   thickness: number;
-  width: number;  // Added to match usage in components
-  height: number; // Added to match usage in components
+  width: number;  
+  height: number;
   edge: {
     top: boolean;
     right: boolean;
     bottom: boolean;
     left: boolean;
   };
-  position: BodyPartPosition; // Added to match usage in components
+  position: BodyPartPosition;
   material?: string; // Keeping for backward compatibility
 }
 

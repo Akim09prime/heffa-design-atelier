@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FurnitureBody, BodyPart, BodyAccessory } from '@/types';
+import { FurnitureBody, BodyPart, BodyAccessory } from '@/types/body';
 import { BodyDimensionsStep } from './wizard/BodyDimensionsStep';
 import { BodyPartsStep } from './wizard/BodyPartsStep';
 import { BodyAccessoriesStep } from './wizard/BodyAccessoriesStep';
@@ -99,7 +99,6 @@ export const NewBodyWizard: React.FC<NewBodyWizardProps> = ({
     }));
   };
   
-  // Fixed the handleAccessoriesChange function to match the expected type
   const handleAccessoriesChange = (data: { customAccessories: BodyAccessory[] }) => {
     setBodyData(prev => ({
       ...prev,
