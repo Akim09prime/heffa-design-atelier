@@ -1,14 +1,14 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useToast } from "@/components/ui/use-toast";
-import { FileUploader } from './FileUploader';
-import { DataTypeSelector } from './DataTypeSelector';
-import { ColumnMapping } from './ColumnMapping';
-import { DataPreview } from './DataPreview';
-import { ValidationIssues } from './ValidationIssues';
+import FileUploader from './FileUploader';
+import DataTypeSelector from './DataTypeSelector';
+import ColumnMapping from './ColumnMapping';
+import DataPreview from './DataPreview';
+import ValidationIssues from './ValidationIssues';
 import { useImportData } from './useImportData';
 
 const ImportDataForm = () => {
@@ -20,17 +20,19 @@ const ImportDataForm = () => {
     setFile,
     dataType,
     setDataType,
-    columnMapping,
-    setColumnMapping,
+    columnMappings,
+    setColumnMappings,
     previewData,
     validationIssues,
     handleImport,
-    isImporting,
-    isProcessing
+    isUploading,
+    getTargetColumns
   } = useImportData();
 
   const handleFileUpload = (uploadedFile: File | null) => {
-    setFile(uploadedFile);
+    if (uploadedFile) {
+      setFile(uploadedFile);
+    }
   };
 
   const handleImportClick = async () => {
@@ -66,7 +68,7 @@ const ImportDataForm = () => {
               <div>
                 <FileUploader 
                   file={file} 
-                  onFileUpload={handleFileUpload}
+                  onFileSelect={handleFileUpload}
                 />
               </div>
             </div>
@@ -80,10 +82,9 @@ const ImportDataForm = () => {
                 <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-[#1F2937] mb-4">{t('importExport.columnMapping')}</h3>
                   <ColumnMapping 
-                    headers={previewData[0]}
-                    mapping={columnMapping}
-                    onChange={setColumnMapping}
-                    dataType={dataType}
+                    mappings={columnMappings}
+                    onUpdateMapping={setColumnMappings}
+                    availableColumns={getTargetColumns()}
                   />
                 </div>
 
@@ -91,7 +92,6 @@ const ImportDataForm = () => {
                   <h3 className="text-lg font-medium text-[#1F2937] mb-4">{t('importExport.dataPreview')}</h3>
                   <DataPreview 
                     data={previewData}
-                    mapping={columnMapping}
                   />
                 </div>
               </div>
@@ -101,16 +101,16 @@ const ImportDataForm = () => {
         <CardFooter className="flex justify-end gap-4 border-t border-gray-200 p-4">
           <Button 
             variant="outline"
-            disabled={isImporting || isProcessing}
+            disabled={isUploading}
           >
             {t('common.cancel')}
           </Button>
           <Button 
             onClick={handleImportClick}
-            disabled={!file || validationIssues.length > 0 || isImporting || isProcessing}
+            disabled={!file || validationIssues.length > 0 || isUploading}
             className="bg-[#10B981] hover:bg-[#34D399] text-white"
           >
-            {isImporting ? t('importExport.importing') : t('importExport.import')}
+            {isUploading ? t('importExport.importing') : t('importExport.import')}
           </Button>
         </CardFooter>
       </Card>

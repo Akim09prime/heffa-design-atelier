@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useUi } from '@/contexts/UiContext';
+import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { DataType } from './DataTypeSelector';
 
@@ -11,7 +11,7 @@ export interface ColumnMapping {
 
 export const useImportData = () => {
   const { t } = useTranslation();
-  const { showSuccessToast, showErrorToast, showWarningToast } = useUi();
+  const { toast } = useToast();
   
   const [file, setFile] = useState<File | null>(null);
   const [dataType, setDataType] = useState<DataType>('materials');
@@ -24,8 +24,11 @@ export const useImportData = () => {
     if (selectedFile.type !== 'text/csv' && 
         !selectedFile.name.endsWith('.xlsx') && 
         !selectedFile.name.endsWith('.xls')) {
-      showErrorToast(t('importExport.invalidFileType'), 
-        t('importExport.pleaseSelectCsvOrExcel'));
+      toast({
+        title: t('importExport.invalidFileType'),
+        description: t('importExport.pleaseSelectCsvOrExcel'),
+        variant: "destructive"
+      });
       return;
     }
     
@@ -63,7 +66,7 @@ export const useImportData = () => {
     setValidationIssues([]);
   };
   
-  const updateColumnMapping = (index: number, targetColumn: string) => {
+  const setColumnMapping = (index: number, targetColumn: string) => {
     const updatedMappings = [...columnMappings];
     updatedMappings[index].targetColumn = targetColumn;
     setColumnMappings(updatedMappings);
@@ -77,15 +80,17 @@ export const useImportData = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       if (validationIssues.length > 0) {
-        showWarningToast(
-          t('importExport.importCompletedWithWarnings'),
-          t('importExport.checkValidationIssues')
-        );
+        toast({
+          title: t('importExport.importCompletedWithWarnings'),
+          description: t('importExport.checkValidationIssues'),
+          variant: "warning"
+        });
       } else {
-        showSuccessToast(
-          t('importExport.importSuccessful'),
-          t('importExport.dataImportedSuccessfully')
-        );
+        toast({
+          title: t('importExport.importSuccessful'),
+          description: t('importExport.dataImportedSuccessfully'),
+          variant: "success"
+        });
       }
       
       // Reset form after successful import
@@ -93,12 +98,16 @@ export const useImportData = () => {
       setPreviewData([]);
       setColumnMappings([]);
       setValidationIssues([]);
+      
+      return true;
     } catch (error) {
       console.error('Import error:', error);
-      showErrorToast(
-        t('importExport.importFailed'),
-        t('importExport.errorOccurredDuringImport')
-      );
+      toast({
+        title: t('importExport.importFailed'),
+        description: t('importExport.errorOccurredDuringImport'),
+        variant: "destructive"
+      });
+      return false;
     } finally {
       setIsUploading(false);
     }
@@ -123,15 +132,17 @@ export const useImportData = () => {
   
   return {
     file,
+    setFile,
     dataType,
+    setDataType,
     isUploading,
     previewData,
     columnMappings,
+    setColumnMappings,
     validationIssues,
-    setDataType,
     handleFileSelect,
     handleRemoveFile,
-    updateColumnMapping,
+    setColumnMapping,
     handleImport,
     getTargetColumns
   };

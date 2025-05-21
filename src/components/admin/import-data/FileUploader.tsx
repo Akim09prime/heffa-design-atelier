@@ -3,12 +3,14 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { useTranslation } from '@/contexts/TranslationContext';
+import FilePreview from './FilePreview';
 
 interface FileUploaderProps {
-  onFileSelect: (file: File) => void;
+  file: File | null;
+  onFileSelect: (file: File | null) => void;
 }
 
-const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
+const FileUploader = ({ file, onFileSelect }: FileUploaderProps) => {
   const { t } = useTranslation();
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +31,14 @@ const FileUploader = ({ onFileSelect }: FileUploaderProps) => {
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
+
+  const handleRemoveFile = () => {
+    onFileSelect(null);
+  };
+  
+  if (file) {
+    return <FilePreview file={file} onRemove={handleRemoveFile} />;
+  }
   
   return (
     <div 
