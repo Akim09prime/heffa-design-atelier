@@ -131,7 +131,6 @@ export const useImportData = () => {
     isUploading,
     previewData,
     columnMappings,
-    setColumnMappings,
     updateColumnMapping,
     validationIssues,
     handleFileSelect,
