@@ -90,7 +90,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="admin-theme flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <div className="admin-sidebar w-64 flex-shrink-0 hidden md:block">
         <div className="flex flex-col h-full">

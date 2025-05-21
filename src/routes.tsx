@@ -18,6 +18,7 @@ import Reports from './pages/admin/Reports';
 import Analytics from './pages/admin/Analytics';
 import ImportData from './pages/admin/ImportData';
 import Settings from './pages/admin/Settings';
+import { AdminLayout } from './components/layout/AdminLayout';
 
 // Designer routes
 import DesignerProjects from './pages/designer/Projects';
@@ -57,16 +58,31 @@ const AppRoutes: React.FC = () => {
       
       {/* Admin routes */}
       <Route path="/admin" element={<AdminDashboard />}>
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="materials" element={<Materials />} />
-        <Route path="processing" element={<Processing />} />
-        <Route path="accessories" element={<Accessories />} />
-        <Route path="users" element={<Users />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="import" element={<ImportData />} />
-        <Route path="settings" element={<Settings />} />
+        <Route element={<AdminLayout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/materials" element={<Materials />} />
+            <Route path="/processing" element={<Processing />} />
+            <Route path="/accessories" element={<Accessories />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/import" element={<ImportData />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </AdminLayout>}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="materials" element={<Materials />} />
+          <Route path="processing" element={<Processing />} />
+          <Route path="accessories" element={<Accessories />} />
+          <Route path="users" element={<Users />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="import" element={<ImportData />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
       </Route>
       
       {/* Designer routes */}
