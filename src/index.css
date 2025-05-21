@@ -1,5 +1,4 @@
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -125,5 +124,34 @@
   .admin-theme h3, 
   .admin-theme h4 {
     @apply text-gray-900;
+  }
+  
+  /* Auth page specific styles */
+  .auth-page {
+    @apply min-h-screen flex items-center justify-center bg-gradient-to-br p-4;
+  }
+  
+  .login-page {
+    @apply from-blue-50 to-indigo-100;
+  }
+  
+  .register-page {
+    @apply from-green-50 to-teal-100;
+  }
+  
+  .auth-card {
+    @apply bg-white rounded-2xl shadow-xl overflow-hidden p-8;
+  }
+  
+  .auth-button {
+    @apply flex items-center justify-center w-full gap-2 px-4 py-2 rounded-xl shadow-md transition;
+  }
+  
+  .auth-button-login {
+    @apply bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white;
+  }
+  
+  .auth-button-register {
+    @apply bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white;
   }
 }

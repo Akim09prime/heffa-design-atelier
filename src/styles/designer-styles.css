@@ -1,3 +1,4 @@
+
 @tailwind components;
 
 /* Designer area - blue theme */
@@ -120,6 +121,11 @@
   
   .designer-theme .sidebar-button.active {
     @apply bg-blue-100 text-designer-primary font-medium;
+  }
+  
+  /* Navigation button for Designer Dashboard */
+  .btn-nav {
+    @apply flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-3 py-2 rounded-lg transition hover:scale-105 shadow-sm;
   }
 }
 

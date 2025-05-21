@@ -7,6 +7,7 @@ interface AuthContextType {
   loading: boolean;
   appMode: AppMode;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   setUserRole: (role: UserRole) => void; // For demo purposes only
   setAppMode: (mode: AppMode) => void; // For toggling between configurator and showroom
@@ -96,6 +97,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const register = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      // Demo registration - in a real app this would register in a backend
+      const lowerEmail = email.toLowerCase();
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Create a new user object 
+      const newUser: User = {
+        id: Math.random().toString(36).substring(2, 9),
+        name: email.split('@')[0],
+        email: email,
+        role: 'designer', // Default role for new registrations
+        avatar: '/avatar-default.jpg',
+        active: true,
+        projectIds: []
+      };
+      
+      setUser(newUser);
+      localStorage.setItem('heffaUser', JSON.stringify(newUser));
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('heffaUser');
@@ -121,6 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user, 
         loading, 
         login, 
+        register,
         logout, 
         setUserRole, 
         appMode, 
