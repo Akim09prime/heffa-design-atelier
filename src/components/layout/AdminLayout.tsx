@@ -90,7 +90,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* Sidebar */}
       <div className="admin-sidebar w-64 flex-shrink-0 hidden md:block">
         <div className="flex flex-col h-full">
@@ -125,7 +125,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               className="flex items-center px-4 py-2 w-full text-white hover:bg-gray-700 rounded-md transition-all duration-200"
             >
               <LogOut className="w-5 h-5 mr-3" />
-              <span className="font-medium">{t('common.logout')}</span>
+              <span className="font-medium">Logout</span>
             </button>
           </div>
         </div>
@@ -144,7 +144,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
         
         {/* Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-900">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
           {children}
         </main>
       </div>
@@ -158,7 +158,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleLogout}>{t('common.logout')}</AlertDialogAction>
+            <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

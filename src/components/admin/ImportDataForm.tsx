@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -176,17 +175,17 @@ const ImportDataForm = () => {
   
   return (
     <div className="space-y-6">
-      <Card className="admin-card">
+      <Card>
         <CardHeader>
-          <CardTitle>{t('importExport.importData')}</CardTitle>
-          <CardDescription>{t('importExport.uploadCsvOrExcel')}</CardDescription>
+          <CardTitle className="text-gray-800">{t('importExport.importData')}</CardTitle>
+          <CardDescription className="text-gray-600">{t('importExport.uploadCsvOrExcel')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-900">{t('importExport.dataType')}</label>
+              <label className="text-sm font-medium text-gray-800">{t('importExport.dataType')}</label>
               <Select value={dataType} onValueChange={(value) => setDataType(value as DataType)}>
-                <SelectTrigger>
+                <SelectTrigger className="text-gray-700">
                   <SelectValue placeholder={t('importExport.selectDataType')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -213,9 +212,9 @@ const ImportDataForm = () => {
                   accept=".csv,.xlsx,.xls"
                   onChange={handleFileChange}
                 />
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <Upload className="mx-auto h-12 w-12 text-gray-500" />
                 <p className="mt-2 text-sm text-gray-700">{t('importExport.dragAndDrop')}</p>
-                <p className="text-xs text-gray-700">{t('importExport.csvOrExcel')}</p>
+                <p className="text-xs text-gray-600">{t('importExport.csvOrExcel')}</p>
                 <Button variant="outline" className="mt-4">
                   {t('importExport.selectFile')}
                 </Button>
@@ -229,7 +228,7 @@ const ImportDataForm = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-800">{file.name}</p>
-                      <p className="text-xs text-gray-700">{(file.size / 1024).toFixed(2)} KB</p>
+                      <p className="text-xs text-gray-600">{(file.size / 1024).toFixed(2)} KB</p>
                     </div>
                   </div>
                   <Button
@@ -244,21 +243,21 @@ const ImportDataForm = () => {
                 
                 {previewData.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">{t('importExport.dataPreview')}</h4>
+                    <h4 className="text-sm font-medium text-gray-800 mb-2">{t('importExport.dataPreview')}</h4>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm admin-table">
+                      <table className="w-full text-sm">
                         <thead>
-                          <tr>
+                          <tr className="bg-gray-100">
                             {Object.keys(previewData[0]).map((key) => (
-                              <th key={key} className="px-4 py-2">{key}</th>
+                              <th key={key} className="px-4 py-2 text-left text-gray-700">{key}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
                           {previewData.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
+                            <tr key={rowIndex} className="border-b">
                               {Object.values(row).map((value, cellIndex) => (
-                                <td key={cellIndex} className="px-4 py-2 border text-gray-800">{value as string}</td>
+                                <td key={cellIndex} className="px-4 py-2 text-gray-700">{value as string}</td>
                               ))}
                             </tr>
                           ))}
@@ -269,12 +268,12 @@ const ImportDataForm = () => {
                 )}
                 
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">{t('importExport.columnMapping')}</h4>
+                  <h4 className="text-sm font-medium text-gray-800 mb-2">{t('importExport.columnMapping')}</h4>
                   <div className="space-y-2">
                     {columnMappings.map((mapping, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div className="flex-1">
-                          <p className="text-sm text-gray-800">{mapping.sourceColumn}</p>
+                          <p className="text-sm text-gray-700">{mapping.sourceColumn}</p>
                         </div>
                         <div className="text-gray-600">→</div>
                         <div className="flex-1">
@@ -282,7 +281,7 @@ const ImportDataForm = () => {
                             value={mapping.targetColumn} 
                             onValueChange={(value) => updateColumnMapping(index, value)}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className="text-gray-700">
                               <SelectValue placeholder={t('importExport.selectTargetColumn')} />
                             </SelectTrigger>
                             <SelectContent>
